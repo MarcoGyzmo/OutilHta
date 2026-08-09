@@ -3098,7 +3098,7 @@ function suggestRefs(){
   if(q.length < 2){ box.style.display='none'; box.innerHTML=''; return; }
   const vus = new Set();
   const hits = [];
-  REFERENCE_DATA.concat(bddCache).forEach(r=>{
+  REFERENCE_DATA.concat(sharedData, bddCache).forEach(r=>{
     if(!r.ref || vus.has(r.ref) || hits.length>=12) return;
     if(norm(r.ref).includes(q)){ vus.add(r.ref); hits.push(r); }
   });
@@ -3120,9 +3120,9 @@ function hideRefs(){
 }
 
 function exportCsv(){
-  const allData = REFERENCE_DATA.concat(bddCache);
-  const header = 'Marque;Gamme;Référence;Calibre (A);Tension (kV);Année;Résistance froid (mΩ);Notes\n';
-  const rows = allData.map(r=>[r.marque,r.gamme,r.ref,r.cal,r.tens,r.annee,r.res,r.note].join(';')).join('\n');
+  const allData = REFERENCE_DATA.concat(sharedData, bddCache);
+  const header = 'Marque;Gamme;Référence;Calibre (A);Tension (kV);Année;Résistance froid (mΩ);Origine;Notes\n';
+  const rows = allData.map(r=>[r.marque,r.gamme,r.ref,r.cal,r.tens,r.annee,r.res,(r.isRef?'catalogue':(r.auteur||'local')),r.note].join(';')).join('\n');
   const blob = new Blob([header+rows], {type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
