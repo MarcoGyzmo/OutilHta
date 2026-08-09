@@ -2832,8 +2832,13 @@ async function sbFetch(chemin, options = {}){
 
 // --- authentification ---
 async function sbInscription(email, motdepasse, nom, codeEquipe){
-  const eq = await sbFetch('/rest/v1/equipes?code_acces=eq.' + encodeURIComponent(codeEquipe) + '&select=id,nom');
-  if(!eq || !eq.length) throw new Error("Code d'équipe inconnu.");
+  // verification du code via une fonction dediee : lisible avant connexion,
+  // sans exposer la liste des equipes ni les codes
+  const eqId = await sbFetch('/rest/v1/rpc/equipe_par_code', {
+    method:'POST', body: JSON.stringify({ code: codeEquipe })
+  });
+  if(!eqId) throw new Error("Code d'équipe inconnu — vérifie la saisie (majuscules et tirets compris).");
+  const eq = [{ id: eqId }];
   const res = await sbFetch('/auth/v1/signup', { method:'POST', body: JSON.stringify({ email, password: motdepasse }) });
   if(!res.access_token) throw new Error('Compte créé. Vérifie ta boîte mail pour confirmer, puis connecte-toi.');
   session = { access_token: res.access_token, refresh_token: res.refresh_token, user: res.user };
