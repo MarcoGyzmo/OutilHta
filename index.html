@@ -10,6 +10,9 @@
 <meta name="apple-mobile-web-app-title" content="KIT HT">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#12161a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icone-32.png">
+<link rel="apple-touch-icon" href="icons/icone-180.png">
 <style>
 :root{
   --bg:#12161a;
@@ -231,6 +234,17 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 </head>
 <body>
 <div class="wrap">
+  <div id="barreHorsLigne" style="display:none; background:rgba(255,138,30,0.12); border:1px solid var(--amber-dim); border-radius:5px; padding:8px 12px; margin-bottom:12px; font-size:12.5px; color:var(--amber);">
+    Hors ligne — tous les calculs et les 726 références restent disponibles.
+  </div>
+  <div id="barreInstall" style="display:none; background:var(--panel); border:1px solid var(--amber-dim); border-radius:5px; padding:10px 12px; margin-bottom:12px; display:none; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+    <span style="font-size:12.5px; color:var(--text);">Installer KIT HT sur l'écran d'accueil pour un accès hors ligne</span>
+    <span style="display:flex; gap:8px;">
+      <button class="action" style="padding:8px 14px;" onclick="installerPWA()">Installer</button>
+      <button class="ghost" style="padding:8px 12px;" onclick="document.getElementById('barreInstall').style.display='none'">Plus tard</button>
+    </span>
+  </div>
+
 
   <div class="plate">
     <div class="plate-row">
@@ -260,8 +274,11 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     <button class="tile" onclick="selectTab('access')"><span class="tnum">08</span><span class="tname">Accessoires HTA</span><span class="tdesc">CSD, CSE, E3UIC</span></button>
     <button class="tile" onclick="selectTab('couple')"><span class="tnum">09</span><span class="tname">Couples de serrage</span><span class="tdesc">Constructeur &amp; visserie</span></button>
     <button class="tile" onclick="selectTab('huile')"><span class="tnum">10</span><span class="tname">Analyse d'huile</span><span class="tdesc">DGA, furanes, PCB</span></button>
-    <button class="tile" onclick="selectTab('neutre')"><span class="tnum">11</span><span class="tname">Régimes de neutre</span><span class="tdesc">TT, TN-C, TN-S, IT</span></button>
-    <button class="tile" onclick="selectTab('info')"><span class="tnum">12</span><span class="tname">À propos</span><span class="tdesc">Sources et limites</span></button>
+    <button class="tile" onclick="selectTab('relais')"><span class="tnum">11</span><span class="tname">Relais de protection</span><span class="tdesc">C13-100/200, découplage, essais</span></button>
+    <button class="tile" onclick="selectTab('djbt')"><span class="tnum">12</span><span class="tname">Disjoncteur général BT</span><span class="tdesc">Masterpact, essais, réglages</span></button>
+    <button class="tile" onclick="selectTab('secu')"><span class="tnum">13</span><span class="tname">Sécurité &amp; obligations</span><span class="tdesc">EPI, affichage, vérifications</span></button>
+    <button class="tile" onclick="selectTab('neutre')"><span class="tnum">14</span><span class="tname">Régimes de neutre</span><span class="tdesc">TT, TN-C, TN-S, IT</span></button>
+    <button class="tile" onclick="selectTab('info')"><span class="tnum">15</span><span class="tname">À propos</span><span class="tdesc">Sources et limites</span></button>
   </div>
 
   <!-- ================= PANEL 1 : COUPLAGE ================= -->
@@ -762,9 +779,132 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     <div class="pubslot" data-pub="labo"></div>
   </div>
 
+  <div class="panel" id="p-relais">
+    <div class="card">
+      <h2><span class="idx">11</span> Relais de protection</h2>
+      <p class="desc">Rôle des protections en NF C13-100 et NF C13-200, protections de découplage des installations de production, et méthode d'essai par injection.</p>
+      <div class="field">
+        <label>Sujet</label>
+        <select id="rSel" onchange="updateRelais()">
+          <optgroup label="Les référentiels">
+            <option value="c13100">NF C13-100 — protection générale du poste de livraison</option>
+            <option value="c13200">NF C13-200 — installations privées et sélectivité</option>
+            <option value="ansi">Mémo des codes ANSI</option>
+          </optgroup>
+          <optgroup label="Les relais">
+            <option value="techno">Technologies de relais — des générations</option>
+            <option value="gammes">Gammes courantes et leurs fonctions</option>
+            <option value="alim">Alimentation : autoalimenté ou source auxiliaire</option>
+          </optgroup>
+          <optgroup label="Production décentralisée">
+            <option value="decoupPrincipe">Découplage — principe et fonctions</option>
+            <option value="decoupTypes">Découplage HTA — les types de protection</option>
+            <option value="decoupBt">Découplage BT — VFR2019 et arrêté RfG</option>
+          </optgroup>
+          <optgroup label="Essais">
+            <option value="essaiMaxI">Essai à maximum de courant (50/51)</option>
+            <option value="essaiHomo">Essai homopolaire (50N/51N, PWH)</option>
+            <option value="essaiDecoup">Essai de découplage — mise en service</option>
+            <option value="essaiChaine">Chaîne complète : TC, TT, déclenchement</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="note" id="rRes" style="margin-top:0;"></div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:14px;">Schémas de câblage d'essai</h2>
+      <p class="desc">Comment raccorder la valise d'injection selon l'essai à réaliser.</p>
+      <div class="field">
+        <label>Montage</label>
+        <select id="esSel" onchange="drawEssai()">
+          <optgroup label="La boîte d'essais">
+            <option value="boite">Anatomie et repérage des bornes</option>
+            <option value="boiteTypes">Types de boîtes et codage couleur</option>
+            <option value="fiches">Fiches et adaptateurs</option>
+          </optgroup>
+          <optgroup label="Injection secondaire par la boîte d'essais">
+            <option value="maxi1">Max de I — injection monophasée</option>
+            <option value="maxi3">Max de I — injection triphasée</option>
+            <option value="homoNich">Homopolaire — somme des 3 TC (Nicholson)</option>
+            <option value="direct">Directionnel homopolaire (PWH) — I0 + U0</option>
+            <option value="tension">Découplage — tension et fréquence</option>
+          </optgroup>
+          <optgroup label="Injection primaire">
+            <option value="homoTresse">Homopolaire par la tresse de terre d'écran</option>
+            <option value="homoTore">Homopolaire — spires sur le tore</option>
+            <option value="primaire">Chaîne complète par les TC</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="schema" id="esSchema"></div>
+      <div class="note" id="esNote" style="margin-top:0;"></div>
+    </div>
+
+    <div class="pubslot" data-pub="relais"></div>
+  </div>
+
+  <div class="panel" id="p-djbt">
+    <div class="card">
+      <h2><span class="idx">12</span> Disjoncteur général BT</h2>
+      <p class="desc">Le premier appareil après le transformateur : son rôle, ce que change le comptage HT ou BT, les gammes et leurs déclencheurs, et les essais.</p>
+      <div class="field">
+        <label>Sujet</label>
+        <select id="djSel" onchange="updateDj()">
+          <optgroup label="Principe et règles">
+            <option value="role">Rôle du disjoncteur général BT</option>
+            <option value="comptage">Comptage HT ou BT — ce que ça change</option>
+            <option value="selectivite">Sélectivité avec la protection HTA amont</option>
+            <option value="reglages">Les réglages : Ir, Isd, Ii, Ig</option>
+          </optgroup>
+          <optgroup label="Matériel">
+            <option value="gammes">Gammes Masterpact — M, NT/NW, MTZ</option>
+            <option value="declencheurs">Déclencheurs — STR, Micrologic, Micrologic X</option>
+          </optgroup>
+          <optgroup label="Essais">
+            <option value="secondaire">Injection secondaire</option>
+            <option value="primaire">Injection primaire</option>
+            <option value="contact">Résistance de contact</option>
+            <option value="meca">Contrôles mécaniques et auxiliaires</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="note" id="djRes" style="margin-top:0;"></div>
+    </div>
+    <div class="pubslot" data-pub="appareillage"></div>
+  </div>
+
+  <div class="panel" id="p-secu">
+    <div class="card">
+      <h2><span class="idx">13</span> Sécurité &amp; obligations</h2>
+      <p class="desc">Matériel de sécurité à demeure dans un poste, affichage réglementaire, et obligations de vérification et d'entretien.</p>
+      <div class="field">
+        <label>Sujet</label>
+        <select id="secSel" onchange="updateSecu()">
+          <optgroup label="Équiper le poste">
+            <option value="materiel">Matériel de sécurité obligatoire dans le poste</option>
+            <option value="epi">EPI selon le domaine de tension</option>
+            <option value="affichage">Affichage obligatoire</option>
+            <option value="verifEpi">Vérification du matériel de sécurité</option>
+          </optgroup>
+          <optgroup label="Obligations réglementaires">
+            <option value="verifInstall">Vérifications de l'installation — périodicités</option>
+            <option value="dossier">Dossier et documents à conserver</option>
+            <option value="entretien">Entretien et maintenance du poste</option>
+          </optgroup>
+          <optgroup label="Intervention">
+            <option value="consignation">Consignation — les étapes</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="note" id="secRes" style="margin-top:0;"></div>
+    </div>
+    <div class="pubslot" data-pub="secu"></div>
+  </div>
+
   <div class="panel" id="p-neutre">
     <div class="card">
-      <h2><span class="idx">11</span> Régimes de neutre — schémas de liaison à la terre (SLT)</h2>
+      <h2><span class="idx">14</span> Régimes de neutre — schémas de liaison à la terre (SLT)</h2>
       <p class="desc">Le régime de neutre définit comment le neutre du transformateur et les masses métalliques sont reliés à la terre. Ça détermine le comportement au 1er défaut d'isolement, le type de protection à mettre en œuvre, et le nombre de pôles pertinent pour les disjoncteurs.</p>
 
       <div class="grid">
@@ -1045,6 +1185,8 @@ tr:hover td{background:rgba(255,138,30,0.03);}
       <h2><span class="idx">04</span> Répertoire — résistances à froid des fusibles HT</h2>
       <p class="desc">726 références déjà intégrées (Siba, Ferraz, Alstom, Driescher, Simplex, Merlin Gerin/Schneider) — cherchable directement ci-dessous, pas d'import à faire. Tes propres ajouts se sauvegardent en plus, automatiquement sur cet appareil.</p>
 
+      <div id="authBox"></div>
+
       <div class="note" style="margin-bottom:14px;">
         <b>Recherche</b> — 726 entrées déjà dedans, ta référence y est peut-être. Renseigne <b>la référence seule</b> (identifiant unique), ou <b>marque + calibre ensemble</b> (l'un des deux seul ne suffit pas, trop de résultats possibles). Tension et année affinent en plus si besoin. Calibre et année acceptent un rapprochement automatique — si la valeur exacte n'existe pas, les entrées les plus proches s'affichent (du plus proche au plus loin). Utile par exemple pour une réf. distribuée sur plusieurs années dont la résistance a pu légèrement varier.
       </div>
@@ -1098,7 +1240,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   <!-- ================= PANEL 5 : INFO ================= -->
   <div class="panel" id="p-info">
     <div class="card">
-      <h2><span class="idx">12</span> À propos de cet outil</h2>
+      <h2><span class="idx">15</span> À propos de cet outil</h2>
       <p class="desc">Outil de terrain pour technicien HTA/HTB : rapport de transformation, loi d'Ohm, calibre fusible, disjoncteur BT général, régimes de neutre, câbles BT/HT, répertoire de résistances à froid de fusibles.</p>
       <div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">
         <b>Cet outil n'a pas d'accès internet.</b><br><br>
@@ -1134,12 +1276,53 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 </div>
 
 <script>
+
+// ---------- PWA : hors ligne, installation, état réseau ----------
+// Le service worker met en cache la coquille de l'application : une fois la page ouverte
+// une première fois, tout fonctionne sans réseau (poste enterré, sous-sol, zone blanche).
+// Il ne s'active que si la page est servie en HTTPS (ou en localhost) : ouverte en
+// fichier local (file://), l'application fonctionne quand même, sans cache géré.
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('service-worker.js')
+      .catch(e=>console.warn('Service worker non enregistré :', e.message));
+  });
+}
+
+// --- bandeau hors ligne ---
+function majEtatReseau(){
+  const b=document.getElementById('barreHorsLigne');
+  if(b) b.style.display = navigator.onLine ? 'none' : 'block';
+}
+window.addEventListener('online', majEtatReseau);
+window.addEventListener('offline', majEtatReseau);
+majEtatReseau();
+
+// --- invite d'installation (Android / Chrome / Edge) ---
+let inviteInstall = null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  inviteInstall = e;
+  const b=document.getElementById('barreInstall');
+  if(b) b.style.display='flex';
+});
+function installerPWA(){
+  const b=document.getElementById('barreInstall');
+  if(!inviteInstall){ if(b) b.style.display='none'; return; }
+  inviteInstall.prompt();
+  inviteInstall.userChoice.finally(()=>{ inviteInstall=null; if(b) b.style.display='none'; });
+}
+window.addEventListener('appinstalled', ()=>{
+  const b=document.getElementById('barreInstall');
+  if(b) b.style.display='none';
+});
+
 // ---------- NAVIGATION : accueil en tuiles + écran outil ----------
 const TITRES = {
   couplage:'01 · Rapport transfo', abaques:'02 · Abaques transfo', fusible:'03 · Calibre fusible',
   bdd:'04 · Résistances fusibles', bt:'05 · Disjoncteur BT', ohm:"06 · Loi d'Ohm",
   cablebt:'07 · Câbles BT & HT', access:'08 · Accessoires HTA', couple:'09 · Couples de serrage',
-  huile:"10 · Analyse d'huile", neutre:'11 · Régimes de neutre', info:'12 · À propos'
+  huile:"10 · Analyse d'huile", relais:'11 · Relais de protection', djbt:'12 · Disjoncteur général BT', secu:'13 · Sécurité & obligations', neutre:'14 · Régimes de neutre', info:'15 · À propos'
 };
 function selectTab(name){
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
@@ -1540,7 +1723,7 @@ const FUSE_DIMS = {
 };
 function drawFuseShape(){
   const gamme = document.getElementById('fGamme').value;
-  const d = FUSE_DIMS[gamme];
+  const d = FUSE_DIMS[gamme] || FUSE_DIMS.ute;
   // échelle graphique commune pour comparer visuellement les deux tailles réelles
   const scale = 0.5;
   const bodyLen = d.len*scale*0.6; // corps central (hors calottes)
@@ -1747,7 +1930,7 @@ const IZ_E_PR3 = {
   alu: {2.5:25,4:33,6:43,10:59,16:79,25:98,35:122,50:149,70:192,95:235,120:273,150:316,185:363,240:430,300:497,400:600,500:694,630:808}
 };
 function sectionPourIz(mat, izReq){
-  const t = IZ_E_PR3[mat];
+  const t = IZ_E_PR3[mat] || IZ_E_PR3.alu;
   const sections = Object.keys(t).map(Number).sort((a,b)=>a-b);
   for(const sec of sections){ if(t[sec] >= izReq) return {sec, iz:t[sec]}; }
   return null;
@@ -2605,19 +2788,129 @@ const REFERENCE_DATA = CATALOG_XLSX.map(([ref,marque,gamme,tens,cal,res])=>({
 }));
 
 // ---------- BDD (window.storage) — uniquement les ajouts personnels de l'utilisateur ----------
-let bddCache = [];
-async function loadBdd(){
+// ===================================================================
+// CONFIGURATION SUPABASE — base partagée
+// Renseigne ces deux valeurs après avoir créé ton projet Supabase
+// (Réglages du projet → API). Tant qu'elles sont vides, l'application
+// fonctionne normalement en local, sans partage.
+// La clé « anon » est publique par nature : la sécurité repose sur les
+// règles RLS définies dans supabase-schema.sql, pas sur son secret.
+// ===================================================================
+const SUPABASE = {
+  url: 'https://hewookgrmqphjcppvdgv.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhld29va2dybXFwaGpjcHB2ZGd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDYxNDIsImV4cCI6MjEwMTgyMjE0Mn0.wkiLMWvB-z1Kk6s7gG_js3KvH-DDikWt0cVuC9iJWoA'
+};
+const SB_ACTIF = () => !!(SUPABASE.url && SUPABASE.anonKey);
+
+// --- stockage local (fonctionne partout : fichier local, GitHub Pages, appli) ---
+const LS = {
+  get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){ console.warn('stockage indisponible', e); } },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+
+// --- état ---
+let bddCache   = [];   // ajouts personnels non encore synchronisés ou hors ligne
+let sharedData = [];   // contributions de l'équipe, rapatriées du serveur
+let session    = null; // { access_token, refresh_token, user, profil }
+let fileAttente = [];  // ajouts créés hors ligne, à envoyer au retour du réseau
+
+// --- appels REST Supabase (pas de librairie externe : rien à télécharger, marche hors ligne) ---
+async function sbFetch(chemin, options = {}){
+  const h = Object.assign({
+    'apikey': SUPABASE.anonKey,
+    'Content-Type': 'application/json'
+  }, options.headers || {});
+  if(session && session.access_token) h['Authorization'] = 'Bearer ' + session.access_token;
+  const r = await fetch(SUPABASE.url + chemin, Object.assign({}, options, { headers: h }));
+  const txt = await r.text();
+  let data = null;
+  try{ data = txt ? JSON.parse(txt) : null; }catch(e){ data = txt; }
+  if(!r.ok) throw new Error((data && (data.message || data.error_description || data.msg)) || ('Erreur ' + r.status));
+  return data;
+}
+
+// --- authentification ---
+async function sbInscription(email, motdepasse, nom, codeEquipe){
+  const eq = await sbFetch('/rest/v1/equipes?code_acces=eq.' + encodeURIComponent(codeEquipe) + '&select=id,nom');
+  if(!eq || !eq.length) throw new Error("Code d'équipe inconnu.");
+  const res = await sbFetch('/auth/v1/signup', { method:'POST', body: JSON.stringify({ email, password: motdepasse }) });
+  if(!res.access_token) throw new Error('Compte créé. Vérifie ta boîte mail pour confirmer, puis connecte-toi.');
+  session = { access_token: res.access_token, refresh_token: res.refresh_token, user: res.user };
+  await sbFetch('/rest/v1/profils', { method:'POST', headers:{'Prefer':'return=minimal'},
+    body: JSON.stringify({ id: res.user.id, nom: nom || email, equipe_id: eq[0].id }) });
+  await sbChargerProfil();
+  LS.set('kitht-session', session);
+  return true;
+}
+async function sbConnexion(email, motdepasse){
+  const res = await sbFetch('/auth/v1/token?grant_type=password', { method:'POST',
+    body: JSON.stringify({ email, password: motdepasse }) });
+  session = { access_token: res.access_token, refresh_token: res.refresh_token, user: res.user };
+  await sbChargerProfil();
+  LS.set('kitht-session', session);
+  return true;
+}
+async function sbChargerProfil(){
+  const p = await sbFetch('/rest/v1/profils?id=eq.' + session.user.id + '&select=nom,role,equipe_id,equipes(nom)');
+  if(p && p.length) session.profil = p[0];
+}
+function sbDeconnexion(){
+  session = null; sharedData = [];
+  LS.del('kitht-session');
+  majAuthUI(); renderTable();
+}
+
+// --- lecture / écriture des contributions ---
+async function sbCharger(){
+  if(!SB_ACTIF() || !session) return;
   try{
-    const r = await window.storage.get('fusibles-resistances', false);
-    bddCache = r && r.value ? JSON.parse(r.value) : [];
-  }catch(e){ bddCache = []; }
+    const d = await sbFetch('/rest/v1/fusibles?select=*&statut=eq.actif&order=cree_le.desc');
+    sharedData = (d||[]).map(r=>({
+      marque:r.marque, gamme:r.gamme, ref:r.reference, cal:r.calibre, tens:r.tension,
+      annee:r.annee, res:r.resistance, note:r.note, id:r.id,
+      auteur:r.auteur_nom, partage:true, mien: session.user && r.auteur_id === session.user.id
+    }));
+    LS.set('kitht-cache-partage', sharedData);   // conservé pour l'usage hors ligne
+  }catch(e){ console.warn('Chargement partagé impossible', e.message); }
+}
+async function sbEnvoyer(entree){
+  const corps = {
+    marque:entree.marque, gamme:entree.gamme, reference:entree.ref, calibre:entree.cal,
+    tension:entree.tens, annee:entree.annee, resistance:entree.res, note:entree.note,
+    auteur_id: session.user.id, auteur_nom: (session.profil && session.profil.nom) || session.user.email,
+    equipe_id: session.profil.equipe_id
+  };
+  await sbFetch('/rest/v1/fusibles', { method:'POST', headers:{'Prefer':'return=minimal'}, body: JSON.stringify(corps) });
+}
+async function viderFileAttente(){
+  if(!SB_ACTIF() || !session || !fileAttente.length) return;
+  const restant = [];
+  for(const e of fileAttente){
+    try{ await sbEnvoyer(e); }catch(err){ restant.push(e); }
+  }
+  fileAttente = restant;
+  LS.set('kitht-file-attente', fileAttente);
+  await sbCharger();
+  majAuthUI(); renderTable();
+}
+window.addEventListener('online', viderFileAttente);
+
+// --- démarrage ---
+async function loadBdd(){
+  bddCache    = LS.get('kitht-local', []);
+  fileAttente = LS.get('kitht-file-attente', []);
+  sharedData  = LS.get('kitht-cache-partage', []);   // disponible immédiatement, même hors ligne
+  session     = LS.get('kitht-session', null);
+  if(SB_ACTIF() && session){
+    try{ await sbChargerProfil(); await sbCharger(); await viderFileAttente(); }
+    catch(e){ console.warn('Session expirée ou hors ligne'); }
+  }
+  majAuthUI();
   renderTable();
 }
-async function saveBdd(){
-  try{
-    await window.storage.set('fusibles-resistances', JSON.stringify(bddCache), false);
-  }catch(e){ console.error('Sauvegarde impossible', e); }
-}
+function saveBdd(){ LS.set('kitht-local', bddCache); }
+
 function addRow(){
   const marque = document.getElementById('nMarque').value.trim();
   const gamme = document.getElementById('nGamme').value.trim();
@@ -2628,10 +2921,27 @@ function addRow(){
   const res = document.getElementById('nRes').value.trim();
   const note = document.getElementById('nNote').value.trim();
   if(!marque && !ref){ return; }
-  bddCache.push({marque, gamme, ref, cal, tens, annee, res, note, id: Date.now()});
+  const entree = {marque, gamme, ref, cal, tens, annee, res, note, id: Date.now()};
   ['nMarque','nGamme','nRef','nCal','nTens','nAnnee','nRes','nNote'].forEach(id=>document.getElementById(id).value='');
-  saveBdd();
-  renderTable();
+
+  if(SB_ACTIF() && session){
+    // partagé : envoi immédiat, ou mise en file d'attente si pas de réseau
+    sbEnvoyer(entree)
+      .then(()=>sbCharger())
+      .catch(()=>{ fileAttente.push(entree); LS.set('kitht-file-attente', fileAttente); })
+      .finally(()=>{ majAuthUI(); renderTable(); });
+  } else {
+    bddCache.push(entree);
+    saveBdd();
+    renderTable();
+  }
+}
+async function supprimerPartage(id){
+  if(!confirm('Supprimer cette entrée de la base partagée ?')) return;
+  try{
+    await sbFetch('/rest/v1/fusibles?id=eq.' + id, { method:'DELETE', headers:{'Prefer':'return=minimal'} });
+    await sbCharger(); renderTable();
+  }catch(e){ alert('Suppression impossible : ' + e.message); }
 }
 function delRow(id){
   bddCache = bddCache.filter(r=>r.id!==id);
@@ -2668,8 +2978,8 @@ function renderTable(){
 
   const canSearch = !!sRef || (!!sMarque && !!sCalRaw);
   const body = document.getElementById('bddBody');
-  const allData = REFERENCE_DATA.concat(bddCache);
-  document.getElementById('countTag').textContent = allData.length+' entrée'+(allData.length>1?'s':'')+' ('+REFERENCE_DATA.length+' catalogue + '+bddCache.length+' perso)';
+  const allData = REFERENCE_DATA.concat(sharedData, bddCache);
+  document.getElementById('countTag').textContent = allData.length+' entrée'+(allData.length>1?'s':'')+' ('+REFERENCE_DATA.length+' catalogue'+(sharedData.length?' + '+sharedData.length+' équipe':'')+(bddCache.length?' + '+bddCache.length+' local':'')+')';
 
   if(!canSearch){
     body.innerHTML='';
@@ -2740,8 +3050,8 @@ function renderTable(){
       '<td>'+(r.tens?r.tens+' kV':'—')+'</td>'+
       '<td>'+(r.annee||'—')+'</td>'+
       '<td>'+(r.res?r.res+' mΩ':'—')+'</td>'+
-      '<td style="color:var(--muted); font-size:11px;">'+(r.isRef ? 'catalogue fourni' : (r.note||''))+'</td>'+
-      '<td>'+(r.isRef ? '' : '<button class="ghost danger" style="padding:4px 8px; font-size:11px;" onclick="delRow('+r.id+')">✕</button>')+'</td>'+
+      '<td style="color:var(--muted); font-size:11px;">'+(r.isRef ? 'catalogue fourni' : (r.partage ? '<span style="color:var(--green);">'+(r.auteur||'équipe')+'</span>'+(r.note?' — '+r.note:'') : (r.note||'')))+'</td>'+
+      '<td>'+(r.isRef ? '' : (r.partage ? (r.mien||(session&&session.profil&&session.profil.role==='admin') ? '<button class="ghost danger" style="padding:4px 8px; font-size:11px;" onclick="supprimerPartage(\''+r.id+'\')">✕</button>' : '') : '<button class="ghost danger" style="padding:4px 8px; font-size:11px;" onclick="delRow('+r.id+')">✕</button>'))+'</td>'+
     '</tr>'
   ).join('');
 
@@ -2848,6 +3158,81 @@ const PRINCIPES = {
 
 
 
+
+// ---------- INTERFACE COMPTE / PARTAGE ----------
+function majAuthUI(){
+  const box = document.getElementById('authBox');
+  if(!box) return;
+  if(!SB_ACTIF()){
+    box.innerHTML = '<div class="note" style="border-left-color:var(--muted);">'+
+      '<b>Base partagée non configurée.</b> Tes ajouts restent sur cet appareil. '+
+      'Pour activer le partage entre collègues, renseigne les identifiants Supabase en haut du code '+
+      '(voir le guide de mise en route).</div>';
+    return;
+  }
+  const enAttente = fileAttente.length
+    ? '<div style="color:var(--amber); font-size:11.5px; margin-top:6px;">'+fileAttente.length+' ajout(s) en attente d\'envoi — ils partiront au retour du réseau.</div>'
+    : '';
+  if(session && session.profil){
+    const eq = (session.profil.equipes && session.profil.equipes.nom) || 'équipe';
+    box.innerHTML = '<div class="note" style="border-left-color:var(--green); background:rgba(73,192,122,0.05);">'+
+      '<div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">'+
+        '<div><b>'+(session.profil.nom||'')+'</b> — '+eq+
+        (session.profil.role==='admin'?' <span class="tag" style="border-color:var(--amber-dim); color:var(--amber);">ADMIN</span>':'')+
+        '<div style="font-size:11.5px; color:var(--muted);">Base partagée active : '+sharedData.length+' contribution(s) d\'équipe.</div>'+enAttente+'</div>'+
+        '<button class="ghost" onclick="sbDeconnexion()">Se déconnecter</button>'+
+      '</div></div>';
+  } else {
+    box.innerHTML = '<div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">'+
+      '<b>Base partagée</b> — connecte-toi pour voir et enrichir le répertoire de ton équipe. '+
+      'Sans compte, l\'outil fonctionne normalement : tes ajouts restent simplement sur cet appareil.'+
+      '<div class="row2" style="margin-top:10px;">'+
+        '<div class="field"><label>Email</label><input type="text" id="aEmail" autocomplete="username"></div>'+
+        '<div class="field"><label>Mot de passe</label><input type="password" id="aPass" autocomplete="current-password"></div>'+
+      '</div>'+
+      '<div id="inscrChamps" style="display:none;">'+
+        '<div class="row2">'+
+          '<div class="field"><label>Nom / prénom</label><input type="text" id="aNom"></div>'+
+          '<div class="field"><label>Code d\'équipe</label><input type="text" id="aCode" placeholder="fourni par ton responsable"></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="toolbar" style="margin-top:6px;">'+
+        '<button class="action" onclick="actionConnexion()">Se connecter</button>'+
+        '<button class="ghost" onclick="basculerInscription()" id="btnInscr">Créer un compte</button>'+
+      '</div>'+
+      '<div id="authMsg" style="font-size:12px; margin-top:8px;"></div>'+
+    '</div>';
+  }
+}
+let modeInscription = false;
+function basculerInscription(){
+  modeInscription = !modeInscription;
+  document.getElementById('inscrChamps').style.display = modeInscription ? 'block' : 'none';
+  document.getElementById('btnInscr').textContent = modeInscription ? 'J\'ai déjà un compte' : 'Créer un compte';
+  document.querySelector('#authBox .action').textContent = modeInscription ? 'Créer le compte' : 'Se connecter';
+}
+async function actionConnexion(){
+  const msg = document.getElementById('authMsg');
+  const email = document.getElementById('aEmail').value.trim();
+  const pass  = document.getElementById('aPass').value;
+  if(!email || !pass){ msg.innerHTML = '<span style="color:var(--red);">Email et mot de passe requis.</span>'; return; }
+  msg.innerHTML = '<span style="color:var(--muted);">Connexion…</span>';
+  try{
+    if(modeInscription){
+      const nom  = document.getElementById('aNom').value.trim();
+      const code = document.getElementById('aCode').value.trim();
+      if(!code){ msg.innerHTML = '<span style="color:var(--red);">Code d\'équipe requis.</span>'; return; }
+      await sbInscription(email, pass, nom, code);
+    } else {
+      await sbConnexion(email, pass);
+    }
+    await sbCharger(); await viderFileAttente();
+    majAuthUI(); renderTable();
+  }catch(e){
+    msg.innerHTML = '<span style="color:var(--red);">'+e.message+'</span>';
+  }
+}
+
 // ---------- EMPLACEMENTS PARTENAIRES ----------
 // Cartographie des espaces publicitaires par onglet, avec la cible annonceur correspondante.
 // Chaque encart est identifié comme publicitaire et reste hors du contenu technique.
@@ -2866,6 +3251,10 @@ const PUB_SLOTS = {
                  txt:'Fabricants de connecteurs séparables, d\'extrémités et de jonctions. Distributeurs spécialisés. Lecteur en phase de choix ou de commande d\'accessoire.' },
   outillage:   { cible:'Outillage et EPI',
                  txt:'Clés dynamométriques et outillage de serrage, outillage isolé, équipements de protection individuelle, matériel de consignation, sociétés de vérification et d\'étalonnage.' },
+  secu:        { cible:'EPI, matériel de sécurité et vérifications',
+                 txt:'Fabricants et distributeurs d\'EPI et de matériel de sécurité pour postes, organismes de vérification périodique et de contrôle réglementaire, organismes de formation aux habilitations électriques, sociétés de thermographie.' },
+  relais:      { cible:'Relais de protection et matériel d\'essai',
+                 txt:'Fabricants de relais de protection et de protections de découplage, valises d\'injection et matériel d\'essai, bureaux de contrôle, organismes de formation aux essais de protection. Lecteur en préparation ou en cours d\'essai.' },
   labo:        { cible:'Laboratoires et traitement d\'huile',
                  txt:'Laboratoires d\'analyse accrédités, sociétés de traitement et de régénération d\'huile, entreprises agréées pour la décontamination PCB et l\'élimination des appareils.' }
 };
@@ -2926,6 +3315,1233 @@ function renderPubSlots(){
   });
 }
 renderPubSlots();
+
+
+
+
+// ---------- SCHÉMAS DE CÂBLAGE D'ESSAI ----------
+function boite(x,y,w,h,titre,sous,couleur){
+  return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="4" fill="var(--panel-2)" stroke="'+couleur+'" stroke-width="2"/>'+
+    '<text x="'+(x+w/2)+'" y="'+(y+20)+'" text-anchor="middle" font-family="var(--disp)" font-size="12.5" fill="'+couleur+'" font-weight="600">'+titre+'</text>'+
+    (sous?'<text x="'+(x+w/2)+'" y="'+(y+35)+'" text-anchor="middle" font-family="var(--body)" font-size="10" fill="var(--muted)">'+sous+'</text>':'');
+}
+function fil(x1,y1,x2,y2,couleur,pointille){
+  return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+couleur+'" stroke-width="2.5"'+(pointille?' stroke-dasharray="5,3"':'')+'/>';
+}
+function borne(x,y,couleur){ return '<circle cx="'+x+'" cy="'+y+'" r="4" fill="'+couleur+'"/>'; }
+function etiq(x,y,txt,couleur,anchor){
+  return '<text x="'+x+'" y="'+y+'" text-anchor="'+(anchor||'middle')+'" font-family="var(--mono)" font-size="11" fill="'+(couleur||'var(--muted)')+'">'+txt+'</text>';
+}
+const A='var(--amber)', B='var(--blue)', G='var(--green)', R='var(--red)', M='var(--muted)', T='var(--text)', BB='#9aa5b1';
+
+// petite boite d'essais simplifiee (schemas secondaires)
+function boiteEssais(x,y,n,labels){
+  let g='<rect x="'+x+'" y="'+y+'" width="70" height="'+(n*26+22)+'" rx="3" fill="var(--panel-2)" stroke="'+G+'" stroke-width="2"/>';
+  g+='<text x="'+(x+35)+'" y="'+(y+15)+'" text-anchor="middle" font-family="var(--disp)" font-size="10.5" fill="'+G+'" font-weight="600">BOÎTE</text>';
+  for(let k=0;k<n;k++){
+    const yy=y+30+k*26;
+    g+='<circle cx="'+(x+18)+'" cy="'+yy+'" r="3.5" fill="'+G+'"/><circle cx="'+(x+52)+'" cy="'+yy+'" r="3.5" fill="'+G+'"/>';
+    g+='<line x1="'+(x+18)+'" y1="'+yy+'" x2="'+(x+52)+'" y2="'+yy+'" stroke="'+G+'" stroke-width="1.5" stroke-dasharray="2,2"/>';
+    if(labels&&labels[k]) g+='<text x="'+(x+35)+'" y="'+(yy-7)+'" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="'+M+'">'+labels[k]+'</text>';
+  }
+  return g;
+}
+
+// dessin realiste d'une embase ESSAILEC : 2 rangees de 4 bornes
+// rangee 1-2-3-4 = cote transformateur (TC/TT) | rangee 01-02-03-04 = cote equipement (relais)
+function embase(x,y,couleur,titre,actifsHaut,actifsBas){
+  const W=150,H=96;
+  let g='<rect x="'+x+'" y="'+y+'" width="'+W+'" height="'+H+'" rx="4" fill="var(--panel-2)" stroke="'+couleur+'" stroke-width="2.5"/>';
+  g+='<text x="'+(x+W/2)+'" y="'+(y-8)+'" text-anchor="middle" font-family="var(--disp)" font-size="11" fill="'+couleur+'" font-weight="600">'+titre+'</text>';
+  // rangee haute : cote transformateur
+  for(let k=0;k<4;k++){
+    const cx=x+24+k*34, cy=y+24;
+    const on=(actifsHaut||[]).includes(k+1);
+    g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(on?7:5)+'" fill="'+(on?couleur:'var(--panel)')+'" stroke="'+couleur+'" stroke-width="2"/>';
+    g+='<text x="'+cx+'" y="'+(y+13)+'" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="'+M+'">'+(k+1)+'</text>';
+  }
+  // rangee basse : cote equipement
+  for(let k=0;k<4;k++){
+    const cx=x+24+k*34, cy=y+70;
+    const on=(actifsBas||[]).includes(k+1);
+    g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(on?7:5)+'" fill="'+(on?couleur:'var(--panel)')+'" stroke="'+couleur+'" stroke-width="2"/>';
+    g+='<text x="'+cx+'" y="'+(y+90)+'" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="'+M+'">0'+(k+1)+'</text>';
+  }
+  // contacts mobiles internes
+  for(let k=0;k<4;k++){
+    const cx=x+24+k*34;
+    g+='<line x1="'+cx+'" y1="'+(y+31)+'" x2="'+cx+'" y2="'+(y+63)+'" stroke="'+M+'" stroke-width="1.5" stroke-dasharray="3,3"/>';
+  }
+  g+='<text x="'+(x-6)+'" y="'+(y+28)+'" text-anchor="end" font-family="var(--body)" font-size="9.5" fill="'+M+'">côté TC/TT</text>';
+  g+='<text x="'+(x-6)+'" y="'+(y+74)+'" text-anchor="end" font-family="var(--body)" font-size="9.5" fill="'+M+'">côté relais</text>';
+  return g;
+}
+
+const ESSAIS = {
+boite:{ titre:"La boîte d'essais — anatomie",
+  svg:(()=>{
+    let g=embase(150,50,G,'EMBASE COURANT (verte)',[1,2,3,4],[1,2,3,4]);
+    g+='<circle cx="60" cy="74" r="18" fill="none" stroke="'+G+'" stroke-width="2"/>'+etiq(60,78,'TC',G);
+    g+=fil(78,74,150,74,G);
+    g+=boite(340,60,110,80,'RELAIS','',B);
+    g+=fil(300,120,340,100,B);
+    // pont de court-circuitage cote TC
+    g+='<path d="M174,32 Q242,10 310,32" fill="none" stroke="'+R+'" stroke-width="2.5"/>';
+    g+=etiq(242,14,'1-2-3-4 court-circuités',R);
+    // injection cote equipement
+    g+='<rect x="150" y="185" width="110" height="26" rx="3" fill="none" stroke="'+A+'" stroke-width="2"/>'+etiq(205,202,'VALISE',A);
+    g+=fil(205,185,205,150,A)+etiq(285,178,'injection sur 01-02-03-04',A,'start');
+    return '<svg width="480" height="225" viewBox="0 0 480 225">'+g+'</svg>';
+  })(),
+  note:`<b>Repérage — la première chose à comprendre</b><br><br>
+    Une embase comporte <b>deux rangées de 4 bornes</b>, marquées dans les deux sens pour être lisibles quel que soit le sens de montage :<br>
+    — <b>1 · 2 · 3 · 4</b> → <b>côté transformateur</b> (TC ou TT)<br>
+    — <b>01 · 02 · 03 · 04</b> → <b>côté équipement</b> (le relais)<br><br>
+    Entre les deux, des <b>contacts mobiles internes</b> assurent la continuité en service normal. Le couvercle est en place, éventuellement scellé.<br><br>
+    <b>Ce qui se passe à l'insertion de la fiche — le principe « contact avant coupure » :</b><br>
+    1. Les broches de la fiche <b>établissent d'abord le contact</b> avec celles de l'embase. La circulation des signaux reste inchangée : c'est ce qui empêche toute interruption du circuit TC.<br>
+    2. Une fois la fiche <b>complètement insérée</b>, les tiges plastique de la fiche enfoncent les contacts mobiles et les <b>4 circuits s'ouvrent simultanément</b>. Les signaux sont dérivés dans la fiche vers l'équipement d'essai.<br>
+    3. Au retrait, les contacts se referment et le service normal reprend.<br><br>
+    <b style="color:var(--red);">Le point vital sur les circuits courant :</b> avant d'injecter, les 4 fils côté TC (1-2-3-4) <b>doivent être court-circuités</b>. Deux façons :<br>
+    — <b>Court-circuitage externe</b> : avec une fiche 2×4 pôles standard, on relie soi-même les 4 fils d'essai côté TC. À ne pas oublier.<br>
+    — <b>Court-circuitage intégré</b> : avec une fiche 4 pôles à broches court-circuitées, le TC est mis en court-circuit <b>automatiquement</b> dès l'enfichage. C'est la solution sûre.<br><br>
+    Sans ce court-circuit, un secondaire de TC ouvert sous charge développe une <b>surtension destructrice</b> — TC détruit, risque d'amorçage, danger mortel.<br><br>
+    <b>Caractéristiques utiles :</b> circuits courant 15 A nominal, tenue 100 A/5 s à 200 A/1 s, contacts plaqués or. Circuits tension 8 A, contacts plaqués argent. Tension nominale 400 V, tenue aux chocs 4000 V.`},
+
+boiteTypes:{ titre:"Les différentes boîtes et leur repérage",
+  svg:(()=>{
+    let g='';
+    g+=embase(20,45,G,'COURANT — vert',[],[]);
+    g+=embase(200,45,'#9aa5b1','TENSION — gris',[],[]);
+    g+=embase(380,45,B,'POLARITÉ — bleu',[],[]);
+    return '<svg width="545" height="160" viewBox="0 0 545 160">'+g+'</svg>';
+  })(),
+  note:`<b>Une cellule comporte plusieurs boîtes, une par nature de circuit.</b> Selon le relais, on trouve <b>une à plusieurs boîtes de courant</b>, <b>une boîte de tension</b>, et souvent une <b>boîte de polarité</b> et une de <b>déclenchement</b>.<br><br>
+    <b>Le codage couleur est une convention, à connaître par cœur :</b><br>
+    <table style="margin-top:8px;"><thead><tr><th>Couleur</th><th>Circuit</th><th>Repère</th></tr></thead><tbody>
+    <tr><td><b style="color:var(--green);">Vert</b></td><td>Courant (TC)</td><td>6.6</td></tr>
+    <tr><td><b style="color:#9aa5b1;">Gris</b></td><td>Tension (TT)</td><td>2.2</td></tr>
+    <tr><td><b style="color:var(--blue);">Bleu</b></td><td>Polarité</td><td>8.8</td></tr>
+    <tr><td><b style="color:var(--amber);">Orange</b></td><td>Déclenchement</td><td>—</td></tr>
+    </tbody></table><br>
+    <b>Le détrompage rend l'erreur impossible :</b> chaque embase et chaque fiche portent des <b>broches de codage</b> (jusqu'à 6 combinaisons), plus une forme plastique qui <b>empêche l'insertion inversée</b>. Une fiche courant ne peut pas entrer dans une embase tension. C'est une sécurité, pas une contrainte.<br><br>
+    <b>Trois types de contacts selon l'usage :</b><br>
+    — <b>Contact avant coupure</b> : le circuit est fermé puis ouvert. <b>Obligatoire pour les TC.</b> Disponible aussi en tension.<br>
+    — <b>Coupure avant contact</b> (contact ouvert) : la continuité est assurée par le couvercle ; le retirer ouvre le circuit et <b>isole l'équipement de l'alimentation</b>. Réservé aux circuits de tension et de déclenchement.<br>
+    — <b>Contact fermé</b> : continuité permanente, aucune coupure possible. Mesure uniquement.<br><br>
+    <b>Lire une référence d'embase</b> — exemple <b>CC-E-VA-6.6</b> :<br>
+    — 1<sup>re</sup> lettre = nature : <b>C</b> courant, <b>T</b> tension, <b>P</b> polarité, <b>DE</b> déclenchement<br>
+    — 2<sup>e</sup> lettre = contact : <b>C</b> avant coupure, <b>O</b> ouvert, <b>F</b> fermé<br>
+    — puis le montage (<b>E</b> encastré, <b>D</b> semi-encastré, <b>S</b> saillie, <b>TH35</b> rail, <b>R</b> tiroir, <b>I</b> inverse)<br>
+    — puis la connexion (<b>VA</b> vissé arrière, <b>VL</b> vissé latéral, <b>C5A</b> clip, <b>RJ45</b>)<br>
+    — puis le codage (6.6 / 2.2 / 8.8)<br><br>
+    <b>Sur les cellules récentes à capteurs</b> (LPCT courant, LPVT tension), la boîte est au format <b>RJ45</b> blindé : mesure par fiches Ø 4 mm et injection par la prise RJ45.`},
+
+fiches:{ titre:"Fiches et adaptateurs — que prendre dans la valise",
+  svg:(()=>{
+    let g='';
+    g+='<rect x="30" y="40" width="110" height="70" rx="4" fill="var(--panel-2)" stroke="'+G+'" stroke-width="2"/>'+etiq(85,32,'fiche 2×4 pôles',G);
+    for(let k=0;k<4;k++){ g+='<circle cx="'+(48+k*22)+'" cy="60" r="4" fill="'+G+'"/>'; g+='<circle cx="'+(48+k*22)+'" cy="90" r="4" fill="'+G+'"/>'; }
+    g+='<rect x="190" y="40" width="110" height="70" rx="4" fill="var(--panel-2)" stroke="'+G+'" stroke-width="2"/>'+etiq(245,32,'fiche 4 pôles CC intégré',G);
+    for(let k=0;k<4;k++){ g+='<circle cx="'+(208+k*22)+'" cy="60" r="4" fill="'+R+'"/>'; g+='<circle cx="'+(208+k*22)+'" cy="90" r="4" fill="'+G+'"/>'; }
+    g+='<path d="M208,52 L274,52" stroke="'+R+'" stroke-width="2.5"/>'+etiq(245,46,'',R);
+    g+='<rect x="350" y="40" width="110" height="70" rx="4" fill="var(--panel-2)" stroke="'+A+'" stroke-width="2"/>'+etiq(405,32,'adaptateur universel',A);
+    for(let k=0;k<4;k++){ g+='<circle cx="'+(368+k*22)+'" cy="60" r="5" fill="none" stroke="'+A+'" stroke-width="2"/>'; g+='<circle cx="'+(368+k*22)+'" cy="90" r="5" fill="none" stroke="'+A+'" stroke-width="2"/>'; }
+    g+=etiq(405,128,'insertion directe Ø 4 mm',A);
+    return '<svg width="490" height="145" viewBox="0 0 490 145">'+g+'</svg>';
+  })(),
+  note:`<b>Trois familles de fiches, à choisir selon ce qu'on veut faire.</b><br><br>
+    <b>1. Fiche 2×4 pôles (8 broches de contact)</b><br>
+    Ramène les <b>deux côtés</b> — 1-2-3-4 et 01-02-03-04 — vers 8 fiches de test (4 noires, 4 rouges, câble 2 m, 2,5 mm²).<br>
+    — <b>Pour mesurer</b> : on lit le courant réel sans ouvrir le circuit.<br>
+    — <b>Pour injecter</b> : il faut <b>court-circuiter soi-même</b> les 4 fils côté TC. Un adaptateur en H (pont sectionnable) ou un adaptateur droit sert à ça.<br><br>
+    <b>2. Fiche 4 pôles à broches court-circuitées</b><br>
+    Les 4 broches côté TC (1-2-3-4) sont <b>reliées entre elles dans la fiche</b>. Le TC est court-circuité automatiquement à l'enfichage, et seules les 4 fiches de test côté équipement sortent.<br>
+    <b>C'est la fiche à privilégier pour l'injection</b> : elle supprime l'oubli de court-circuitage, qui est l'erreur grave du métier.<br><br>
+    <b>3. Adaptateur universel Ø 4 mm</b><br>
+    Compatible avec toutes les embases courant. Les <b>fiches bananes de la valise s'enfichent directement</b>, sans accessoire ni câble précâblé. C'est la solution la plus rapide sur le terrain, et elle accepte n'importe quelles fiches isolées Ø 4 mm du commerce.<br><br>
+    <b>Aussi utile :</b> fiche 1 pôle (2 broches) pour un seul circuit, et fiches personnalisables où l'on sertit soi-même les broches selon le besoin.<br><br>
+    <b>Accessoires à avoir :</b> adaptateur droit, adaptateur en H (pont sectionnable), capuchons isolants, et l'outil d'extraction de broche si l'on personnalise des fiches.`,
+},
+
+
+boite:{ titre:"La boîte d'essais",
+  svg:(()=>{
+    let g='';
+    g+='<circle cx="55" cy="95" r="20" fill="none" stroke="'+G+'" stroke-width="2"/>'+etiq(55,99,'TC',G);
+    g+=fil(75,85,150,85,G)+fil(75,105,150,105,G);
+    g+=boiteEssais(150,55,2,['P','S']);
+    g+=fil(220,85,290,85,B)+fil(220,105,290,105,B);
+    g+=boite(290,60,100,70,'RELAIS','',B);
+    g+='<rect x="150" y="150" width="70" height="26" rx="3" fill="none" stroke="'+A+'" stroke-width="2"/>';
+    g+=etiq(185,167,'FICHE',A);
+    g+=fil(185,150,185,133,A,true);
+    g+=fil(60,163,150,163,A)+etiq(58,167,'valise',A,'end');
+    g+=etiq(300,165,'insertion de la fiche =',R,'start');
+    g+=etiq(300,180,'TC court-circuités + relais isolé',R,'start');
+    return '<svg width="480" height="195" viewBox="0 0 480 195">'+g+'</svg>';
+  })(),
+  note:`<b>Le point de raccordement normalisé de tout essai secondaire.</b> La boîte d'essais s'intercale entre les TC/TT et le relais. Elle permet d'injecter <b>sans débrancher un seul fil</b>, ce qui supprime le risque d'erreur au remontage.<br><br>
+    <b>Le principe « contact avant coupure » — c'est là que se joue la sécurité :</b> à l'insertion de la fiche, le <b>court-circuitage des TC s'effectue automatiquement</b>, avant que le circuit de mesure ne s'ouvre. Aucun curseur ni commutateur à actionner manuellement.<br><br>
+    <b style="color:var(--red);">Pourquoi c'est vital :</b> un secondaire de TC laissé ouvert alors que le primaire est chargé développe une <b>surtension dangereuse</b> à ses bornes — destruction du TC, risque d'amorçage, danger mortel. La boîte d'essais rend ce scénario impossible.<br><br>
+    <b>Autres fonctions selon les modèles :</b><br>
+    — <b>Isolement des circuits de déclenchement</b> à l'insertion de la fiche, pour ne pas déclencher le disjoncteur pendant l'essai.<br>
+    — <b>Verrouillage</b> : au retrait de la fiche, le relais se stabilise en position repos <b>avant</b> le rétablissement des circuits de déclenchement.<br>
+    — <b>Fiche de blocage de déclenchement</b> : isole le seul circuit de déclenchement, en gardant les autres circuits actifs, avec visualisation de l'état.<br>
+    — Certaines gammes traitent 1 à 4 circuits par bloc, courant et tension.<br><br>
+    <b>Méthode :</b> repérer le brochage sur le schéma de la cellule <b>avant</b> d'insérer quoi que ce soit. Les embases sont détrompées et codées : une fiche courant ne doit jamais pouvoir entrer dans une embase tension.` },
+
+maxi1:{ titre:'Max de I — injection monophasée',
+  svg:(()=>{
+    const W=720,H=560;
+    let g='';
+    // ---- cadre cellule ----
+    g+='<rect x="14" y="40" width="200" height="300" rx="4" fill="none" stroke="'+M+'" stroke-width="1.5" stroke-dasharray="6,4"/>';
+    g+='<text x="114" y="32" text-anchor="middle" font-family="var(--body)" font-size="11" fill="'+M+'">Cellule HTA — réduit BT</text>';
+    // ---- 3 TC avec reperage P1/P2 S1/S2 ----
+    const tcY=[90,180,270];
+    ['L1','L2','L3'].forEach((ph,k)=>{
+      const y=tcY[k];
+      // conducteur primaire
+      g+='<line x1="30" y1="'+y+'" x2="200" y2="'+y+'" stroke="'+M+'" stroke-width="3"/>';
+      g+='<text x="26" y="'+(y-10)+'" font-family="var(--mono)" font-size="11" fill="'+M+'">'+ph+'</text>';
+      g+='<text x="38" y="'+(y-6)+'" font-family="var(--mono)" font-size="8.5" fill="'+G+'">P1</text>';
+      g+='<text x="182" y="'+(y-6)+'" font-family="var(--mono)" font-size="8.5" fill="'+G+'">P2</text>';
+      // tore TC
+      g+='<circle cx="110" cy="'+y+'" r="20" fill="none" stroke="'+G+'" stroke-width="2.5"/>';
+      g+='<text x="110" y="'+(y+34)+'" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="'+G+'">TC'+(k+1)+'</text>';
+      // secondaire S1/S2
+      g+='<line x1="128" y1="'+(y-8)+'" x2="150" y2="'+(y-8)+'" stroke="'+G+'" stroke-width="1.8"/>';
+      g+='<line x1="128" y1="'+(y+8)+'" x2="150" y2="'+(y+8)+'" stroke="'+G+'" stroke-width="1.8"/>';
+      g+='<text x="152" y="'+(y-10)+'" font-family="var(--mono)" font-size="8.5" fill="'+G+'">S1</text>';
+      g+='<text x="152" y="'+(y+16)+'" font-family="var(--mono)" font-size="8.5" fill="'+G+'">S2</text>';
+    });
+    // ---- filerie TC -> embase, avec reperes de fils ----
+    const bx=270, by=90;   // embase
+    const bornesX=[bx+26,bx+62,bx+98,bx+134];
+    // S1 de chaque TC vers bornes 1,2,3 ; S2 communs vers borne 4
+    [[0,'1'],[1,'2'],[2,'3']].forEach(([k,b])=>{
+      const y=tcY[k], tx=bornesX[k];
+      const lane=(by-56)+k*10;   // couloir horizontal propre a chaque fil : 34, 44, 54
+      g+='<polyline points="150,'+(y-8)+' '+(200+k*14)+','+(y-8)+' '+(200+k*14)+','+lane+' '+tx+','+lane+' '+tx+','+(by+14)+'" fill="none" stroke="'+G+'" stroke-width="2"/>';
+      g+='<text x="'+(206+k*14)+'" y="'+(y-14)+'" font-family="var(--mono)" font-size="9" fill="'+G+'">'+b+'</text>';
+    });
+    // communs S2
+    g+='<polyline points="150,98 160,98 160,278" fill="none" stroke="'+G+'" stroke-width="2"/>';
+    g+='<polyline points="150,188 160,188" fill="none" stroke="'+G+'" stroke-width="2"/>';
+    g+='<polyline points="150,278 252,278 252,20 '+bornesX[3]+',20 '+bornesX[3]+','+(by+14)+'" fill="none" stroke="'+G+'" stroke-width="2"/>';
+    g+='<text x="250" y="272" font-family="var(--mono)" font-size="9" fill="'+G+'">4 (commun)</text>';
+    // ---- EMBASE COURANT ----
+    g+='<rect x="'+bx+'" y="'+by+'" width="160" height="118" rx="5" fill="var(--panel-2)" stroke="'+G+'" stroke-width="3"/>';
+    g+='<text x="'+(bx+80)+'" y="'+(by-46)+'" text-anchor="middle" font-family="var(--disp)" font-size="12" fill="'+G+'" font-weight="600">EMBASE COURANT</text>';
+    g+='<text x="'+(bx+80)+'" y="'+(by-32)+'" text-anchor="middle" font-family="var(--body)" font-size="9.5" fill="'+M+'">codage vert 6.6 · contact avant coupure</text>';
+    bornesX.forEach((cx,k)=>{
+      // borne haute (cote TC)
+      g+='<circle cx="'+cx+'" cy="'+(by+22)+'" r="7" fill="'+G+'" stroke="'+G+'" stroke-width="2"/>';
+      g+='<text x="'+cx+'" y="'+(by+11)+'" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="'+T+'">'+(k+1)+'</text>';
+      // borne basse (cote relais)
+      g+='<circle cx="'+cx+'" cy="'+(by+96)+'" r="7" fill="'+((k===0||k===3)?G:'var(--panel)')+'" stroke="'+G+'" stroke-width="2"/>';
+      g+='<text x="'+cx+'" y="'+(by+114)+'" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="'+T+'">0'+(k+1)+'</text>';
+      // contact mobile ouvert
+      g+='<line x1="'+cx+'" y1="'+(by+30)+'" x2="'+(cx+6)+'" y2="'+(by+62)+'" stroke="'+R+'" stroke-width="2"/>';
+      g+='<line x1="'+cx+'" y1="'+(by+66)+'" x2="'+cx+'" y2="'+(by+88)+'" stroke="'+M+'" stroke-width="1.5"/>';
+    });
+    g+='<text x="'+(bx+168)+'" y="'+(by+50)+'" font-family="var(--body)" font-size="9.5" fill="'+R+'">contacts</text>';
+    g+='<text x="'+(bx+168)+'" y="'+(by+62)+'" font-family="var(--body)" font-size="9.5" fill="'+R+'">ouverts</text>';
+    // barre de court-circuitage
+    g+='<line x1="'+bornesX[0]+'" y1="'+(by+22)+'" x2="'+bornesX[3]+'" y2="'+(by+22)+'" stroke="'+R+'" stroke-width="4"/>';
+    g+='<text x="'+(bx+80)+'" y="'+(by-8)+'" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="'+R+'" font-weight="700">1-2-3-4 COURT-CIRCUITÉS</text>';
+    // ---- RELAIS ----
+    const rx=520, ry=90;
+    g+='<rect x="'+rx+'" y="'+ry+'" width="170" height="150" rx="5" fill="var(--panel-2)" stroke="'+B+'" stroke-width="2.5"/>';
+    g+='<text x="'+(rx+85)+'" y="'+(ry+24)+'" text-anchor="middle" font-family="var(--disp)" font-size="13" fill="'+B+'" font-weight="600">RELAIS 50/51</text>';
+    ['I1','I2','I3','IN'].forEach((l,k)=>{
+      const y=ry+50+k*26;
+      g+='<circle cx="'+rx+'" cy="'+y+'" r="5" fill="var(--panel)" stroke="'+B+'" stroke-width="2"/>';
+      g+='<text x="'+(rx+14)+'" y="'+(y+4)+'" font-family="var(--mono)" font-size="10.5" fill="'+B+'">'+l+'</text>';
+      g+='<polyline points="'+bornesX[k]+','+(by+103)+' '+bornesX[k]+','+(268+k*8)+' '+(rx-30+k*6)+','+(268+k*8)+' '+(rx-30+k*6)+','+y+' '+rx+','+y+'" fill="none" stroke="'+B+'" stroke-width="1.8"/>';
+    });
+    // ---- VALISE ----
+    g+='<rect x="270" y="400" width="180" height="90" rx="5" fill="var(--panel-2)" stroke="'+A+'" stroke-width="2.5"/>';
+    g+='<text x="360" y="426" text-anchor="middle" font-family="var(--disp)" font-size="13" fill="'+A+'" font-weight="600">VALISE D\'INJECTION</text>';
+    g+='<circle cx="316" cy="462" r="6" fill="'+A+'"/><text x="316" y="484" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="'+A+'">I+</text>';
+    g+='<circle cx="404" cy="462" r="6" fill="'+A+'"/><text x="404" y="484" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="'+A+'">I−</text>';
+    // fils valise -> 01 et 04
+    // couloirs valise decales des descentes relais : approche laterale puis entree courte dans la borne
+    g+='<polyline points="316,456 316,376 '+(bornesX[0]-14)+',376 '+(bornesX[0]-14)+','+(by+96)+' '+bornesX[0]+','+(by+96)+'" fill="none" stroke="'+A+'" stroke-width="2.5"/>';
+    g+='<polyline points="404,456 404,344 '+(bornesX[3]-14)+',344 '+(bornesX[3]-14)+','+(by+96)+' '+bornesX[3]+','+(by+96)+'" fill="none" stroke="'+A+'" stroke-width="2.5"/>';
+    g+='<text x="200" y="366" font-family="var(--mono)" font-size="10" fill="'+A+'">vers 01</text>';
+    g+='<text x="462" y="348" font-family="var(--mono)" font-size="10" fill="'+A+'">vers 04</text>';
+    // ---- reperes d'etapes ----
+    function pastille(x,y,n){ return '<circle cx="'+x+'" cy="'+y+'" r="11" fill="'+A+'"/><text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-family="var(--disp)" font-size="12" fill="#1a1200" font-weight="700">'+n+'</text>'; }
+    g+=pastille(bx+80,by-62,1);
+    g+=pastille(bx+80,by+140,2);
+    g+=pastille(360,510,3);
+    g+=pastille(rx+85,ry+165,4);
+    // ---- legende ----
+    g+='<rect x="14" y="400" width="230" height="130" rx="4" fill="none" stroke="'+M+'" stroke-width="1"/>';
+    g+='<text x="26" y="420" font-family="var(--disp)" font-size="11" fill="'+T+'" font-weight="600">LÉGENDE</text>';
+    const leg=[[G,'circuit TC (secondaire)'],[R,'court-circuit / contact ouvert'],[A,'injection valise'],[B,'circuit vers relais']];
+    leg.forEach(([c,l],k)=>{
+      const y=440+k*22;
+      g+='<line x1="26" y1="'+y+'" x2="56" y2="'+y+'" stroke="'+c+'" stroke-width="3"/>';
+      g+='<text x="64" y="'+(y+4)+'" font-family="var(--body)" font-size="10" fill="'+M+'">'+l+'</text>';
+    });
+    return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+g+'</svg>';
+  })(),
+  note:`<b>Ordre des opérations — les repères ① à ④ sur le schéma</b><br><br>
+    <b>① Court-circuiter les bornes 1-2-3-4 (côté TC).</b> Soit la fiche 4 pôles le fait d'elle-même à l'enfichage, soit tu réalises le pont sur les fils d'essai. Sans ça, secondaire de TC ouvert = surtension destructrice.<br><br>
+    <b>② Insérer la fiche.</b> Les contacts mobiles s'ouvrent : le relais est déconnecté des TC, l'injection ne remonte pas vers l'installation.<br><br>
+    <b>③ Raccorder la valise</b> entre <b>01</b> (phase testée) et <b>04</b> (commun). Vérifier la correspondance borne ↔ phase <b>sur le schéma de la cellule</b> : le repère 01 ne garantit pas que c'est I1.<br><br>
+    <b>④ Contrôler au relais</b> : le courant affiché doit correspondre à l'injection. Écart = rapport TC mal paramétré.<br><br>
+    <b>Mesures à relever, par phase :</b> seuil de démarrage, seuil de retombée, temporisation à 2 × Is, puis 3 points de courbe (2 ×, 5 ×, 10 × Is) si temps dépendant.<br><br>
+    <b style="color:var(--amber);">Piège du monophasé :</b> le relais voit un résiduel égal au courant injecté, donc le 51N déclenche avant le seuil phase. Inhiber la fonction terre, ou injecter <b>entre 01 et 02</b> (deux phases opposées) pour que la somme reste nulle.<br><br>
+    <b>Repérage TC :</b> P1 côté jeu de barres, S1/S2 au secondaire. Une inversion S1/S2 sur une phase fausse la somme homopolaire sans se voir sur l'essai phase.` },
+
+maxi3:{ titre:'Max de I — injection triphasée',
+  svg:(()=>{
+    let g='';
+    g+=boiteEssais(120,45,4,['I1','I2','I3','N']);
+    g+=fil(190,75,290,75,B)+fil(190,101,290,101,B)+fil(190,127,290,127,B)+fil(190,153,290,153,M);
+    g+=boite(290,50,120,120,'RELAIS','50/51 · 46 · 49',B);
+    g+='<rect x="20" y="60" width="80" height="110" rx="3" fill="none" stroke="'+A+'" stroke-width="2"/>'+etiq(60,80,'VALISE',A);
+    g+=etiq(60,100,'3 × I',A)+etiq(60,118,'120°',A);
+    g+=fil(100,75,120,75,A)+fil(100,101,120,101,A)+fil(100,127,120,127,A)+fil(100,153,120,153,A);
+    return '<svg width="440" height="195" viewBox="0 0 440 195">'+g+'</svg>';
+  })(),
+  note:`<b>Trois courants injectés simultanément</b>, déphasés de 120°, par la même boîte d'essais.<br><br>
+    <b>Avantage décisif :</b> la somme vectorielle est nulle, donc <b>aucun résiduel parasite</b>. On teste la fonction phase sans interférer avec la fonction terre — contrairement à l'injection monophasée.<br><br>
+    <b>Ce que ce montage permet en plus :</b><br>
+    — <b>46 (composante inverse)</b> : inverser deux phases ou déséquilibrer volontairement, et vérifier le seuil.<br>
+    — <b>49 (image thermique)</b> : injecter une surcharge prolongée et observer la montée du modèle thermique.<br>
+    — <b>Vérification des mesures</b> : comparer les courants affichés par le relais à ceux injectés, phase par phase. C'est le contrôle le plus rapide du paramétrage TC.<br>
+    — <b>Ordre des phases</b> : certains relais l'affichent, ce qui valide le câblage.<br><br>
+    <b>Simulation de défaut réaliste :</b> pour approcher les conditions réelles, injecter un défaut biphasé (deux phases au courant de défaut, la troisième au courant de charge) plutôt qu'un triphasé parfait.` },
+
+homoNich:{ titre:'Homopolaire — somme des 3 TC',
+  svg:(()=>{
+    const W=800,H=580;
+    let g='';
+    function past(x,y,n){ return '<circle cx="'+x+'" cy="'+y+'" r="11" fill="'+A+'"/><text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-family="var(--disp)" font-size="12" fill="#1a1200" font-weight="700">'+n+'</text>'; }
+
+    // ===== CELLULE : 3 conducteurs + 3 TC =====
+    g+='<rect x="14" y="24" width="238" height="300" rx="4" fill="none" stroke="'+M+'" stroke-width="1.5" stroke-dasharray="6,4"/>';
+    g+='<text x="133" y="18" text-anchor="middle" font-family="var(--body)" font-size="11" fill="'+M+'">Cellule HTA</text>';
+    const tcY=[70,140,210];
+    ['L1','L2','L3'].forEach((ph,k)=>{
+      const y=tcY[k];
+      g+='<line x1="30" y1="'+y+'" x2="240" y2="'+y+'" stroke="'+M+'" stroke-width="3"/>';
+      g+='<text x="30" y="'+(y-24)+'" font-family="var(--mono)" font-size="10.5" fill="'+M+'">'+ph+'</text>';
+      g+='<text x="46" y="'+(y-6)+'" font-family="var(--mono)" font-size="8.5" fill="'+G+'">P1</text>';
+      g+='<text x="222" y="'+(y-6)+'" font-family="var(--mono)" font-size="8.5" fill="'+G+'">P2</text>';
+      g+='<circle cx="120" cy="'+y+'" r="21" fill="none" stroke="'+G+'" stroke-width="2.5"/>';
+      g+='<text x="120" y="'+(y+4)+'" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="'+G+'">TC'+(k+1)+'</text>';
+      // secondaires S1 (haut) et S2 (bas)
+      g+='<line x1="141" y1="'+(y-8)+'" x2="160" y2="'+(y-8)+'" stroke="'+G+'" stroke-width="2"/>';
+      g+='<line x1="141" y1="'+(y+8)+'" x2="152" y2="'+(y+8)+'" stroke="'+G+'" stroke-width="2"/>';
+      g+='<text x="146" y="'+(y-13)+'" font-family="var(--mono)" font-size="8.5" fill="'+G+'">S1</text>';
+      g+='<text x="146" y="'+(y+21)+'" font-family="var(--mono)" font-size="8.5" fill="'+G+'">S2</text>';
+      g+='<text x="166" y="'+(y-13)+'" font-family="var(--mono)" font-size="10" fill="'+A+'" font-weight="700">I'+(k+1)+'</text>';
+    });
+
+    // ===== POINT DE SOMME (S2 communs) =====
+    g+='<line x1="152" y1="78" x2="200" y2="78" stroke="'+G+'" stroke-width="2"/>';
+    g+='<line x1="152" y1="148" x2="200" y2="148" stroke="'+G+'" stroke-width="2"/>';
+    g+='<line x1="152" y1="218" x2="200" y2="218" stroke="'+G+'" stroke-width="2"/>';
+    g+='<line x1="200" y1="28" x2="200" y2="218" stroke="'+G+'" stroke-width="3"/>';
+    [78,148,218].forEach(y=>{ g+='<circle cx="200" cy="'+y+'" r="4.5" fill="'+G+'"/>'; });
+    g+='<text x="206" y="252" font-family="var(--body)" font-size="10" fill="'+G+'">point de somme</text>';
+    g+='<text x="206" y="266" font-family="var(--mono)" font-size="11" fill="'+A+'" font-weight="700">I1+I2+I3 = I résiduel</text>';
+
+    // ===== EMBASE COURANT =====
+    const bx=300, by=60, bX=[324,360,396,432];
+    g+='<rect x="'+bx+'" y="'+by+'" width="145" height="96" rx="5" fill="var(--panel-2)" stroke="'+G+'" stroke-width="3"/>';
+    g+='<text x="'+(bx+72)+'" y="'+(by-34)+'" text-anchor="middle" font-family="var(--disp)" font-size="11.5" fill="'+G+'" font-weight="600">EMBASE COURANT</text>';
+    g+='<text x="'+(bx+72)+'" y="'+(by-22)+'" text-anchor="middle" font-family="var(--body)" font-size="9" fill="'+M+'">vert 6.6 — contact avant coupure</text>';
+    bX.forEach((cx,k)=>{
+      g+='<circle cx="'+cx+'" cy="'+(by+20)+'" r="6.5" fill="'+G+'" stroke="'+G+'" stroke-width="2"/>';
+      g+='<text x="'+(cx+11)+'" y="'+(by+24)+'" font-family="var(--mono)" font-size="9" fill="'+M+'">'+(k+1)+'</text>';
+      g+='<circle cx="'+cx+'" cy="'+(by+76)+'" r="6.5" fill="'+G+'" stroke="'+G+'" stroke-width="2"/>';
+      g+='<text x="'+(cx+11)+'" y="'+(by+80)+'" font-family="var(--mono)" font-size="9" fill="'+M+'">0'+(k+1)+'</text>';
+      g+='<line x1="'+cx+'" y1="'+(by+27)+'" x2="'+(cx+5)+'" y2="'+(by+52)+'" stroke="'+R+'" stroke-width="1.8"/>';
+      g+='<line x1="'+cx+'" y1="'+(by+55)+'" x2="'+cx+'" y2="'+(by+69)+'" stroke="'+M+'" stroke-width="1.4"/>';
+    });
+    g+='<line x1="'+bX[0]+'" y1="'+(by+20)+'" x2="'+bX[3]+'" y2="'+(by+20)+'" stroke="'+R+'" stroke-width="4"/>';
+    g+='<text x="'+(bx+72)+'" y="'+(by+9)+'" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="'+R+'" font-weight="700">1-2-3-4 COURT-CIRCUITÉS</text>';
+
+    // ===== S1 -> bornes 1,2,3 (couloirs horizontaux distincts) =====
+    [[0,262,36],[1,274,44],[2,286,52]].forEach(([k,vx,ly])=>{
+      const y=tcY[k]-8;
+      g+='<polyline points="160,'+y+' '+vx+','+y+' '+vx+','+ly+' '+bX[k]+','+ly+' '+bX[k]+','+(by+13)+'" fill="none" stroke="'+G+'" stroke-width="2"/>';
+      g+='<text x="'+(vx+4)+'" y="'+(ly-4)+'" font-family="var(--mono)" font-size="8.5" fill="'+G+'">S1 TC'+(k+1)+' → '+(k+1)+'</text>';
+    });
+    // ===== somme -> borne 4 =====
+    g+='<polyline points="200,28 '+bX[3]+',28 '+bX[3]+','+(by+13)+'" fill="none" stroke="'+G+'" stroke-width="2.5"/>';
+    g+='<text x="240" y="22" font-family="var(--mono)" font-size="8.5" fill="'+G+'">somme → 4 (commun)</text>';
+
+    // ===== EMBASE -> RELAIS (4 couloirs distincts) =====
+    const rx=620, ry=80;
+    [[0,250,590,130],[1,262,580,160],[2,274,570,190],[3,286,560,220]].forEach(([k,ly,vx,ty])=>{
+      g+='<polyline points="'+bX[k]+','+(by+83)+' '+bX[k]+','+ly+' '+vx+','+ly+' '+vx+','+ty+' '+rx+','+ty+'" fill="none" stroke="'+B+'" stroke-width="1.8"/>';
+    });
+    g+='<rect x="'+rx+'" y="'+ry+'" width="160" height="180" rx="5" fill="var(--panel-2)" stroke="'+B+'" stroke-width="2.5"/>';
+    g+='<text x="'+(rx+80)+'" y="'+(ry+26)+'" text-anchor="middle" font-family="var(--disp)" font-size="13" fill="'+B+'" font-weight="600">RELAIS</text>';
+    g+='<text x="'+(rx+80)+'" y="'+(ry+42)+'" text-anchor="middle" font-family="var(--body)" font-size="9.5" fill="'+M+'">50/51 + 51N</text>';
+    [['I1',130],['I2',160],['I3',190],['IN / I0',220]].forEach(([l,y])=>{
+      g+='<circle cx="'+rx+'" cy="'+y+'" r="5" fill="var(--panel)" stroke="'+B+'" stroke-width="2"/>';
+      g+='<text x="'+(rx+14)+'" y="'+(y+4)+'" font-family="var(--mono)" font-size="10.5" fill="'+B+'">'+l+'</text>';
+    });
+
+    // ===== VALISE =====
+    g+='<rect x="300" y="430" width="290" height="105" rx="5" fill="var(--panel-2)" stroke="'+A+'" stroke-width="2.5"/>';
+    g+='<text x="445" y="468" text-anchor="middle" font-family="var(--disp)" font-size="13" fill="'+A+'" font-weight="600">VALISE D\'INJECTION</text>';
+    g+='<text x="445" y="486" text-anchor="middle" font-family="var(--body)" font-size="9.5" fill="'+M+'">1 seul courant — sur une phase à la fois</text>';
+    g+='<circle cx="340" cy="430" r="6" fill="'+A+'"/><text x="340" y="422" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="'+A+'">I+</text>';
+    g+='<circle cx="530" cy="430" r="6" fill="'+A+'"/><text x="530" y="422" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="'+A+'">I−</text>';
+    g+='<polyline points="340,430 340,340 310,340 310,'+(by+76)+' '+bX[0]+','+(by+76)+'" fill="none" stroke="'+A+'" stroke-width="2.5"/>';
+    g+='<polyline points="530,430 530,352 460,352 460,'+(by+76)+' '+bX[3]+','+(by+76)+'" fill="none" stroke="'+A+'" stroke-width="2.5"/>';
+    g+='<text x="230" y="336" font-family="var(--mono)" font-size="9.5" fill="'+A+'">vers 01 (phase testée)</text>';
+    g+='<text x="470" y="348" font-family="var(--mono)" font-size="9.5" fill="'+A+'">vers 04 (commun)</text>';
+
+    // ===== PASTILLES =====
+    g+=past(200,290,1);
+    g+=past(bx+72,by+118,2);
+    g+=past(445,556,3);
+    g+=past(rx+80,ry+200,4);
+
+    // ===== LEGENDE =====
+    g+='<rect x="14" y="400" width="250" height="112" rx="4" fill="none" stroke="'+M+'" stroke-width="1"/>';
+    g+='<text x="26" y="420" font-family="var(--disp)" font-size="11" fill="'+T+'" font-weight="600">LÉGENDE</text>';
+    [[G,'secondaires TC (S1 / S2)'],[R,'court-circuit / contact ouvert'],[A,'cordons valise'],[B,'liaison vers relais']].forEach(([c,l],k)=>{
+      const y=440+k*19;
+      g+='<line x1="26" y1="'+y+'" x2="54" y2="'+y+'" stroke="'+c+'" stroke-width="3"/>';
+      g+='<text x="62" y="'+(y+4)+'" font-family="var(--body)" font-size="9.5" fill="'+M+'">'+l+'</text>';
+    });
+    return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+g+'</svg>';
+  })(),
+  note:`<b>Le principe — repère ①</b><br>
+    Les trois secondaires ne sont pas indépendants : les <b>S2 sont reliés à un point commun</b>. Le relais reçoit donc I1, I2 et I3 sur ses entrées phase, et la borne commune véhicule la <b>somme vectorielle I1+I2+I3</b>. En régime équilibré cette somme est nulle ; un défaut terre la fait apparaître. C'est ce qu'on appelle montage <b>Nicholson</b> ou <b>Holmgreen</b>.<br><br>
+    <b>② Court-circuiter 1-2-3-4</b> avant toute injection — la fiche 4 pôles le fait d'elle-même.<br><br>
+    <b>③ Injecter sur une seule phase</b>, entre <b>01</b> (phase testée) et <b>04</b> (commun). Les deux autres TC ne voient rien, donc le relais mesure un résiduel <b>égal au courant injecté</b> : aucun coefficient à appliquer, contrairement au tore.<br><br>
+    <b>④ Lire au relais</b> : le courant résiduel affiché doit correspondre à l'injection.<br><br>
+    <b>Les trois essais à enchaîner — c'est là que le montage se valide vraiment :</b><br>
+    — injecter successivement sur <b>01, puis 02, puis 03</b>. Le relais doit voir <b>le même résiduel</b> à chaque fois. Une différence trahit un TC au mauvais rapport ou une entrée défectueuse.<br>
+    — <b>injecter les trois phases en équilibré</b> et vérifier que le résiduel affiché reste <b>proche de zéro</b>. C'est le seul essai qui détecte une <b>polarité S1/S2 inversée</b> sur un TC : en injection monophasée elle ne se voit pas, mais en régime sain elle crée un résiduel permanent qui déclenche à tort ou masque un vrai défaut.<br><br>
+    <b>Limite du montage :</b> les dispersions entre les trois TC limitent la précision, donc le seuil minimal exploitable. Quand il faut de la sensibilité — grandes longueurs de câble, courant capacitif élevé — on utilise un tore.` },
+
+homoTresse:{ titre:"Homopolaire par la tresse de terre d'écran",
+  svg:(()=>{
+    let g='';
+    g+='<ellipse cx="130" cy="85" rx="52" ry="38" fill="none" stroke="'+G+'" stroke-width="3"/>'+etiq(130,45,'TORE',G);
+    g+='<rect x="105" y="70" width="50" height="30" rx="4" fill="none" stroke="'+M+'" stroke-width="2"/>'+etiq(130,89,'câble',M);
+    g+='<path d="M130,100 Q130,140 195,140" fill="none" stroke="'+A+'" stroke-width="2.5"/>';
+    g+='<path d="M195,140 Q240,140 240,105" fill="none" stroke="'+A+'" stroke-width="2.5"/>';
+    g+=etiq(180,158,"tresse de terre d'écran",A);
+    g+='<line x1="230" y1="105" x2="250" y2="105" stroke="'+M+'" stroke-width="2"/>';
+    g+='<line x1="240" y1="98" x2="240" y2="112" stroke="'+M+'" stroke-width="3"/>';
+    g+=etiq(258,109,'prise de terre cellule',M,'start');
+    g+='<rect x="20" y="180" width="90" height="26" rx="3" fill="none" stroke="'+R+'" stroke-width="2"/>'+etiq(65,197,'VALISE',R);
+    g+=fil(110,193,175,193,R)+etiq(150,185,'injection',R);
+    g+='<circle cx="185" cy="140" r="5" fill="none" stroke="'+R+'" stroke-width="2"/>';
+    g+=fil(175,193,185,145,R);
+    g+=fil(250,105,250,193,R)+fil(250,193,300,193,R);
+    g+=boite(190,20,120,55,'RELAIS','51N / 67N',B);
+    g+=fil(182,60,190,55,G);
+    return '<svg width="440" height="220" viewBox="0 0 440 220">'+g+'</svg>';
+  })(),
+  note:`<b>La méthode de terrain la plus élégante</b> pour vérifier une protection terre sur tore, sans démonter quoi que ce soit et sans bobiner de spires.<br><br>
+    <b>Principe :</b> la tresse de mise à la terre de l'écran du câble <b>repasse à travers le tore</b> (c'est la règle de câblage). On injecte donc un courant <b>entre cette tresse et la prise de terre de la cellule</b> : ce courant traverse le tore une fois et est vu par le relais exactement comme un courant de défaut terre.<br><br>
+    <b>Avantages :</b><br>
+    — Un seul passage dans le tore, donc <b>pas de coefficient de spires</b> à appliquer : le courant injecté est le courant vu.<br>
+    — <b>Injection primaire</b> : on valide le tore lui-même, son câblage, le relais et la chaîne de déclenchement d'un seul essai.<br>
+    — Aucun démontage, aucun débranchement : le risque d'erreur au remontage disparaît.<br><br>
+    <b>Conditions impératives :</b><br>
+    — Installation <b>consignée</b> : on manipule la mise à la terre d'écran.<br>
+    — Vérifier <b>avant</b> que la tresse repasse bien dans le tore — si ce n'est pas le cas, la méthode ne fonctionne pas, et c'est en soi un défaut de câblage à signaler.<br>
+    — Rétablir la mise à la terre d'écran <b>immédiatement</b> après l'essai, et le vérifier.<br><br>
+    <b>Ce que ça révèle en prime :</b> si le relais ne voit rien alors que l'injection est correcte, c'est le tore ou son raccordement qui est en cause — un diagnostic impossible à poser par injection secondaire seule.` },
+
+homoTore:{ titre:'Homopolaire — spires sur le tore',
+  svg:(()=>{
+    let g='';
+    g+='<ellipse cx="120" cy="95" rx="55" ry="42" fill="none" stroke="'+G+'" stroke-width="3"/>';
+    g+='<ellipse cx="120" cy="95" rx="30" ry="20" fill="none" stroke="'+G+'" stroke-width="2"/>';
+    g+=etiq(120,45,'TORE',G);
+    g+='<path d="M70,95 Q120,55 170,95 Q120,135 70,95" fill="none" stroke="'+A+'" stroke-width="2.5"/>';
+    g+=etiq(120,152,'N spires comptées',A);
+    g+=fil(25,80,70,80,A)+fil(25,110,70,110,A)+etiq(23,84,'valise',A,'end');
+    g+=boiteEssais(230,60,2,['I0','N']);
+    g+=fil(175,85,230,85,G);
+    g+=fil(300,90,360,90,B)+fil(300,116,360,116,B);
+    g+=boite(360,65,90,60,'RELAIS','',B);
+    return '<svg width="470" height="175" viewBox="0 0 470 175">'+g+'</svg>';
+  })(),
+  note:`<b>Méthode de repli</b> quand la tresse d'écran ne permet pas l'injection, ou pour un tore hors installation.<br><br>
+    <b>Principe :</b> bobiner quelques spires de fil à travers le tore et injecter dedans. <b>2 à 5 spires</b> suffisent généralement.<br><br>
+    <b style="color:var(--amber);">Le courant vu par le relais = courant injecté × nombre de spires.</b> Les compter avec certitude : une spire de plus ou de moins fausse la mesure de 20 à 50 %. Serrer les spires contre l'anneau, comme le secondaire du tore.<br><br>
+    <b>À contrôler au passage — défaut de câblage classique :</b> si les <b>écrans de câble</b> traversent le tore, leurs tresses de mise à la terre doivent <b>repasser en sens inverse dans le tore</b> avant d'aller à la terre. Sinon le courant d'écran est compté comme un courant de défaut : déclenchements intempestifs, ou protection aveugle.<br><br>
+    <b>Sur le réglage du seuil (pour information) :</b> sur un tore, il se situe typiquement entre <b>1,5 et 2 fois le courant capacitif</b> du départ. En dessous, la protection déclenche sur le courant capacitif normal du câble.` },
+
+direct:{ titre:'Directionnel homopolaire (PWH)',
+  svg:(()=>{
+    const W=830,H=650;
+    let g='';
+    function past(x,y,n){ return '<circle cx="'+x+'" cy="'+y+'" r="11" fill="'+A+'"/><text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-family="var(--disp)" font-size="12" fill="#1a1200" font-weight="700">'+n+'</text>'; }
+    function emb(x,y,couleur,titre,sous,cc){
+      const bX=[x+24,x+60,x+96,x+132];
+      let o='<rect x="'+x+'" y="'+y+'" width="145" height="96" rx="5" fill="var(--panel-2)" stroke="'+couleur+'" stroke-width="3"/>';
+      o+='<text x="'+(x+72)+'" y="'+(y-26)+'" text-anchor="middle" font-family="var(--disp)" font-size="11.5" fill="'+couleur+'" font-weight="600">'+titre+'</text>';
+      o+='<text x="'+(x+72)+'" y="'+(y-14)+'" text-anchor="middle" font-family="var(--body)" font-size="9" fill="'+M+'">'+sous+'</text>';
+      bX.forEach((cx,k)=>{
+        o+='<circle cx="'+cx+'" cy="'+(y+20)+'" r="6" fill="'+couleur+'" stroke="'+couleur+'" stroke-width="2"/>';
+        o+='<text x="'+(cx+11)+'" y="'+(y+24)+'" font-family="var(--mono)" font-size="9" fill="'+M+'">'+(k+1)+'</text>';
+        o+='<circle cx="'+cx+'" cy="'+(y+76)+'" r="6" fill="'+couleur+'" stroke="'+couleur+'" stroke-width="2"/>';
+        o+='<text x="'+(cx+11)+'" y="'+(y+80)+'" font-family="var(--mono)" font-size="9" fill="'+M+'">0'+(k+1)+'</text>';
+        o+='<line x1="'+cx+'" y1="'+(y+27)+'" x2="'+(cx+5)+'" y2="'+(y+52)+'" stroke="'+R+'" stroke-width="1.8"/>';
+        o+='<line x1="'+cx+'" y1="'+(y+55)+'" x2="'+cx+'" y2="'+(y+69)+'" stroke="'+M+'" stroke-width="1.4"/>';
+      });
+      if(cc){
+        o+='<line x1="'+bX[0]+'" y1="'+(y+20)+'" x2="'+bX[3]+'" y2="'+(y+20)+'" stroke="'+R+'" stroke-width="4"/>';
+        o+='<text x="'+(x+72)+'" y="'+(y+8)+'" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="'+R+'" font-weight="700">1-2-3-4 CC</text>';
+      }
+      return o;
+    }
+    function fiche(x,y,couleur,txt){
+      let o='<rect x="'+x+'" y="'+y+'" width="145" height="34" rx="4" fill="var(--panel)" stroke="'+couleur+'" stroke-width="2" stroke-dasharray="5,3"/>';
+      o+='<text x="'+(x+72)+'" y="'+(y+21)+'" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="'+couleur+'">'+txt+'</text>';
+      return o;
+    }
+
+    // ===== CELLULE =====
+    g+='<rect x="14" y="20" width="232" height="330" rx="4" fill="none" stroke="'+M+'" stroke-width="1.5" stroke-dasharray="6,4"/>';
+    g+='<text x="130" y="14" text-anchor="middle" font-family="var(--body)" font-size="11" fill="'+M+'">Cellule HTA</text>';
+    [70,84,98].forEach(y=>{ g+='<line x1="30" y1="'+y+'" x2="232" y2="'+y+'" stroke="'+M+'" stroke-width="2.5"/>'; });
+    g+='<text x="30" y="58" font-family="var(--mono)" font-size="10" fill="'+M+'">L1 L2 L3</text>';
+    g+='<ellipse cx="118" cy="84" rx="34" ry="30" fill="none" stroke="'+G+'" stroke-width="3"/>';
+    g+='<text x="118" y="132" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="'+G+'">TORE</text>';
+    g+='<line x1="152" y1="76" x2="180" y2="76" stroke="'+G+'" stroke-width="2"/>';
+    g+='<line x1="152" y1="92" x2="180" y2="92" stroke="'+G+'" stroke-width="2"/>';
+    g+='<text x="156" y="70" font-family="var(--mono)" font-size="9" fill="'+G+'">S1</text>';
+    g+='<text x="156" y="106" font-family="var(--mono)" font-size="9" fill="'+G+'">S2</text>';
+    g+='<text x="130" y="176" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="'+BB+'">TT — triangle ouvert</text>';
+    [200,246,292].forEach((y,k)=>{
+      g+='<path d="M46,'+y+' q7,-11 14,0 q7,11 14,0 q7,-11 14,0" fill="none" stroke="'+BB+'" stroke-width="2.2"/>';
+      g+='<text x="40" y="'+(y+4)+'" text-anchor="end" font-family="var(--mono)" font-size="9.5" fill="'+BB+'">TT'+(k+1)+'</text>';
+    });
+    g+='<polyline points="102,200 116,200 116,246" fill="none" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<polyline points="102,246 110,246" fill="none" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<polyline points="102,292 126,292 126,246" fill="none" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<polyline points="46,200 34,200 34,292 46,292" fill="none" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<line x1="126" y1="222" x2="150" y2="222" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<line x1="126" y1="292" x2="150" y2="292" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<text x="132" y="216" font-family="var(--mono)" font-size="9" fill="'+BB+'">da</text>';
+    g+='<text x="132" y="308" font-family="var(--mono)" font-size="9" fill="'+BB+'">dn</text>';
+
+    // ===== EMBASES =====
+    g+=emb(285,60,G,'EMBASE COURANT','vert 6.6',true);
+    g+=emb(470,60,BB,'EMBASE TENSION','gris 2.2 — pas de CC',false);
+    const cX=[309,345,381,417], tX=[494,530,566,602];
+
+    // ---- TC -> embase courant (couloirs y=40 et y=48) ----
+    g+='<polyline points="180,76 250,76 250,40 '+cX[0]+',40 '+cX[0]+',80" fill="none" stroke="'+G+'" stroke-width="2"/>';
+    g+='<polyline points="180,92 262,92 262,48 '+cX[1]+',48 '+cX[1]+',80" fill="none" stroke="'+G+'" stroke-width="2"/>';
+    g+='<text x="256" y="34" font-family="var(--mono)" font-size="8.5" fill="'+G+'">S1→1</text>';
+    g+='<text x="268" y="60" font-family="var(--mono)" font-size="8.5" fill="'+G+'">S2→2</text>';
+
+    // ---- TT -> embase tension (couloirs x=444 et x=456) ----
+    g+='<polyline points="150,222 444,222 444,36 '+tX[0]+',36 '+tX[0]+',80" fill="none" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<polyline points="150,292 456,292 456,26 '+tX[1]+',26 '+tX[1]+',80" fill="none" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<text x="452" y="34" font-family="var(--mono)" font-size="8.5" fill="'+BB+'">da→1</text>';
+    g+='<text x="464" y="20" font-family="var(--mono)" font-size="8.5" fill="'+BB+'">dn→2</text>';
+
+    // ---- fiches + descentes verticales vers valise (aucun croisement) ----
+    [[cX[0],285],[tX[0],470]].forEach(()=>{});
+    cX.slice(0,4).forEach((x,k)=>{ g+='<line x1="'+x+'" y1="136" x2="'+x+'" y2="176" stroke="'+G+'" stroke-width="1.5" stroke-dasharray="3,3"/>'; });
+    tX.slice(0,4).forEach((x,k)=>{ g+='<line x1="'+x+'" y1="136" x2="'+x+'" y2="176" stroke="'+BB+'" stroke-width="1.5" stroke-dasharray="3,3"/>'; });
+    g+=fiche(285,176,G,'FICHE 4 pôles — CC intégré');
+    g+=fiche(470,176,BB,'FICHE 2×4 pôles');
+    g+='<line x1="'+cX[0]+'" y1="210" x2="'+cX[0]+'" y2="430" stroke="'+A+'" stroke-width="2.2"/>';
+    g+='<line x1="'+cX[1]+'" y1="210" x2="'+cX[1]+'" y2="430" stroke="'+A+'" stroke-width="2.2"/>';
+    g+='<line x1="'+tX[0]+'" y1="210" x2="'+tX[0]+'" y2="430" stroke="'+A+'" stroke-width="2.2"/>';
+    g+='<line x1="'+tX[1]+'" y1="210" x2="'+tX[1]+'" y2="430" stroke="'+A+'" stroke-width="2.2"/>';
+
+    // ---- liaisons vers relais : faisceaux par la droite (couloirs distincts) ----
+    g+='<polyline points="430,104 640,104 640,272 660,272" fill="none" stroke="'+G+'" stroke-width="2.2"/>';
+    g+='<polyline points="430,112 632,112 632,302 660,302" fill="none" stroke="'+G+'" stroke-width="2.2"/>';
+    g+='<text x="470" y="98" font-family="var(--mono)" font-size="9" fill="'+G+'">01-04 → relais</text>';
+    g+='<polyline points="615,120 622,120 622,352 660,352" fill="none" stroke="'+BB+'" stroke-width="2.2"/>';
+    g+='<polyline points="615,130 614,130 614,382 660,382" fill="none" stroke="'+BB+'" stroke-width="2.2"/>';
+    g+='<text x="540" y="150" font-family="var(--mono)" font-size="9" fill="'+BB+'">01-04 → relais</text>';
+
+    // ===== RELAIS =====
+    g+='<rect x="660" y="230" width="158" height="180" rx="5" fill="var(--panel-2)" stroke="'+B+'" stroke-width="2.5"/>';
+    g+='<text x="739" y="256" text-anchor="middle" font-family="var(--disp)" font-size="13" fill="'+B+'" font-weight="600">RELAIS 67N</text>';
+    [['I0',272,G],['IN',302,G],['U0',352,BB],['UN',382,BB]].forEach(([l,y,c])=>{
+      g+='<circle cx="660" cy="'+y+'" r="5" fill="var(--panel)" stroke="'+c+'" stroke-width="2"/>';
+      g+='<text x="674" y="'+(y+4)+'" font-family="var(--mono)" font-size="10.5" fill="'+c+'">'+l+'</text>';
+    });
+
+    // ===== VALISE =====
+    g+='<rect x="285" y="430" width="332" height="110" rx="5" fill="var(--panel-2)" stroke="'+A+'" stroke-width="2.5"/>';
+    g+='<text x="451" y="470" text-anchor="middle" font-family="var(--disp)" font-size="13" fill="'+A+'" font-weight="600">VALISE — injection I0 + U0</text>';
+    g+='<text x="451" y="490" text-anchor="middle" font-family="var(--body)" font-size="10" fill="'+M+'">déphasage φ réglable entre les deux voies</text>';
+    [[cX[0],'I0+'],[cX[1],'I0−'],[tX[0],'U0+'],[tX[1],'U0−']].forEach(([x,l])=>{
+      g+='<circle cx="'+x+'" cy="430" r="6" fill="'+A+'"/>';
+      g+='<text x="'+x+'" y="450" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="#1a1200">'+l+'</text>';
+      g+='<text x="'+x+'" y="424" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="'+A+'">'+l+'</text>';
+    });
+
+    // ===== DIAGRAMME VECTORIEL =====
+    const cx0=725, cy0=500, rr=72;
+    g+='<text x="'+cx0+'" y="'+(cy0-rr-24)+'" text-anchor="middle" font-family="var(--disp)" font-size="11.5" fill="'+T+'" font-weight="600">SECTEUR DE FONCTIONNEMENT</text>';
+    g+='<path d="M'+cx0+','+cy0+' L'+(cx0+rr*Math.cos(-Math.PI*0.86)).toFixed(1)+','+(cy0+rr*Math.sin(-Math.PI*0.86)).toFixed(1)+' A'+rr+','+rr+' 0 0,1 '+(cx0+rr*Math.cos(-Math.PI*0.14)).toFixed(1)+','+(cy0+rr*Math.sin(-Math.PI*0.14)).toFixed(1)+' Z" fill="rgba(73,192,122,0.18)" stroke="'+G+'" stroke-width="1.5"/>';
+    g+='<circle cx="'+cx0+'" cy="'+cy0+'" r="'+rr+'" fill="none" stroke="'+M+'" stroke-width="1"/>';
+    g+='<line x1="'+cx0+'" y1="'+cy0+'" x2="'+(cx0+rr)+'" y2="'+cy0+'" stroke="'+BB+'" stroke-width="2.5"/>';
+    g+='<text x="'+(cx0+rr+6)+'" y="'+(cy0+4)+'" font-family="var(--mono)" font-size="10" fill="'+BB+'">U0</text>';
+    const ang=-Math.PI*0.42;
+    g+='<line x1="'+cx0+'" y1="'+cy0+'" x2="'+(cx0+rr*0.85*Math.cos(ang)).toFixed(1)+'" y2="'+(cy0+rr*0.85*Math.sin(ang)).toFixed(1)+'" stroke="'+G+'" stroke-width="3"/>';
+    g+='<text x="'+(cx0+rr*0.95*Math.cos(ang)-4).toFixed(1)+'" y="'+(cy0+rr*0.95*Math.sin(ang)-6).toFixed(1)+'" font-family="var(--mono)" font-size="10" fill="'+G+'">I0</text>';
+    g+='<path d="M'+(cx0+28)+','+cy0+' A28,28 0 0,0 '+(cx0+28*Math.cos(ang)).toFixed(1)+','+(cy0+28*Math.sin(ang)).toFixed(1)+'" fill="none" stroke="'+A+'" stroke-width="2"/>';
+    g+='<text x="'+(cx0+36)+'" y="'+(cy0-14)+'" font-family="var(--mono)" font-size="11" fill="'+A+'">φ</text>';
+    g+='<text x="'+cx0+'" y="'+(cy0-rr-8)+'" text-anchor="middle" font-family="var(--body)" font-size="9.5" fill="'+G+'">EN FACE → déclenche</text>';
+    g+='<text x="'+cx0+'" y="'+(cy0+rr+18)+'" text-anchor="middle" font-family="var(--body)" font-size="9.5" fill="'+R+'">DANS LE DOS → ne déclenche pas</text>';
+
+    // ===== PASTILLES =====
+    g+=past(272,88,1);
+    g+=past(457,88,2);
+    g+=past(451,556,3);
+    g+=past(cx0,cy0,4);
+
+    // ===== LEGENDE =====
+    g+='<rect x="14" y="430" width="250" height="112" rx="4" fill="none" stroke="'+M+'" stroke-width="1"/>';
+    g+='<text x="26" y="450" font-family="var(--disp)" font-size="11" fill="'+T+'" font-weight="600">LÉGENDE</text>';
+    [[G,'circuit courant I0 (tore)'],[BB,'circuit tension U0 (TT)'],[R,'court-circuit / contact ouvert'],[A,'cordons valise']].forEach(([c,l],k)=>{
+      const y=470+k*19;
+      g+='<line x1="26" y1="'+y+'" x2="54" y2="'+y+'" stroke="'+c+'" stroke-width="3"/>';
+      g+='<text x="62" y="'+(y+4)+'" font-family="var(--body)" font-size="9.5" fill="'+M+'">'+l+'</text>';
+    });
+    return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+g+'</svg>';
+  })(),
+  note:`<b>Deux embases, deux natures de circuit — repères ① à ④</b><br><br>
+    <b>① Embase courant (verte)</b> — I0 vient du tore (S1→borne 1, S2→borne 2). Bornes <b>1-2-3-4 court-circuitées</b> par la fiche 4 pôles. La valise injecte I0 sur <b>01-02</b>.<br><br>
+    <b>② Embase tension (grise)</b> — U0 vient du <b>triangle ouvert</b> : les trois secondaires de TT en série (da / dn). Tension nulle en régime équilibré, 3×V0 en défaut. <b>Aucun court-circuit</b> : l'insertion de la fiche isole le relais des TT.<br><br>
+    <b>③ Valise en mode I + U</b>, déphasage réglable. Les deux voies doivent être injectées <b>simultanément</b> : c'est le triplet (I0, U0, φ) qui décide, jamais une grandeur seule.<br><br>
+    <b>④ Balayage de φ — le cœur de l'essai :</b><br>
+    — φ dans le secteur « en face » → vérifier le déclenchement.<br>
+    — <b>Balayer φ sur 360°</b> et relever les <b>deux angles de basculement</b>, à comparer à l'angle caractéristique réglé.<br>
+    — φ dans le secteur opposé → vérifier la <b>non-action</b>.<br>
+    — Contrôler séparément les seuils de I0 et U0 : la fonction n'agit que si les deux sont franchis.<br><br>
+    <b>Orientation :</b> la source est le jeu de barres. Défaut « en face » côté ligne, « dans le dos » côté barres. <b>P1 des TC côté jeu de barres</b> ; une protection sur TC d'arrivée doit être inversée.<br><br>
+    <b style="color:var(--red);">Défaut le plus pénalisant :</b> inversion de polarité sur le tore (S1/S2) ou sur U0 — le vecteur pivote de 180°. Tous les essais de seuil passent, les mesures semblent cohérentes, et la protection se trompe de sens en exploitation. <b>Seul le balayage complet de φ le révèle.</b>` },
+
+tension:{ titre:'Découplage — tension et fréquence',
+  svg:(()=>{
+    const W=810,H=600;
+    let g='';
+    function past(x,y,n){ return '<circle cx="'+x+'" cy="'+y+'" r="11" fill="'+A+'"/><text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-family="var(--disp)" font-size="12" fill="#1a1200" font-weight="700">'+n+'</text>'; }
+
+    // ===== CELLULE : 3 TT en etoile + point neutre =====
+    g+='<rect x="14" y="24" width="240" height="310" rx="4" fill="none" stroke="'+M+'" stroke-width="1.5" stroke-dasharray="6,4"/>';
+    g+='<text x="134" y="18" text-anchor="middle" font-family="var(--body)" font-size="11" fill="'+M+'">Cellule HTA — TT de mesure</text>';
+    const ttY=[70,140,210];
+    ['L1','L2','L3'].forEach((ph,k)=>{
+      const y=ttY[k];
+      // primaire TT
+      g+='<line x1="30" y1="'+y+'" x2="70" y2="'+y+'" stroke="'+M+'" stroke-width="3"/>';
+      g+='<text x="30" y="'+(y-22)+'" font-family="var(--mono)" font-size="10.5" fill="'+M+'">'+ph+'</text>';
+      // bobine primaire
+      g+='<path d="M70,'+y+' q8,-12 16,0 q8,12 16,0 q8,-12 16,0" fill="none" stroke="'+BB+'" stroke-width="2.4"/>';
+      g+='<text x="86" y="'+(y-18)+'" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="'+BB+'">TT'+(k+1)+'</text>';
+      // bobine secondaire
+      g+='<path d="M126,'+y+' q8,-12 16,0 q8,12 16,0 q8,-12 16,0" fill="none" stroke="'+BB+'" stroke-width="2.4"/>';
+      g+='<line x1="118" y1="'+y+'" x2="126" y2="'+y+'" stroke="'+BB+'" stroke-width="2"/>';
+      g+='<text x="142" y="'+(y+22)+'" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="'+BB+'">a'+(k+1)+' — n</text>';
+      g+='<line x1="174" y1="'+y+'" x2="196" y2="'+y+'" stroke="'+BB+'" stroke-width="2"/>';
+      g+='<text x="180" y="'+(y-8)+'" font-family="var(--mono)" font-size="10" fill="'+A+'" font-weight="700">U'+(k+1)+'</text>';
+    });
+    // point neutre secondaire commun
+    g+='<line x1="118" y1="70" x2="110" y2="70" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<line x1="110" y1="70" x2="110" y2="280" stroke="'+BB+'" stroke-width="2.5"/>';
+    g+='<line x1="118" y1="140" x2="110" y2="140" stroke="'+BB+'" stroke-width="2"/>';
+    g+='<line x1="118" y1="210" x2="110" y2="210" stroke="'+BB+'" stroke-width="2"/>';
+    [70,140,210].forEach(y=>{ g+='<circle cx="110" cy="'+y+'" r="4" fill="'+BB+'"/>'; });
+    g+='<line x1="110" y1="280" x2="212" y2="280" stroke="'+BB+'" stroke-width="2.5"/>';
+    g+='<text x="112" y="300" font-family="var(--body)" font-size="10" fill="'+BB+'">point neutre secondaire (n)</text>';
+
+    // ===== EMBASE TENSION =====
+    const bx=300, by=60, bX=[324,360,396,432];
+    g+='<rect x="'+bx+'" y="'+by+'" width="145" height="96" rx="5" fill="var(--panel-2)" stroke="'+BB+'" stroke-width="3"/>';
+    g+='<text x="'+(bx+72)+'" y="'+(by-34)+'" text-anchor="middle" font-family="var(--disp)" font-size="11.5" fill="'+BB+'" font-weight="600">EMBASE TENSION</text>';
+    g+='<text x="'+(bx+72)+'" y="'+(by-22)+'" text-anchor="middle" font-family="var(--body)" font-size="9" fill="'+M+'">gris 2.2 — aucun court-circuit</text>';
+    bX.forEach((cx,k)=>{
+      g+='<circle cx="'+cx+'" cy="'+(by+20)+'" r="6.5" fill="'+BB+'" stroke="'+BB+'" stroke-width="2"/>';
+      g+='<text x="'+(cx+11)+'" y="'+(by+24)+'" font-family="var(--mono)" font-size="9" fill="'+M+'">'+(k+1)+'</text>';
+      g+='<circle cx="'+cx+'" cy="'+(by+76)+'" r="6.5" fill="'+BB+'" stroke="'+BB+'" stroke-width="2"/>';
+      g+='<text x="'+(cx+11)+'" y="'+(by+80)+'" font-family="var(--mono)" font-size="9" fill="'+M+'">0'+(k+1)+'</text>';
+      g+='<line x1="'+cx+'" y1="'+(by+27)+'" x2="'+(cx+5)+'" y2="'+(by+52)+'" stroke="'+R+'" stroke-width="1.8"/>';
+      g+='<line x1="'+cx+'" y1="'+(by+55)+'" x2="'+cx+'" y2="'+(by+69)+'" stroke="'+M+'" stroke-width="1.4"/>';
+    });
+    g+='<text x="'+(bx+72)+'" y="'+(by+9)+'" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="'+R+'" font-weight="700">TT ISOLÉS DU RELAIS</text>';
+
+    // ===== TT -> bornes 1,2,3 (couloirs distincts) + neutre -> borne 4 =====
+    [[0,262,36],[1,274,44],[2,286,52]].forEach(([k,vx,ly])=>{
+      const y=ttY[k];
+      g+='<polyline points="196,'+y+' '+vx+','+y+' '+vx+','+ly+' '+bX[k]+','+ly+' '+bX[k]+','+(by+13)+'" fill="none" stroke="'+BB+'" stroke-width="2"/>';
+      g+='<text x="'+(vx+4)+'" y="'+(ly-4)+'" font-family="var(--mono)" font-size="8.5" fill="'+BB+'">U'+(k+1)+' → '+(k+1)+'</text>';
+    });
+    g+='<polyline points="212,280 296,280 296,26 '+bX[3]+',26 '+bX[3]+','+(by+13)+'" fill="none" stroke="'+BB+'" stroke-width="2.5"/>';
+    g+='<text x="240" y="274" font-family="var(--mono)" font-size="8.5" fill="'+BB+'">neutre → 4</text>';
+
+    // ===== EMBASE -> RELAIS =====
+    const rx=620, ry=70;
+    [[0,320,590,120],[1,332,580,150],[2,344,570,180],[3,356,560,210]].forEach(([k,ly,vx,ty])=>{
+      g+='<polyline points="'+bX[k]+','+(by+83)+' '+bX[k]+','+ly+' '+vx+','+ly+' '+vx+','+ty+' '+rx+','+ty+'" fill="none" stroke="'+B+'" stroke-width="1.8"/>';
+    });
+    g+='<rect x="'+rx+'" y="'+ry+'" width="170" height="200" rx="5" fill="var(--panel-2)" stroke="'+B+'" stroke-width="2.5"/>';
+    g+='<text x="'+(rx+85)+'" y="'+(ry+24)+'" text-anchor="middle" font-family="var(--disp)" font-size="13" fill="'+B+'" font-weight="600">RELAIS DÉCOUPLAGE</text>';
+    g+='<text x="'+(rx+85)+'" y="'+(ry+40)+'" text-anchor="middle" font-family="var(--body)" font-size="9.5" fill="'+M+'">27 · 59 · 59N · 81&lt; · 81&gt;</text>';
+    [['U1',120],['U2',150],['U3',180],['N',210]].forEach(([l,y])=>{
+      g+='<circle cx="'+rx+'" cy="'+y+'" r="5" fill="var(--panel)" stroke="'+B+'" stroke-width="2"/>';
+      g+='<text x="'+(rx+14)+'" y="'+(y+4)+'" font-family="var(--mono)" font-size="10.5" fill="'+B+'">'+l+'</text>';
+    });
+    // sortie declenchement
+    g+='<line x1="'+(rx+85)+'" y1="'+(ry+200)+'" x2="'+(rx+85)+'" y2="'+(ry+232)+'" stroke="'+R+'" stroke-width="2.5"/>';
+    g+='<rect x="'+(rx+18)+'" y="'+(ry+232)+'" width="134" height="44" rx="4" fill="var(--panel-2)" stroke="'+R+'" stroke-width="2"/>';
+    g+='<text x="'+(rx+85)+'" y="'+(ry+252)+'" text-anchor="middle" font-family="var(--disp)" font-size="11" fill="'+R+'" font-weight="600">ORGANE DE</text>';
+    g+='<text x="'+(rx+85)+'" y="'+(ry+266)+'" text-anchor="middle" font-family="var(--disp)" font-size="11" fill="'+R+'" font-weight="600">COUPLAGE</text>';
+
+    // ===== VALISE =====
+    g+='<rect x="300" y="440" width="300" height="115" rx="5" fill="var(--panel-2)" stroke="'+A+'" stroke-width="2.5"/>';
+    g+='<text x="450" y="480" text-anchor="middle" font-family="var(--disp)" font-size="13" fill="'+A+'" font-weight="600">VALISE — 3 tensions</text>';
+    g+='<text x="450" y="498" text-anchor="middle" font-family="var(--body)" font-size="9.5" fill="'+M+'">amplitude ET fréquence réglables</text>';
+    [[bX[0],'U1'],[bX[1],'U2'],[bX[2],'U3'],[bX[3],'N']].forEach(([x,l])=>{
+      g+='<circle cx="'+x+'" cy="440" r="6" fill="'+A+'"/>';
+      g+='<text x="'+x+'" y="432" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="'+A+'">'+l+'</text>';
+      g+='<polyline points="'+x+',440 '+x+',396 '+(x-16)+',396 '+(x-16)+','+(by+76)+' '+x+','+(by+76)+'" fill="none" stroke="'+A+'" stroke-width="2.2"/>';
+    });
+    g+='<text x="452" y="418" font-family="var(--mono)" font-size="9.5" fill="'+A+'">injection sur 01-02-03-04</text>';
+
+    // ===== PASTILLES =====
+    g+=past(110,320,1);
+    g+=past(bx+72,by+118,2);
+    g+=past(450,576,3);
+    g+=past(rx+85,ry+296,4);
+
+    // ===== LEGENDE =====
+    g+='<rect x="14" y="410" width="252" height="112" rx="4" fill="none" stroke="'+M+'" stroke-width="1"/>';
+    g+='<text x="26" y="430" font-family="var(--disp)" font-size="11" fill="'+T+'" font-weight="600">LÉGENDE</text>';
+    [[BB,'circuits tension (TT)'],[R,'contact ouvert / déclenchement'],[A,'cordons valise'],[B,'liaison vers relais']].forEach(([c,l],k)=>{
+      const y=450+k*19;
+      g+='<line x1="26" y1="'+y+'" x2="54" y2="'+y+'" stroke="'+c+'" stroke-width="3"/>';
+      g+='<text x="62" y="'+(y+4)+'" font-family="var(--body)" font-size="9.5" fill="'+M+'">'+l+'</text>';
+    });
+    return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+g+'</svg>';
+  })(),
+  note:`<b>① Montage des TT</b> — trois transformateurs de tension, secondaires en <b>étoile avec point neutre commun</b>. Le relais reçoit les trois tensions simples U1, U2, U3 par rapport au neutre. C'est à partir de ces trois grandeurs qu'il calcule aussi la <b>tension homopolaire U0</b> pour la fonction 59N.<br><br>
+    <b>② Embase tension (grise) — la grande différence avec le courant :</b> <b>aucun court-circuit</b>. Au contraire, l'insertion de la fiche <b>isole le relais des TT</b> : l'équipement testé n'est plus alimenté par la mesure réelle, ce qui permet d'injecter proprement. Sur une embase « coupure avant contact », c'est le simple retrait du couvercle qui isole.<br><br>
+    <b>③ Injection des 3 tensions</b> sur <b>01-02-03</b> plus le neutre sur <b>04</b>. La valise doit piloter <b>amplitude et fréquence</b>.<br><br>
+    <b>④ Vérifier le déclenchement réel</b> de l'organe de couplage, pas seulement le contact du relais.<br><br>
+    <b>Les cinq fonctions à essayer, une par une :</b><br>
+    — <b>27 (U min)</b> : partir du nominal, descendre en rampe. Relever seuil de déclenchement <b>et</b> seuil de retombée.<br>
+    — <b>59 (U max)</b> : monter en rampe.<br>
+    — <b>81&lt; / 81&gt;</b> : tension maintenue au nominal, <b>faire varier la fréquence</b> de part et d'autre de 50 Hz. Beaucoup de relais <b>inhibent les fonctions fréquence</b> sous un seuil de tension minimal : le vérifier avant de conclure à un défaut.<br>
+    — <b>59N (U0)</b> : supprimer une phase, ou déséquilibrer les trois tensions, pour faire apparaître une tension homopolaire. Le seuil doit rester <b>au-dessus de 3 %</b> pour ne pas réagir au déséquilibre permanent du réseau.<br><br>
+    <b>Ne pas oublier la temporisation de recouplage</b> : après retour à la normale, la reconnexion ne doit pas être immédiate.<br><br>
+    <b style="color:var(--amber);">Ces essais valident le relais, pas l'installation.</b> Ils doivent être suivis de l'<b>essai de découplage réel</b> : ouverture du disjoncteur d'alimentation, vérification de l'arrêt d'injection et de l'absence de tension côté réseau.` },
+
+primaire:{ titre:'Chaîne complète par les TC',
+  svg:(()=>{
+    let g='';
+    g+='<rect x="20" y="70" width="90" height="50" rx="3" fill="none" stroke="'+R+'" stroke-width="2"/>'+etiq(65,90,'VALISE',R)+etiq(65,108,'fort courant',R);
+    g+=fil(110,85,175,85,R)+fil(110,105,175,105,R);
+    g+='<rect x="175" y="60" width="14" height="70" fill="none" stroke="'+M+'" stroke-width="2"/>'+etiq(182,50,'barre',M);
+    g+='<circle cx="182" cy="95" r="26" fill="none" stroke="'+G+'" stroke-width="2.5"/>'+etiq(182,99,'TC',G);
+    g+=fil(208,95,250,95,G);
+    g+=boiteEssais(250,70,2,['I','N']);
+    g+=fil(320,100,370,100,B);
+    g+=boite(370,60,100,55,'RELAIS','',B);
+    g+=boite(370,140,100,50,'DISJ.','ouverture',R);
+    g+=fil(420,115,420,140,R)+etiq(432,132,'ordre',R,'start');
+    return '<svg width="490" height="205" viewBox="0 0 490 205">'+g+'</svg>';
+  })(),
+  note:`<b>L'essai qui valide tout.</b> On injecte un fort courant dans le circuit primaire, donc à travers les TC réels, jusqu'au déclenchement effectif du disjoncteur.<br><br>
+    <b>Ce que lui seul détecte :</b><br>
+    — un TC au <b>mauvais rapport</b> par rapport au paramétrage du relais,<br>
+    — une <b>polarité inversée</b>,<br>
+    — un raccordement sur le <b>mauvais enroulement</b> d'un TC à double secondaire — erreur fréquente, les cellules ayant souvent un enroulement comptage et un enroulement protection,<br>
+    — une erreur de <b>correspondance phase à phase</b> entre TC et entrées relais.<br><br>
+    <b>Ordre logique :</b> injection secondaire d'abord, primaire ensuite. Ainsi, si un problème apparaît en primaire, il est nécessairement dans les TC, les TT ou leur câblage — le reste ayant déjà été validé.<br><br>
+    <b>Contraintes :</b> matériel lourd (plusieurs centaines d'ampères), installation obligatoirement consignée, temps de mise en œuvre important. Réservé en pratique aux <b>mises en service</b> et aux doutes sérieux sur le câblage.<br><br>
+    <b>Ne jamais valider sur le contact du relais :</b> l'essai n'est concluant que si le <b>disjoncteur s'ouvre réellement</b>, et si l'on a vérifié la position d'ouverture.` }
+};
+function drawEssai(){
+  const e = ESSAIS[document.getElementById('esSel').value]; if(!e) return;
+  document.getElementById('esSchema').innerHTML = e.svg;
+  document.getElementById('esNote').innerHTML = e.note +
+    '<br><br><span style="font-size:11px; color:var(--muted);">Schéma de principe. Se référer à la notice du relais pour le repérage exact des bornes, et à celle de la valise pour ses sorties. Installation consignée et régime spécial d\'essai selon le cas.</span>';
+}
+drawEssai();
+
+
+// ---------- DISJONCTEUR GÉNÉRAL BT ----------
+const DJBT = {
+role:`<b>Rôle du disjoncteur général BT</b><br><br>
+  C'est le <b>premier appareil de coupure après le transformateur</b>, et il cumule trois fonctions distinctes qu'on a tendance à confondre :<br><br>
+  <b>1. Protection de l'installation BT aval</b> — surcharge et court-circuit sur le tableau général et les départs. C'est sa fonction évidente.<br><br>
+  <b>2. Protection de la liaison transfo → TGBT</b> — cette liaison est souvent courte mais elle n'est protégée par <b>rien d'autre</b> : la protection HTA amont ne la voit qu'à travers le transformateur, avec une sensibilité très dégradée. Un défaut sur cette liaison est un cas dimensionnant.<br><br>
+  <b>3. Organe de coupure et de consignation</b> — c'est le point de séparation utilisé pour intervenir sur le TGBT.<br><br>
+  <b>Ce qu'il ne protège pas :</b> le transformateur lui-même. Un défaut interne au transfo relève de la protection HTA (fusibles ou relais), du Buchholz et des thermostats — pas du disjoncteur BT, qui ne voit que ce qui traverse son secondaire.<br><br>
+  <b>Dimensionnement :</b> calibre de cadre ≥ In secondaire du transfo, réglage Ir au plus près du courant réel. Le <b>pouvoir de coupure</b> doit couvrir l'Icc au secondaire du transfo — voir les onglets 02 et 05 pour le calcul.<br><br>
+  <b>Point souvent négligé :</b> le disjoncteur doit tenir l'<b>Icc pendant le temps de sa propre temporisation</b>. Un réglage court retard temporisé de 300 ms suppose une tenue thermique compatible, à vérifier sur la courbe du constructeur.`,
+
+comptage:`<b>Comptage HT ou BT — ce que ça change</b><br><br>
+  La position du comptage détermine <b>où passe la limite de propriété</b>, et donc qui possède le transformateur et le disjoncteur général BT.<br><br>
+  <b style="color:var(--amber);">Comptage BT</b><br>
+  Le comptage est en aval du transformateur. Le transformateur appartient au distributeur, ou fait partie du poste de livraison.<br>
+  — Le disjoncteur général BT est proche du <b>point de livraison</b> : son réglage n'est pas totalement libre, il s'inscrit dans les conditions du contrat de raccordement.<br>
+  — Les pertes du transformateur ne sont pas facturées au client, puisque mesurées après.<br>
+  — Solution des puissances modérées, où l'on ne veut pas exploiter de poste HTA privé.<br><br>
+  <b style="color:var(--amber);">Comptage HT</b><br>
+  Le comptage est en amont du transformateur, côté HTA.<br>
+  — Le <b>transformateur appartient au client</b>, ainsi que tout ce qui suit. Les pertes à vide et en charge du transfo sont <b>à sa charge</b> — d'où l'intérêt des transformateurs à faibles pertes (voir onglet 02).<br>
+  — L'installation relève de la <b>NF C13-200</b> : le client construit son propre plan de protection, avec toute la latitude de réglage, mais aussi toute la responsabilité de la sélectivité.<br>
+  — C'est la solution des puissances élevées et des sites à plusieurs transformateurs.<br><br>
+  <b>Conséquence pratique en essai :</b> en comptage HT, les réglages du disjoncteur général BT découlent de <b>l'étude de sélectivité du site</b> — c'est elle qui fait foi, et c'est le document à demander avant d'intervenir. En comptage BT, une partie des contraintes vient du distributeur.<br><br>
+  <span style="font-size:11px; color:var(--muted);">Les règles précises de raccordement et de comptage relèvent de la documentation technique du distributeur, qui évolue. Vérifier le référentiel en vigueur et la convention de raccordement du site.</span>`,
+
+selectivite:`<b>Sélectivité avec la protection HTA amont</b><br><br>
+  L'enjeu : un défaut BT ne doit <b>jamais</b> faire fondre les fusibles HTA ou déclencher la protection générale HTA. Sinon on perd tout le poste pour un défaut sur un départ.<br><br>
+  <b>La difficulté vient du transformateur.</b> Un court-circuit au secondaire est vu au primaire divisé par le rapport de transformation, et déformé par le couplage. Sur un Dyn11, un défaut biphasé BT n'apparaît pas de la même façon sur les trois phases HTA — certaines voient un courant réduit d'un facteur √3.<br><br>
+  <b>Ce qu'il faut confronter :</b><br>
+  — la <b>courbe de fusion</b> du fusible HTA, ramenée côté BT par le rapport de transformation,<br>
+  — la <b>courbe de déclenchement</b> du disjoncteur général BT, temps de coupure inclus.<br>
+  Les deux courbes ne doivent pas se croiser, avec une marge suffisante sur toute la plage de courant.<br><br>
+  <b>Le point de croisement critique</b> se situe généralement dans la zone du court retard : c'est là que le disjoncteur BT temporise et que le fusible HTA commence à réagir. Une temporisation trop longue au BT, et le fusible part avant.<br><br>
+  <b>Avec une protection HTA à relais</b> (fonction D ou B du RM6, Sepam...) la marge est plus facile à tenir : on règle une temporisation franche au-dessus de celle du disjoncteur BT. Avec des <b>fusibles</b>, on subit leur courbe, on ne la règle pas.<br><br>
+  <b>Vers l'aval :</b> même raisonnement entre le disjoncteur général et les départs du TGBT — sélectivité chronométrique, ampèremétrique ou logique (voir onglet 11, NF C13-200).`,
+
+reglages:`<b>Les réglages — Ir, Isd, Ii, Ig</b><br><br>
+  Quatre fonctions, quatre plages de courant, à ne jamais lire sans leur temporisation associée.<br><br>
+  <table style="margin-top:8px;"><thead><tr><th>Repère</th><th>Fonction</th><th>Rôle</th></tr></thead><tbody>
+  <tr><td><b>Ir</b> + tr</td><td>Long retard</td><td>Protection <b>surcharge</b>. Se règle au plus près du courant réel de l'installation, pas du calibre de cadre. tr = temps à 6×Ir en général.</td></tr>
+  <tr><td><b>Isd</b> + tsd</td><td>Court retard</td><td>Protection <b>court-circuit temporisée</b>. C'est le réglage qui porte la sélectivité avec l'aval. Souvent 0 à 400 ms.</td></tr>
+  <tr><td><b>Ii</b></td><td>Instantané</td><td>Court-circuit franc, sans temporisation. Peut être désactivable sur certains appareils pour privilégier la sélectivité.</td></tr>
+  <tr><td><b>Ig</b> + tg</td><td>Terre</td><td>Défaut à la terre. Seuil bas, indépendant des phases. Présent sur les déclencheurs équipés de la fonction (6.0 chez Micrologic).</td></tr>
+  </tbody></table><br>
+  <b>La règle qu'on oublie :</b> <b>Ir se règle sur le besoin réel</b>. Un cadre 630 A sur un transfo de 400 kVA (577 A) ne veut pas dire Ir = 630 A : on règle au plus près de 577 A, sinon la protection surcharge ne protège plus grand-chose.<br><br>
+  <b>Sur le neutre :</b> les déclencheurs proposent un réglage de protection du neutre (Off, N/2, N, 1,6·N). Avec des harmoniques de rang 3 significatives, le neutre peut dépasser le courant de phase — voir onglet 05.<br><br>
+  <b>À relever avant et après intervention :</b> tous les réglages avec leurs temporisations, la position des commutateurs ou le paramétrage numérique, et la <b>référence du calibre du capteur</b> installé. Un même appareil accepte plusieurs calibres de capteurs : le réglage n'a de sens qu'avec le bon.`,
+
+gammes:`<b>Gammes Masterpact — trois générations</b><br><br>
+  <b style="color:var(--amber);">Masterpact M</b> — Merlin Gerin, gamme historique<br>
+  Disjoncteurs débrochables de forte intensité, très présents sur les TGBT installés dans les années 1990-2000. Déclencheurs de la famille <b>STR</b>.<br>
+  Gamme arrêtée depuis longtemps : le sujet du parc existant est la <b>disponibilité des pièces et des déclencheurs</b>. Sur un appareil de cet âge, la mesure de résistance de contact et le contrôle du mécanisme prennent toute leur importance.<br><br>
+  <b style="color:var(--amber);">Masterpact NT / NW</b> — Schneider<br>
+  Génération suivante, très largement répandue. NT pour les calibres inférieurs, NW pour les forts calibres. Déclencheurs <b>Micrologic</b> (2.0, 5.0, 6.0, 7.0, avec les variantes A, E, P, H).<br>
+  Version fixe ou débrochable sur châssis.<br><br>
+  <b style="color:var(--amber);">Masterpact MTZ</b> — gamme actuelle<br>
+  MTZ1, MTZ2, MTZ3 selon le calibre. Unités de contrôle <b>Micrologic X</b>, avec écran, communication, application mobile par Bluetooth, modules numériques optionnels.<br>
+  Apports pour la maintenance : <b>autodiagnostic</b>, suivi de l'<b>usure des contacts</b> et du nombre de manœuvres, historique des déclenchements avec forme d'onde, aide au diagnostic après déclenchement.<br><br>
+  <b>Sur le châssis débrochable</b>, quelle que soit la génération : l'embrochage et le débrochage font partie des points à contrôler, ainsi que les verrouillages et les contacts de position. Une pince d'embrochage fatiguée est une cause classique d'échauffement.`,
+
+declencheurs:`<b>Déclencheurs — de STR à Micrologic X</b><br><br>
+  <b style="color:var(--amber);">Famille STR</b> (Masterpact M)<br>
+  Déclencheurs électroniques de première génération : réglages par commutateurs ou potentiomètres, affichage limité voire absent, pas de communication. Les fonctions disponibles dépendent du modèle — certains n'ont que long retard et instantané, d'autres ajoutent court retard et terre.<br>
+  <b>En essai :</b> pas d'affichage de mesure sur lequel s'appuyer, donc l'injection est le <b>seul moyen</b> de savoir ce que fait réellement l'appareil. C'est là que l'essai est le plus indispensable.<br><br>
+  <b style="color:var(--amber);">Famille Micrologic</b> (Masterpact NT/NW)<br>
+  Le <b>premier chiffre indique les protections</b> embarquées :<br>
+  — <b>2.0</b> : long retard + instantané<br>
+  — <b>5.0</b> : long retard + court retard + instantané<br>
+  — <b>6.0</b> : idem + <b>protection de terre</b><br>
+  — <b>7.0</b> : idem + différentielle<br>
+  La <b>lettre</b> indique les fonctions de mesure : <b>A</b> ampèremétrique, <b>E</b> énergie, <b>P</b> puissance, <b>H</b> harmoniques.<br>
+  Ces déclencheurs affichent les courants mesurés — très utile en essai pour valider la cohérence entre injection et mesure.<br><br>
+  <b style="color:var(--amber);">Micrologic X</b> (Masterpact MTZ)<br>
+  Écran couleur, communication, application mobile, modules numériques. Fonctions de maintenance intégrées : usure des contacts, profil de charge, temps de fonctionnement, assistance au diagnostic.<br>
+  <b>Fonction ERMS</b> (réduction du niveau d'énergie d'arc) sur certaines configurations : à vérifier et à essayer si elle est présente, elle modifie les seuils.<br><br>
+  <b>Dans tous les cas, à relever :</b> référence exacte du déclencheur, version de firmware si numérique, calibre du capteur associé, et l'ensemble des réglages. Deux appareils identiques avec des capteurs différents n'ont pas le même comportement.`,
+
+secondaire:`<b>Injection secondaire</b><br><br>
+  <b>Principe :</b> on injecte un signal directement dans l'électronique du déclencheur, à la place du signal issu des capteurs de courant. Le mécanisme de déclenchement est sollicité, mais aucun courant réel ne traverse les pôles.<br><br>
+  <b>Ce que ça valide :</b> les seuils, les temporisations, la logique de protection, l'ordre de déclenchement et le fonctionnement de la bobine.<br>
+  <b>Ce que ça ne valide pas :</b> les capteurs de courant, leur câblage et leur cohérence avec le calibre paramétré.<br><br>
+  <b>Mise en œuvre :</b> par la prise d'essai du déclencheur, avec le boîtier d'essai du constructeur ou une valise compatible. Les gammes récentes disposent d'un connecteur dédié, et un <b>bouton de test</b> permet en plus de vérifier le mécanisme sans matériel.<br><br>
+  <b>Déroulé pour chaque fonction :</b><br>
+  — <b>Long retard</b> : injecter un multiple franc de Ir (souvent 2× ou 6×) et chronométrer. Vérifier plusieurs points de la courbe, car elle est à temps inverse.<br>
+  — <b>Court retard</b> : injecter au-dessus d'Isd, vérifier le seuil puis la temporisation tsd.<br>
+  — <b>Instantané</b> : vérifier le seuil Ii et l'absence de temporisation.<br>
+  — <b>Terre</b> : injecter sur la voie terre, vérifier Ig et tg.<br><br>
+  <b>Précaution :</b> après une injection long retard, l'image thermique du déclencheur reste chargée. Un essai enchaîné trop vite donne un temps faussement court — <b>laisser refroidir</b> entre deux points, ou utiliser la fonction de remise à zéro si elle existe.<br><br>
+  <b>Toujours terminer par</b> le rétablissement des réglages d'origine, vérifié et consigné.`,
+
+primaire:`<b>Injection primaire</b><br><br>
+  <b>Principe :</b> on fait circuler un courant réel à travers les pôles du disjoncteur, donc à travers les capteurs. C'est l'essai qui valide <b>toute la chaîne</b>.<br><br>
+  <b>Ce que lui seul détecte :</b><br>
+  — un <b>capteur au mauvais calibre</b> par rapport au paramétrage du déclencheur,<br>
+  — un capteur défectueux ou mal raccordé,<br>
+  — une incohérence entre le calibre du capteur installé et le réglage affiché,<br>
+  — un problème de connexion sur les pôles.<br><br>
+  <b>Ordre logique :</b> injection secondaire d'abord, primaire ensuite. Si un écart apparaît en primaire alors que le secondaire était bon, le problème est nécessairement dans les capteurs ou leur câblage.<br><br>
+  <b>Contraintes :</b> matériel lourd — plusieurs centaines à plusieurs milliers d'ampères selon le calibre — installation obligatoirement consignée, et temps de mise en œuvre important. Réservé en pratique aux <b>mises en service</b>, aux <b>expertises après incident</b>, et aux doutes sérieux.<br><br>
+  <b>Ce qui est réellement contrôlé :</b> le courant injecté, le courant <b>affiché par le déclencheur</b> (s'il en affiche un), le temps de déclenchement, et l'<b>ouverture effective</b> des pôles. Un essai n'est validé que si le disjoncteur s'ouvre pour de bon.<br><br>
+  <b>Astuce :</b> profiter de la même mise en œuvre pour mesurer la <b>résistance de contact</b> — le raccordement est déjà en place.`,
+
+contact:`<b>Résistance de contact</b><br><br>
+  <b>Pourquoi c'est l'essai le plus rentable :</b> une résistance de contact qui monte provoque un échauffement local, qui dégrade la surface de contact, ce qui augmente encore la résistance. Le phénomène est <b>auto-accéléré</b> : il évolue lentement pendant des années puis s'emballe brutalement. Le détecter tôt évite le remplacement de l'appareil et l'arrêt du site.<br><br>
+  <b>Méthode :</b> micro-ohmmètre en <b>4 fils (Kelvin)</b>, disjoncteur <b>fermé</b>, injection de courant continu et mesure de la chute de tension aux bornes du pôle. La méthode 4 fils élimine la résistance des cordons et des contacts de mesure.<br><br>
+  <b>Ce qu'il faut soigner :</b><br>
+  — <b>Courant d'essai suffisant</b> : les appareils de terrain injectent de 100 A à plusieurs centaines d'ampères. Un courant trop faible donne des résultats instables.<br>
+  — <b>Compensation de la force électromotrice thermique</b> : la jonction de deux métaux différents crée une tension parasite qui s'ajoute à la mesure. Les micro-ohmmètres la corrigent par inversion de polarité et moyenne — vérifier que la fonction est active.<br>
+  — <b>Points de mesure identiques</b> d'une campagne à l'autre, sinon les valeurs ne sont pas comparables.<br><br>
+  <b>Ordre de grandeur :</b> pour de l'appareillage, les valeurs typiques se situent entre <b>10 et 100 µΩ</b>. Mais ce n'est qu'un repère de vraisemblance.<br><br>
+  <b style="color:var(--amber);">Les valeurs de référence par appareil ne sont pas publiées.</b> Je n'ai pas trouvé de tableau constructeur donnant la résistance de contact attendue pour les Masterpact M, NT/NW ou MTZ. Se référer à la documentation de maintenance du constructeur, ou à défaut raisonner ainsi :<br>
+  — <b>Comparer les trois pôles entre eux</b> : ils doivent être cohérents. Un pôle nettement au-dessus des deux autres est l'anomalie, même sans valeur de référence.<br>
+  — <b>Comparer à l'historique</b> du même appareil : c'est la <b>dérive dans le temps</b> qui alerte, plus que la valeur absolue.<br>
+  C'est exactement pour ça que la première mesure, à la mise en service, a autant de valeur : elle crée la référence.<br><br>
+  <b>À croiser avec la thermographie</b> sous charge : les deux méthodes se recoupent et se confortent.`,
+
+meca:`<b>Contrôles mécaniques et auxiliaires</b><br><br>
+  Un déclencheur juste ne sert à rien si le mécanisme ne suit pas. Ce qui se vérifie au-delà des essais électriques :<br><br>
+  <b>Mécanisme</b><br>
+  — Manœuvres d'ouverture et de fermeture, à vide, plusieurs fois.<br>
+  — Armement du ressort, manuel et par moteur si présent.<br>
+  — Indicateurs de position et d'armement, cohérents avec l'état réel.<br>
+  — Bouton de test mécanique du déclencheur.<br><br>
+  <b>Auxiliaires</b><br>
+  — <b>Bobine de déclenchement</b> (émission ou manque de tension) : continuité, tension de fonctionnement.<br>
+  — <b>Contacts de signalisation</b> : position, déclenchement sur défaut électrique.<br>
+  — <b>Contacts de position de châssis</b> sur appareil débrochable.<br>
+  — Alimentation auxiliaire, et report d'alarme sur sa perte.<br><br>
+  <b>Châssis débrochable</b><br>
+  — Embrochage et débrochage complets, sans point dur.<br>
+  — Verrouillages et serrures, cadenassage.<br>
+  — <b>État des pinces d'embrochage</b> : c'est un point chaud classique, à examiner et à rapprocher de la mesure de résistance de contact.<br><br>
+  <b>État général</b><br>
+  Propreté, absence de trace d'échauffement ou de noircissement, serrages des raccordements de puissance (voir onglet 09), état de la connectique auxiliaire.<br><br>
+  <b>Nettoyage :</b> pas de produit sous pression ni de solvant — ils éliminent la graisse des points de lubrification inaccessibles, favorisent la corrosion, et un résidu isolant sur une zone de contact provoque justement l'échauffement qu'on cherche à éviter.<br><br>
+  <b>Sur les appareils récents</b>, relever les compteurs intégrés : <b>nombre de manœuvres</b>, <b>usure des contacts</b>, profil de charge. Ces indicateurs disent quand la maintenance devient nécessaire, bien mieux qu'une périodicité fixe.`
+};
+function updateDj(){
+  const v = DJBT[document.getElementById('djSel').value];
+  if(v) document.getElementById('djRes').innerHTML = v;
+}
+updateDj();
+
+// ---------- SÉCURITÉ & OBLIGATIONS ----------
+const SECU = {
+materiel:`<b>Kit de sécurité d'un poste HTA — la liste complète</b><br><br>
+  <b>1. Matériel imposé par la NF C13-200 (partie 6-22)</b> — présent et maintenu, pour permettre les opérations de secours :<br>
+  <table style="margin-top:8px;"><thead><tr><th>Matériel</th><th>Domaine</th></tr></thead><tbody>
+  <tr><td><b>Perche à corps</b> (perche de sauvetage)</td><td>selon tension du poste</td></tr>
+  <tr><td><b>Tapis isolant</b></td><td>jusqu'à 36 kV</td></tr>
+  <tr><td><b>ou tabouret isolant</b></td><td>jusqu'à 63 kV</td></tr>
+  <tr><td><b>Gants isolants</b> + boîte à gants</td><td>jusqu'à 36 kV</td></tr>
+  <tr><td><b>VAT</b> — vérificateur d'absence de tension</td><td>adapté à la tension</td></tr>
+  </tbody></table>
+  Le matériel se choisit sur la <b>tension maximale de l'installation</b>, pas sur la tension d'exploitation habituelle.<br><br>
+  <b>2. Éclairage de sécurité</b><br>
+  Au-delà de l'éclairage de sécurité fixe (blocs autonomes), le local doit comporter au moins un <b>BAPI — Bloc Autonome Portable d'Intervention</b>.<br>
+  — Obligatoire dans <b>tous les locaux de service électrique</b>, en ERP comme au titre du code du travail (NF C15-100 art. 781.5.4, règlement de sécurité ERP art. EL).<br>
+  — Conforme <b>NF C 71-810</b>. Attention : une simple lampe portative sans certificat de conformité <b>ne remplace pas un BAPI</b>.<br>
+  — Il est portable et se prend en main : il sert à intervenir quand l'éclairage normal est tombé, ce que ne permet pas un BAES fixe.<br><br>
+  <b>3. Extincteur</b><br>
+  À <b>dioxyde de carbone (CO₂)</b>, pour feux de classe B (liquides inflammables) et C (gaz), adapté à l'origine électrique.<br>
+  <b>Distances de diffusion à respecter :</b> jusqu'à 20 kV, se tenir à plus de <b>1 m</b> ; de 20 à 35 kV, à plus de <b>2 m</b>.<br><br>
+  <b>4. Selon configuration</b><br>
+  — <b>Dispositif de mise à la terre et en court-circuit</b> si les cellules n'en sont pas équipées d'origine.<br>
+  — Nécessaire de condamnation : cadenas, macarons.<br>
+  — <b>Lunette passe-perche</b> pour manœuvrer depuis l'extérieur.<br>
+  — Porte-fusible mural pour les fusibles de rechange.<br><br>
+  <b>Sur le VAT :</b> il doit correspondre au matériel. Certains appareils HTA utilisent des <b>bornes capacitives</b>, avec des VAT de type dédié selon que le matériel est sensible ou non à l'environnement. Un VAT inadapté donne une indication qui ne veut rien dire — et c'est une erreur qui peut être fatale.`,
+
+epi:`<b>EPI selon le domaine de tension</b><br><br>
+  La NF C18-510 impose des équipements <b>adaptés au domaine de tension</b>, en complément des protections collectives.<br><br>
+  <b>Basse tension</b> — gants isolants de qualité vérifiée, écran facial, tapis isolant, outillage isolé.<br><br>
+  <b>HTA / HTB</b> — s'ajoutent la <b>perche isolante</b> et le <b>dispositif de mise à la terre</b>.<br><br>
+  <b>Les classes de gants</b> (NF EN 60903) se choisissent sur la tension d'utilisation : la classe 0 couvre le 1000 V, les classes supérieures montent en HTA. Ne jamais se fier à l'aspect : c'est le marquage qui fait foi.<br><br>
+  <b>Casque et écran facial</b> — casque d'électricien isolant, écran facial contre le risque d'arc. Les vêtements de protection doivent être <b>non propagateurs de la flamme</b> et sans pièces conductrices.<br><br>
+  <b>Chaussures isolantes</b> — elles viennent en <b>complément</b> du tapis ou du tabouret, elles ne les remplacent pas. C'est une confusion fréquente.<br><br>
+  <b>Qui décide ?</b> C'est <b>l'employeur</b> qui définit les équipements nécessaires, après analyse des risques, en application du code du travail. L'habilitation elle aussi est délivrée par l'employeur, pas par l'organisme de formation : la formation atteste d'une compétence, l'habilitation engage l'employeur.<br><br>
+  <b>Avant chaque usage :</b> contrôle visuel de chaque matériel. Un gant percé ou un tapis fendu ne protège plus, et le défaut n'est visible que si on regarde.`,
+
+affichage:`<b>Affichage réglementaire du poste</b><br><br>
+  <b style="color:var(--amber);">Signalisation extérieure</b><br>
+  — <b>Danger de mort — poste de transformation</b><br>
+  — <b>Danger, défense d'entrer</b> — poste de transformation<br>
+  — Vignettes d'<b>identification du poste</b> (nom, repère d'exploitation) à compléter sur l'affiche<br><br>
+  <b style="color:var(--amber);">Signalisation intérieure</b><br>
+  — <b>Schéma synoptique et d'interverrouillage</b> de l'installation<br>
+  — <b>Instructions de sécurité</b> pour le personnel réalisant des travaux<br>
+  — <b>Instructions générales</b> relatives aux dangers des courants électriques<br>
+  — <b>Conduite à tenir en cas d'accident électrique</b><br>
+  — <b>Soins aux électrisés</b><br>
+  — <b>Travaux électriques hors tension en haute tension</b> — les règles impératives<br>
+  — <b>Danger électrique</b> (symbole éclair) sur les enveloppes<br>
+  — <b>Terre des masses métalliques</b><br>
+  — <b>Affiche « local contenant du SF6 »</b> si des cellules à SF6 sont installées<br>
+  — Coordonnées d'urgence et consignes propres à l'exploitant<br><br>
+  <b>Pourquoi le synoptique est le point le plus critique :</b> en cas d'incident, un intervenant qui découvre le poste doit comprendre en quelques secondes l'architecture et les verrouillages. Un synoptique absent, illisible, ou <b>non mis à jour après modification</b>, est à la fois un défaut classique en vérification et un danger réel.<br><br>
+  <b>À contrôler lors des visites :</b> l'affichage se dégrade — humidité, UV, poussière, décollement. Il fait partie de ce qui se vérifie au même titre que le matériel.`,
+
+verifEpi:`<b>Vérification du matériel de sécurité</b><br><br>
+  <b>La règle :</b> vérification conforme aux prescriptions du fabricant, et <b>à défaut tous les ans</b>.<br><br>
+  Cette vérification périodique s'ajoute au <b>contrôle visuel avant chaque utilisation</b>, qui reste à la charge de l'utilisateur.<br><br>
+  <b>Ce qui se vérifie :</b><br>
+  — <b>Gants isolants</b> : essai diélectrique en laboratoire, contrôle d'étanchéité, marquage lisible. Un gant hors délai n'est plus un EPI. Dans les postes de transformation, il est <b>recommandé de les vérifier tous les 6 mois</b> : tout défaut d'aspect peut induire une non-conformité.<br>
+  — <b>Perches</b> : état de surface, propreté, absence de fissure ou d'humidité absorbée.<br>
+  — <b>Tapis et tabourets</b> : état mécanique, absence de coupure ou de déformation. Le tabouret isolant ne fait l'objet ni d'un marquage réglementaire ni d'un marquage normatif — d'où l'importance du suivi interne.<br>
+  — <b>VAT</b> : essai de fonctionnement avant et après chaque usage, à faire systématiquement, avec le dispositif prévu.<br>
+  — <b>Dispositifs de MALT/CC</b> : état des pinces, des câbles et des serrages.<br><br>
+  <b>Traçabilité :</b> tenir un registre daté par matériel. En cas d'accident, l'absence de suivi se retourne contre l'employeur — c'est lui qui porte la responsabilité pénale.`,
+
+verifInstall:`<b>Vérifications réglementaires de l'installation</b><br><br>
+  Cadre : <b>décret 2010-1016 du 30 août 2010</b> (obligations de l'employeur) et <b>arrêté du 26 décembre 2011</b> (méthodes, étendue, périodicité, contenu des rapports).<br><br>
+  <b>Vérification initiale</b> — à la mise en service, et après toute modification de structure (article R. 4226-14 du code du travail).<br><br>
+  <b>Vérification périodique — tous les ans</b> (article R. 4226-16). Le point de départ est la date de la vérification initiale.<br><br>
+  <b>Passage possible à deux ans</b>, à l'initiative du chef d'établissement, si :<br>
+  — le rapport précédent ne présente <b>aucune observation</b>, ou<br>
+  — les travaux de mise en conformité répondant aux observations ont été réalisés avant l'échéance.<br>
+  Cette possibilité s'accompagne d'une information de l'inspection du travail.<br><br>
+  <b>Délai de remise du rapport</b> par un organisme accrédité : au plus <b>cinq semaines</b> après la fin de la vérification.<br><br>
+  <b>L'inspection du travail</b> peut à tout moment prescrire une vérification par un organisme accrédité.<br><br>
+  <b>Ce que la vérification n'est pas :</b> un contrôle réglementaire n'est pas de la maintenance. Il constate un état à un instant donné, il ne remplace ni l'entretien ni les essais périodiques des protections.<br><br>
+  <span style="font-size:11px; color:var(--muted);">Réglementation susceptible d'évoluer et variable selon le type d'établissement (ERP, ICPE, industrie). Vérifier le cadre applicable au site.</span>`,
+
+dossier:`<b>Dossier et documents à conserver</b><br><br>
+  Le dossier de l'installation doit pouvoir être présenté lors d'une inspection, ou après un sinistre. Il comprend notamment :<br><br>
+  — <b>Schémas et plans</b> à jour de l'installation<br>
+  — <b>Rapport de vérification initiale</b><br>
+  — <b>Rapports de vérifications périodiques</b> successifs<br>
+  — <b>Attestations de conformité</b> établies lors de la réalisation<br>
+  — Déclarations de conformité et notices des matériels installés en zone à risque d'explosion, le cas échéant<br>
+  — Effectif maximal des locaux, nécessaire au dimensionnement de l'éclairage de sécurité<br><br>
+  <b>Durée de conservation des rapports :</b> au moins cinq ans, et en pratique aussi longtemps que l'installation existe — l'historique est ce qui permet de démontrer un suivi.<br><br>
+  <b>À y ajouter, même sans obligation formelle :</b> procès-verbaux d'essais des protections, relevés d'analyses d'huile, historique des interventions, réglages laissés dans les relais. C'est ce dossier technique qui fait la différence lors d'un diagnostic — et qui évite de repartir de zéro à chaque intervention.`,
+
+entretien:`<b>Entretien et maintenance du poste</b><br><br>
+  <b>Le principe légal :</b> l'employeur doit <b>maintenir ses installations en conformité</b> avec les règles de sécurité pendant toute la durée de leur exploitation. C'est une obligation continue, pas une formalité annuelle.<br><br>
+  La réglementation fixe les <b>vérifications</b>, mais laisse la <b>périodicité d'entretien</b> à définir selon le matériel, son âge, son environnement et sa criticité. Les préconisations constructeur font référence.<br><br>
+  <b>Ce qu'un plan de maintenance couvre habituellement :</b><br>
+  — <b>Visite du poste</b> : propreté, absence d'infiltration, ventilation, éclairage, verrouillages, affichage, matériel de sécurité présent et à jour.<br>
+  — <b>Cellules HTA</b> : contrôle des commandes et verrouillages, état des traversées, graissage selon notice, mesure de résistance de contact, contrôle de la pression ou de la densité pour les cellules SF6.<br>
+  — <b>Transformateur</b> : niveau et étanchéité, état du diélectrique, relais Buchholz, thermomètre, radiateurs, serrages (voir onglet 09), et <b>analyses d'huile</b> (voir onglet 10).<br>
+  — <b>Protections</b> : essais périodiques des relais, chaîne de déclenchement, source auxiliaire (voir onglet 11).<br>
+  — <b>Terres</b> : mesure des prises de terre, état des liaisons équipotentielles.<br>
+  — <b>Thermographie infrarouge</b> : sous charge, révèle les échauffements de connexion invisibles autrement. Souvent demandée par les assureurs, très efficace en préventif.<br><br>
+  <b>Le meilleur argument auprès d'un exploitant :</b> l'entretien coûte moins cher qu'un arrêt de production. Un serrage qui chauffe se voit en thermographie pour quelques centaines d'euros ; le même défaut évolué, c'est une cellule à remplacer et un site à l'arrêt.`,
+
+consignation:`<b>Consignation — les étapes</b><br><br>
+  Procédure de la NF C18-510, dans l'ordre. Aucune étape ne se saute.<br><br>
+  <b>1. Séparation</b> — séparer l'ouvrage de toute source de tension, de façon <b>pleinement apparente</b> ou certaine.<br><br>
+  <b>2. Condamnation</b> — immobiliser l'organe de séparation en position d'ouverture, par un <b>dispositif matériel</b> (cadenas), et poser une <b>signalisation</b> (macaron) indiquant l'interdiction de manœuvre.<br><br>
+  <b>3. Identification</b> — s'assurer sans ambiguïté qu'on est bien sur l'ouvrage concerné : repérage, schémas, plaques. C'est l'étape la plus souvent bâclée et la plus dangereuse.<br><br>
+  <b>4. Vérification d'absence de tension (VAT)</b> — <b>sur le lieu de travail</b>, avec un VAT adapté, essayé <b>avant et après</b> la vérification. Suivie immédiatement de la <b>mise à la terre et en court-circuit</b>.<br><br>
+  <b>Sur la MALT/CC :</b> elle n'est pas une précaution facultative en HTA. Elle protège contre un réenclenchement, une tension induite par une liaison voisine, ou une charge capacitive résiduelle du câble.<br><br>
+  <b>Documents :</b> attestation de consignation (en une ou deux étapes), autorisation de travail, instructions de sécurité. La consignation se termine par une <b>déconsignation</b> formelle, jamais par un simple accord verbal.<br><br>
+  <b>Rappel :</b> ces opérations ne se font qu'avec l'habilitation correspondante, délivrée par l'employeur.`
+};
+function updateSecu(){
+  const v = SECU[document.getElementById('secSel').value]; if(v) document.getElementById('secRes').innerHTML = v;
+}
+updateSecu();
+
+// ---------- RELAIS DE PROTECTION ----------
+const RELAIS = {
+c13100:`<b>NF C13-100 — protection générale du poste de livraison</b><br><br>
+  La protection générale surveille <b>tout ce qui est en aval du disjoncteur général HTA</b>, c'est-à-dire l'installation du client. Ce qui se passe en amont relève du distributeur et de ses protections au poste source.<br><br>
+  <b>Attention au vocabulaire :</b> l'amont, c'est le côté distributeur ; l'aval, c'est l'installation. Cette convention reste vraie sur un poste de <b>production</b> qui injecte sur le réseau — ce n'est pas le sens du courant qui définit l'amont.<br><br>
+  <b>Deux fonctions assurées :</b><br>
+  — <b>Maximum de courant phase</b> (surcharge et court-circuit) : ANSI 50/51.<br>
+  — <b>Défaut à la terre</b> : soit ampèremétrique homopolaire (50N/51N), soit <b>wattmétrique homopolaire (PWH)</b> selon le régime de neutre du réseau.<br><br>
+  La protection agit par <b>relais indirect</b> sur l'ouverture du disjoncteur général HTA. Le relais est alimenté par les TC (et les TT pour la PWH) de la cellule.<br><br>
+  <b>La PWH n'est pas une protection à part :</b> c'est une fonction intégrée à la protection générale C13-100. Elle est demandée lorsque le réseau HTA passe en <b>neutre compensé</b>, régime qui améliore la continuité de service mais rend la détection de défaut terre plus délicate — le critère purement ampèremétrique ne suffit plus, il faut la direction de la puissance homopolaire.<br><br>
+  <b>Les réglages ne s'inventent pas :</b> seuils et temporisations sont imposés par le distributeur, sur la fiche de collecte ou la convention de raccordement, pour rester sélectif avec le plan de protection du réseau.`,
+
+c13200:`<b>NF C13-200 — installations électriques haute tension</b><br><br>
+  Là où la C13-100 traite le <b>point de livraison</b>, la C13-200 traite l'<b>installation privée</b> en aval : réseau interne, postes secondaires, départs HTA, transformateurs.<br><br>
+  <b>Ce qui change concrètement :</b> on ne protège plus un seul point, on construit un <b>plan de protection</b> à plusieurs étages. L'enjeu devient la <b>sélectivité</b> — qu'un défaut sur un départ ne fasse tomber que ce départ, pas tout le site.<br><br>
+  <b>Les trois formes de sélectivité :</b><br>
+  — <b>Chronométrique</b> : chaque étage amont est temporisé plus longtemps que l'aval (échelons typiques de 0,2 à 0,3 s). Simple, mais le défaut le plus proche de la source est éliminé le plus lentement — c'est là que les contraintes thermiques sont les plus fortes.<br>
+  — <b>Ampèremétrique</b> : les seuils sont étagés en fonction du courant de court-circuit, qui décroît vers l'aval. Rapide, mais suppose une impédance suffisante entre les étages.<br>
+  — <b>Logique</b> : l'étage aval qui détecte le défaut envoie un ordre d'attente à l'étage amont. Permet un déclenchement rapide à tous les niveaux, au prix d'un câblage entre relais.<br><br>
+  <b>Points d'attention en essai :</b> vérifier la sélectivité, ce n'est pas seulement contrôler chaque relais isolément — il faut confronter les <b>courbes complètes</b> (seuil + temporisation + temps de coupure du disjoncteur) entre étages successifs.`,
+
+ansi:`<b>Codes ANSI — ce que fait chaque protection</b><br><br>
+  <b style="color:var(--amber);">Protections de courant</b><br>
+  <table style="margin-top:6px;"><thead><tr><th>Code</th><th>Fonction</th><th>Rôle et usage</th></tr></thead><tbody>
+  <tr><td><b>50</b></td><td>Max de courant phase, instantané</td><td>Court-circuit franc. Seuil haut, temps quasi nul. Réglé au-dessus du courant de démarrage pour ne pas déclencher à l'enclenchement.</td></tr>
+  <tr><td><b>51</b></td><td>Max de courant phase, temporisé</td><td>Surcharge. Temps dépendant ou indépendant. C'est l'étage qui assure la sélectivité chronométrique.</td></tr>
+  <tr><td><b>50N / 51N</b></td><td>Max de courant résiduel</td><td>Défaut à la terre. Mesuré par tore ou somme des 3 TC. Seuils bas : très sensible au câblage.</td></tr>
+  <tr><td><b>67</b></td><td>Max de courant directionnel phase</td><td>Distingue un défaut amont d'un défaut aval. Utile en boucle ou avec plusieurs sources.</td></tr>
+  <tr><td><b>67N</b></td><td>Défaut terre directionnel</td><td>Base de la <b>PWH</b>. Indispensable en neutre compensé, où le seul critère ampèremétrique ne permet plus de trancher.</td></tr>
+  <tr><td><b>46</b></td><td>Composante inverse / déséquilibre</td><td>Détecte perte de phase, inversion, déséquilibre. Protège les moteurs, très destructeur pour eux.</td></tr>
+  <tr><td><b>49</b></td><td>Image thermique</td><td>Reconstitue l'échauffement des enroulements par calcul. Protège contre les surcharges prolongées.</td></tr>
+  <tr><td><b>87T</b></td><td>Différentielle transformateur</td><td>Compare courant entrant et sortant. Détecte un défaut interne, insensible aux défauts externes. Réservée aux fortes puissances.</td></tr>
+  </tbody></table><br>
+  <b style="color:var(--amber);">Protections de tension et de fréquence</b><br>
+  <table style="margin-top:6px;"><thead><tr><th>Code</th><th>Fonction</th><th>Rôle et usage</th></tr></thead><tbody>
+  <tr><td><b>27</b></td><td>Minimum de tension</td><td>Perte de réseau, creux de tension. Fonction de base du découplage.</td></tr>
+  <tr><td><b>59</b></td><td>Maximum de tension</td><td>Surtension, notamment en îlotage ou sur excès de production.</td></tr>
+  <tr><td><b>59N</b></td><td>Max de tension homopolaire</td><td>Défaut monophasé — le plus fréquent. Mesuré par TT en triangle ouvert. Seuil à maintenir au-dessus de 3 %.</td></tr>
+  <tr><td><b>81&lt;</b></td><td>Minimum de fréquence</td><td>Déficit de production. En îlotage, la fréquence chute vite si la charge dépasse la production.</td></tr>
+  <tr><td><b>81&gt;</b></td><td>Maximum de fréquence</td><td>Excès de production. Seuil relevé à 51,5 Hz avec la VFR2019 / arrêté RfG.</td></tr>
+  <tr><td><b>81R</b></td><td>Dérivée de fréquence (ROCOF)</td><td>Détecte une variation rapide, signature typique d'un îlotage. Plus réactif que 81&lt;/81&gt; mais sensible aux perturbations.</td></tr>
+  <tr><td><b>32P</b></td><td>Retour de puissance active</td><td>Empêche une consommation depuis le réseau par un groupe censé produire, ou détecte un fonctionnement en moteur.</td></tr>
+  </tbody></table><br>
+  <b>Combinaisons typiques</b><br>
+  — <b>Poste de livraison simple</b> : 50/51 + 51N (ou 67N si neutre compensé).<br>
+  — <b>Poste de production</b> : la protection générale ci-dessus <b>plus</b> le découplage : 27, 59, 59N, 81&lt;, 81&gt;.<br>
+  — <b>Départ moteur HTA</b> : 50/51, 51N, 46, 49, parfois 27 et 32P.<br>
+  — <b>Gros transformateur</b> : 87T en complément, avec Buchholz et thermostats.<br><br>
+  <b>Lire un relais :</b> une même fonction peut apparaître en plusieurs <b>seuils</b> (bas temporisé, haut instantané). Toujours relever seuil <b>et</b> temporisation de chaque étage — un réglage n'a aucun sens sans son temps associé.`,
+
+techno:`<b>Technologies de relais — trois générations</b><br><br>
+  <b style="color:var(--amber);">1. Électromécanique</b> — jusqu'aux années 1980<br>
+  Disque d'induction, armature attirée par un électroaimant. La temporisation vient de la rotation du disque, le seuil du réglage mécanique du ressort.<br>
+  — <b>Reconnaissable à</b> ses cadrans de réglage gradués et son boîtier profond.<br>
+  — <b>En essai :</b> vérifier le seuil <b>et</b> la retombée, contrôler la libre rotation du disque, l'absence d'oxydation des contacts. La dispersion est plus large que sur du numérique.<br>
+  — <b>Défauts typiques :</b> encrassement, grippage, contacts oxydés, dérive du réglage dans le temps.<br>
+  — Encore très présent sur les installations anciennes, et souvent parfaitement fonctionnel.<br><br>
+  <b style="color:var(--amber);">2. Statique / analogique</b> — années 1980-1990<br>
+  Électronique analogique, comparateurs. Réglage par potentiomètres ou roues codeuses.<br>
+  — Plus précis et plus rapide que l'électromécanique, mais <b>pas d'autodiagnostic ni de mémoire d'événement</b>.<br>
+  — Sensible au vieillissement des composants : une dérive ne se voit qu'en essai.<br><br>
+  <b style="color:var(--amber);">3. Numérique</b> — depuis les années 1990<br>
+  Échantillonnage des signaux, traitement par microprocesseur.<br>
+  — <b>Plusieurs fonctions dans un même boîtier</b>, réglages par menu ou logiciel.<br>
+  — <b>Autodiagnostic</b> permanent, avec chien de garde signalant la défaillance du relais lui-même.<br>
+  — <b>Mesures affichées</b> : courants, tensions, puissances — précieux en essai pour valider le paramétrage TC/TT.<br>
+  — <b>Historique d'événements et oscillopertubographie</b> : le relais enregistre le défaut, ce qui permet l'analyse après coup.<br>
+  — <b>Communication</b> possible vers une supervision.<br><br>
+  <b>Conséquence pratique sur les essais :</b> sur un relais numérique, il faut aussi relever la <b>version de firmware</b>, sauvegarder le <b>fichier de paramétrage</b>, et vérifier la <b>pile de sauvegarde</b> de l'horloge. Un relais dont l'horodatage est faux rend son historique inexploitable.`,
+
+gammes:`<b>Gammes courantes rencontrées en poste</b><br><br>
+  <b style="color:var(--amber);">Protections générales de poste (C13-100)</b><br>
+  — <b>Sepam</b> (Schneider) — gamme numérique modulaire, séries 10, 20, 40, 60, 80 selon les fonctions embarquées. La plus répandue en poste client français. Fonctions selon série : 50/51, 50N/51N, 67N, 27/59, 81, 46, 49, mesures, journal d'événements.<br>
+  — <b>VIP</b> (Schneider) — protection <b>autoalimentée</b> par les TC, sans source auxiliaire. Fonctions de base 50/51 + 50N/51N. Très utilisée sur cellules de protection transfo, là où il n'y a pas de batterie.<br>
+  — <b>Micom / Easergy</b> (GE, ex-Areva, Schneider) — gamme numérique large, du départ simple au différentiel.<br>
+  — <b>Microener</b> — relais de protection et de découplage, dont les coffrets type H pour la NF C13-100.<br><br>
+  <b style="color:var(--amber);">Protections de découplage</b><br>
+  Coffrets dédiés type <b>H1, H2</b> et suivants, ou fonctions intégrées à un relais multifonction. Regroupent 27, 59, 59N, 81&lt;, 81&gt;, parfois 81R. Le type est <b>imposé par le distributeur</b> selon le réseau et la puissance.<br><br>
+  <b style="color:var(--amber);">Relais associés</b><br>
+  — <b>Relais Buchholz</b> — transformateur immergé : détecte dégagement gazeux, baisse de niveau, circulation d'huile. Deux étages : alarme et déclenchement.<br>
+  — <b>Thermostats et thermomètres</b> — surveillance de température, sur huile ou sur enroulement (transfo sec).<br>
+  — <b>DGPT2</b> — détection gaz, pression, température, sur transformateurs immergés hermétiques.<br><br>
+  <b>Ce qu'il faut relever sur n'importe quel relais :</b> marque, modèle exact, référence, version de firmware, fonctions activées, et l'ensemble des réglages avec leurs temporisations. C'est ce relevé qui permettra la prochaine intervention.`,
+
+alim:`<b>Alimentation : autoalimenté ou source auxiliaire</b><br><br>
+  Question déterminante pour l'essai comme pour la fiabilité.<br><br>
+  <b style="color:var(--amber);">Relais autoalimenté</b> (type VIP)<br>
+  Il tire son énergie <b>des TC eux-mêmes</b>. Pas de batterie, pas d'alimentation externe.<br>
+  — <b>Avantage :</b> aucune source auxiliaire à maintenir, donc pas de risque de batterie à plat le jour du défaut. Fonctionne tant qu'il y a du courant à mesurer.<br>
+  — <b>Limite :</b> il ne peut rien faire sans courant. Fonctions réduites, pas d'horodatage ni de communication en général.<br>
+  — <b>En essai :</b> le relais ne s'anime qu'à partir d'un certain courant injecté. Il faut atteindre le seuil d'autoalimentation avant de pouvoir tester quoi que ce soit — ne pas conclure trop vite à un relais mort. Certains disposent d'une entrée d'alimentation d'essai dédiée.<br>
+  — Le déclenchement se fait par <b>bobine à manque de courant ou à émission basse énergie</b> : vérifier la cohérence relais / bobine du disjoncteur.<br><br>
+  <b style="color:var(--amber);">Relais à source auxiliaire</b><br>
+  Alimenté par une batterie, un redresseur ou un onduleur.<br>
+  — <b>Avantage :</b> fonctions complètes, mesures permanentes, communication, historique.<br>
+  — <b>Point faible :</b> la source auxiliaire devient un élément critique. Une batterie hors service, c'est une protection inopérante.<br>
+  — <b>À vérifier lors de chaque visite :</b> tension de la batterie, état des éléments, autonomie, fonctionnement du chargeur, et le report d'alarme sur défaut d'alimentation.<br><br>
+  <b>Le contrôle qu'on oublie :</b> couper volontairement la source auxiliaire et vérifier que le défaut est bien signalé. Une alarme d'alimentation non raccordée, c'est une protection qui peut être morte pendant des mois sans que personne le sache.`,
+
+decoupPrincipe:`<b>Protection de découplage — à quoi ça sert</b><br><br>
+  Une installation de production raccordée au réseau doit <b>se séparer automatiquement</b> du réseau dès que celui-ci n'est plus dans un état normal. Deux raisons, et la première est une question de sécurité des personnes :<br><br>
+  <b>1. Éviter l'îlotage non intentionnel.</b> Si le distributeur ouvre un départ pour intervenir, une production restée couplée peut <b>maintenir la ligne sous tension</b> alors que les agents la croient hors tension. C'est le risque majeur.<br>
+  <b>2. Protéger le matériel</b> — le producteur et les autres clients — contre un fonctionnement hors des plages admissibles, et éviter un réenclenchement du réseau en opposition de phase.<br><br>
+  <b>Les fonctions mises en œuvre :</b><br>
+  — <b>Tension</b> : minimum (27) et maximum (59) — détecte la perte du réseau ou une dérive.<br>
+  — <b>Fréquence</b> : minimum et maximum (81&lt; / 81&gt;) — en îlotage, la fréquence dérive vite si production et consommation ne s'équilibrent pas.<br>
+  — <b>Tension homopolaire</b> (59N) — détecte les défauts monophasés, de loin les plus fréquents.<br><br>
+  <b>Le compromis permanent :</b> une protection très sensible découple pour un défaut fugitif sur le réseau et fait perdre de la production sans raison ; une protection trop lente laisse subsister un îlotage dangereux. C'est tout l'objet des différents types de protection.<br><br>
+  <b>Sur le seuil homopolaire</b>, deux repères issus des études des distributeurs : le réglage doit rester <b>supérieur à 3 %</b> (sous ce niveau on est dans le bruit permanent du réseau et les imperfections de la chaîne de mesure), et un seuil de l'ordre de <b>10 %</b> permet en régime séparé de détecter un défaut de résistance élevée. Le relais doit être insensible aux harmoniques homopolaires, rang 3 et multiples.`,
+
+decoupTypes:`<b>Découplage HTA — les types de protection</b><br><br>
+  Les distributeurs distinguent <b>cinq types</b> de protection de découplage HTA, du plus simple au plus élaboré. Le type imposé dépend du réseau, de la puissance et du régime de neutre — <b>il est prescrit par le distributeur</b>, ce n'est pas un choix du producteur.<br><br>
+  <b>Type H1 — action instantanée</b><br>
+  Relais ampèremétrique associé à un maximum de tension homopolaire, à action instantanée. Avantage : ne nécessite pas de dispositif additionnel pour le <b>Régime Spécial d'Essai (RSE)</b>, justement parce qu'il est instantané.<br>
+  Inconvénient assumé dans les documents des distributeurs : cette instantanéité <b>n'est pas sélective</b> et provoque un grand nombre de découplages injustifiés — un défaut monophasé de faible résistance sur le réseau HTA fera déclencher la centrale.<br><br>
+  <b>Types temporisés (B61, B62 et suivants)</b><br>
+  Introduisent une temporisation pour éviter de découpler sur un défaut fugitif éliminé par le réseau. Ils demandent en contrepartie une gestion du RSE.<br><br>
+  <b>Protection ampèremétrique homopolaire complémentaire (PAH)</b><br>
+  Sur raccordement HTB, réglage au <b>seuil minimum de détection de 100 A</b>, à valider au cas par cas. Comme ce critère n'est pas sélectif, sa temporisation doit être <b>supérieure au dernier stade du plan de protection HTB</b>, et au plus égale à 5 s moins le temps d'action des protections de découplage de type H du réseau concerné.<br><br>
+  <b>Alimentation des relais :</b> elle peut être en alternatif et dépendante du réseau, puisque toute disparition de la tension HTA doit de toute façon entraîner le découplage.`,
+
+decoupBt:`<b>Découplage BT — VFR2019 et arrêté RfG</b><br><br>
+  Pour les installations raccordées en basse tension (photovoltaïque en particulier), le découplage est le plus souvent <b>intégré à l'onduleur</b> plutôt que réalisé par un relais externe.<br><br>
+  <b>L'historique, utile pour comprendre le parc existant :</b><br>
+  — La documentation technique d'Enedis s'est appuyée sur la pré-norme <b>DIN VDE 0126-1-1</b>, avec les déclinaisons françaises <b>VFR2014</b> puis <b>VFR2019</b>.<br>
+  — <b>Arrêté du 9 juin 2020</b>, transposant le code européen RfG : c'est lui qui régit désormais les seuils. Principal changement, le <b>seuil de découplage en fréquence haute passe à 51,5 Hz</b>.<br>
+  — Applicable aux installations de moins de 250 kVA à compter du 25 juin 2020. Entre mai 2019 et cette date, Enedis acceptait les deux jeux de certificats pour faciliter la transition.<br><br>
+  <b>En pratique pour une mise en service :</b> un <b>certificat de conformité de l'onduleur</b> est demandé en amont, attestant du réglage selon le référentiel en vigueur.<br><br>
+  <b>Références documentaires Enedis</b> à connaître : <b>Enedis-NMO-RES_025E</b> (règles relatives aux protections de découplage), <b>Enedis-NMO-RES_026E</b> et <b>Enedis-PRO-RES_64E</b> (contrôle de performance), <b>Enedis-PRO-RES_10E</b> (protections des installations de production).<br><br>
+  <span style="color:var(--amber);"><b>Domaine mouvant :</b> les seuils et les références évoluent régulièrement. Vérifier systématiquement la version en vigueur de la documentation technique de référence avant une mise en service.</span>`,
+
+essaiMaxI:`<b>Essai à maximum de courant (50/51)</b><br><br>
+  Objectif : vérifier que le relais déclenche <b>au bon seuil</b> et <b>au bon temps</b>, et que l'ordre parvient bien au disjoncteur.<br><br>
+  <b>Préparation</b><br>
+  — Installation consignée, régime spécial d'essai si nécessaire, accord de l'exploitant.<br>
+  — Relever les réglages <b>attendus</b> (fiche de collecte, convention de raccordement, note de calcul) avant de toucher au relais, et relever aussi les réglages <b>réellement affichés</b>. L'écart entre les deux est déjà un résultat.<br>
+  — Repérer le rapport des TC : c'est lui qui fait le lien entre courant primaire et courant injecté au secondaire.<br><br>
+  <b>Injection</b><br>
+  — Valise d'injection sur les entrées courant du relais, phase par phase puis en triphasé.<br>
+  — <b>Seuil</b> : monter progressivement jusqu'au basculement. Contrôler la valeur de démarrage et la valeur de retombée.<br>
+  — <b>Temporisation</b> : injecter un multiple franc du seuil (souvent 2 fois) et mesurer le temps de déclenchement. Sur une courbe à temps dépendant, vérifier <b>plusieurs points</b> de la courbe, pas un seul.<br>
+  — Répéter sur les trois phases : un TC ou un câblage défaillant ne se voit que sur la phase concernée.<br><br>
+  <b>Critères</b><br>
+  Tolérances données par le constructeur du relais, typiquement quelques pour cent sur le seuil et quelques dizaines de millisecondes sur le temps. Comparer aux valeurs prescrites, pas à ce qui « paraît normal ».<br><br>
+  <b>Piège classique :</b> tester le relais seul et s'arrêter là. Tant que le déclenchement effectif du disjoncteur n'a pas été constaté, la chaîne n'est pas validée — voir l'entrée « chaîne complète ».`,
+
+essaiHomo:`<b>Essai homopolaire (50N/51N, PWH)</b><br><br>
+  <b>Injection ampèremétrique homopolaire</b><br>
+  Selon le montage, le courant résiduel est obtenu par un <b>tore</b> entourant les trois conducteurs, ou par la <b>somme des trois TC</b> (montage Nicholson). Le mode de câblage change la façon d'injecter :<br>
+  — Sur tore : injecter dans une spire passant à travers le tore.<br>
+  — Sur somme de TC : injecter sur une seule phase, le relais voit alors un courant résiduel égal au courant injecté.<br><br>
+  Vérifier le <b>seuil</b> et la <b>temporisation</b> comme pour le maximum de courant. Les seuils homopolaires étant bas, la qualité du câblage et l'absence de faux contacts se voient immédiatement.<br><br>
+  <b>Protection wattmétrique homopolaire (PWH)</b><br>
+  Elle est <b>directionnelle</b> : elle ne se contente pas de mesurer un courant résiduel, elle détermine le <b>sens</b> de la puissance homopolaire pour distinguer un défaut interne d'un défaut réseau. L'essai est donc plus exigeant :<br>
+  — injecter simultanément un <b>courant résiduel et une tension homopolaire</b>,<br>
+  — faire varier le <b>déphasage</b> entre les deux pour vérifier le secteur de fonctionnement et la limite de basculement,<br>
+  — contrôler la <b>non-action</b> dans le sens opposé, qui est le vrai objet de la fonction directionnelle.<br><br>
+  <b>Attention aux polarités :</b> une inversion de câblage sur un TC ou sur le circuit de tension inverse le sens vu par le relais. La protection paraît fonctionner en essai simple mais elle est aveugle, ou déclenche à contresens, en exploitation. C'est le défaut le plus pénalisant et le plus difficile à voir sans essai directionnel.<br><br>
+  <b>Maximum de tension homopolaire (59N)</b><br>
+  Injection d'une tension résiduelle sur l'entrée du relais, vérification du seuil et de la temporisation. Réglage exprimé en pourcentage, et il doit rester <b>supérieur à 3 %</b> pour ne pas réagir au déséquilibre permanent du réseau.`,
+
+essaiDecoup:`<b>Essai de découplage — mise en service</b><br><br>
+  Deux niveaux d'essai, complémentaires. Le premier valide le relais, le second valide la réalité.<br><br>
+  <b>1. Essai par injection</b> — sur chaque fonction du découplage :<br>
+  — minimum et maximum de tension (27 / 59),<br>
+  — minimum et maximum de fréquence (81&lt; / 81&gt;),<br>
+  — maximum de tension homopolaire (59N).<br>
+  Pour chacune : seuil, temporisation, et retour à l'état normal. Consigner les valeurs mesurées en regard des valeurs prescrites.<br><br>
+  <b>2. Essai de découplage réel</b> — le seul qui prouve que la chaîne fonctionne :<br>
+  — installation couplée et en production,<br>
+  — <b>ouverture du disjoncteur d'alimentation</b>,<br>
+  — vérification que la production <b>cesse d'injecter</b> et que l'organe de couplage s'ouvre,<br>
+  — vérification de <b>l'absence de tension</b> côté réseau après découplage — c'est le point de sécurité,<br>
+  — vérification du comportement au recouplage : la reconnexion ne doit pas être immédiate.<br><br>
+  <b>Cas des micro-onduleurs :</b> il n'y a pas de relais central à observer. La vérification passe par le contrôle de l'absence de tension aux bornes du disjoncteur de production après ouverture, ou par le message affiché par le système de supervision.<br><br>
+  <b>Traçabilité :</b> procès-verbal daté avec le matériel utilisé, les valeurs prescrites, les valeurs mesurées et le résultat. Sur une mise en service pour le distributeur, c'est ce document qui fait foi — pas le fait que « ça a déclenché ».`,
+
+essaiChaine:`<b>Chaîne complète : TC, TT, déclenchement</b><br><br>
+  Un relais juste ne garantit rien si la chaîne autour est fausse. Ce qui se vérifie au-delà du relais :<br><br>
+  <b>Transformateurs de courant</b><br>
+  — Rapport réel et rapport supposé : les cellules ont souvent des <b>TC à double secondaire</b>, un pour le comptage et un pour la protection. Se tromper d'enroulement est une erreur classique.<br>
+  — Continuité et absence de circuit ouvert : un secondaire de TC ouvert sous charge est dangereux.<br>
+  — Polarités, en particulier pour les fonctions directionnelles.<br><br>
+  <b>Transformateurs de tension</b><br>
+  — Même remarque : sur les postes producteurs, les TT ont fréquemment <b>deux enroulements secondaires</b>, un pour le comptage, un pour le relais de découplage.<br>
+  — Vérifier l'ordre des phases et les protections amont des circuits de tension.<br><br>
+  <b>Circuit de déclenchement</b><br>
+  — Continuité de la bobine de déclenchement, et surveillance du circuit si le relais le propose.<br>
+  — <b>Déclenchement réel du disjoncteur</b> constaté, pas seulement le contact du relais qui bascule.<br>
+  — Source auxiliaire : batterie ou alimentation, autonomie, comportement sur perte d'alimentation.<br><br>
+  <b>Ce qu'il faut relever avant de partir</b><br>
+  Réglages effectivement laissés dans le relais, version de firmware, date, et les mesures réalisées. Sans ce relevé, la prochaine intervention repart de zéro — et personne ne saura si un réglage a dérivé ou a été modifié entre-temps.`
+};
+function updateRelais(){
+  const v = RELAIS[document.getElementById('rSel').value]; if(v) document.getElementById('rRes').innerHTML = v;
+}
+updateRelais();
 
 // ---------- ANALYSE D'HUILE & PCB ----------
 const HUILE = {
@@ -3041,7 +4657,7 @@ const HUILE = {
     <b>À combiner avec les essais électriques :</b> rapport de transformation (onglet 01), résistance d'enroulement, résistance d'isolement, réponse en fréquence. L'huile dit ce qui se passe chimiquement, les essais électriques disent ce qui se passe dans les enroulements — les deux se recoupent.`
 };
 function updateHuile(){
-  document.getElementById('hRes').innerHTML = HUILE[document.getElementById('hSel').value];
+  const v = HUILE[document.getElementById('hSel').value]; if(v) document.getElementById('hRes').innerHTML = v;
 }
 updateHuile();
 
@@ -3138,7 +4754,7 @@ const COUPLES = {
     note:'Environ 15 à 20 % sous les valeurs acier 8.8 équivalentes.<br><br><b>Grippage à froid :</b> l\'inox sur inox grippe facilement. Lubrifier le filetage et visser lentement ; une vis grippée se casse au démontage.' }
 };
 function updateCouple(){
-  const c = COUPLES[document.getElementById('cpSel').value];
+  const c = COUPLES[document.getElementById('cpSel').value]; if(!c) return;
   if(c.tab){
     document.getElementById('cpRes').innerHTML =
       '<div class="line"><span class="k" style="color:var(--amber); font-weight:600;">'+c.titre+'</span><span class="v small">'+c.mu+'</span></div>'+
@@ -3275,7 +4891,7 @@ function updateMateriel(){
 }
 
 function updateAccess(){
-  const a = ACCESSOIRES[document.getElementById('accSel').value];
+  const a = ACCESSOIRES[document.getElementById('accSel').value]; if(!a) return;
   document.getElementById('accRes').innerHTML =
     '<div class="line"><span class="k" style="color:var(--amber); font-weight:600;">'+a.titre+'</span><span class="v small"></span></div>'+
     a.lignes.map(l=>'<div class="line"><span class="k">'+l[0]+'</span><span class="v small">'+l[1]+'</span></div>').join('');

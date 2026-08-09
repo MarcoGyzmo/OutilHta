@@ -1,0 +1,19 @@
+{
+  "name": "KIT HT — calculs et références poste HTA/HTB",
+  "short_name": "KIT HT",
+  "description": "Outil de terrain pour technicien haute tension : rapport de transformation, calibre fusible, câbles, accessoires, couples de serrage, relais de protection, analyse d'huile.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#12161a",
+  "theme_color": "#12161a",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    { "src": "icons/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
