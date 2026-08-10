@@ -244,8 +244,8 @@ tr:hover td{background:rgba(255,138,30,0.03);}
         <h2 style="font-size:15px;">Bienvenue</h2>
         <p class="desc">Dites-nous qui vous êtes. Cela prend dix secondes, et tout l'outil est ensuite accessible — aucun email à valider pour calculer.</p>
         <div class="row2">
-          <div class="field"><label>Nom et prénom</label><input type="text" id="bNom" placeholder="ex. Marc Gelé"></div>
-          <div class="field"><label>Société</label><input type="text" id="bSociete" placeholder="ex. RPG Electric"></div>
+          <div class="field"><label>Nom et prénom</label><input type="text" id="bNom" placeholder="Prénom Nom"></div>
+          <div class="field"><label>Société</label><input type="text" id="bSociete" placeholder="Nom de la société"></div>
         </div>
         <div class="row2">
           <div class="field"><label>Email</label><input type="text" id="bEmail" autocomplete="username" placeholder="prenom.nom@societe.fr"></div>
@@ -3304,7 +3304,7 @@ function majAuthUI(){
       '<b>'+(p.nom||'')+'</b>'+(p.societe?' — '+p.societe:'')+' · email vérifié'+
       '<div style="margin-top:6px;">Saisis le <b>code d\'équipe</b> fourni par ton responsable pour accéder au répertoire partagé.</div>'+
       '<div class="row2" style="margin-top:8px;">'+
-        '<div class="field"><label>Code d\'équipe</label><input type="text" id="eCode" placeholder="ex. 95640"></div>'+
+        '<div class="field"><label>Code d\'équipe</label><input type="text" id="eCode" placeholder="code fourni par ton responsable"></div>'+
         '<div class="field" style="display:flex; align-items:flex-end;"><button class="action" onclick="validerCodeEquipe()">Rejoindre</button></div>'+
       '</div>'+
       '<div id="eMsg" style="font-size:12px; margin-top:6px;"></div>'+
