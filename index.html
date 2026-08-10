@@ -234,6 +234,37 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 </head>
 <body>
 <div class="wrap">
+  <div id="ecranBienvenue" style="display:none; position:fixed; inset:0; z-index:200; background:var(--bg); overflow-y:auto; padding:24px 16px;">
+    <div style="max-width:440px; margin:0 auto;">
+      <div class="plate" style="margin-bottom:20px;">
+        <div class="plate-row"><h1>Kit <span>//</span> HT</h1></div>
+        <div class="sub" style="padding-left:16px;">calculs et références poste HTA / HTB</div>
+      </div>
+      <div class="card">
+        <h2 style="font-size:15px;">Bienvenue</h2>
+        <p class="desc">Dites-nous qui vous êtes. Cela prend dix secondes, et tout l'outil est ensuite accessible — aucun email à valider pour calculer.</p>
+        <div class="row2">
+          <div class="field"><label>Nom et prénom</label><input type="text" id="bNom" placeholder="ex. Marc Gelé"></div>
+          <div class="field"><label>Société</label><input type="text" id="bSociete" placeholder="ex. RPG Electric"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Email</label><input type="text" id="bEmail" autocomplete="username" placeholder="prenom.nom@societe.fr"></div>
+          <div class="field"><label>Mot de passe</label><input type="password" id="bPass" autocomplete="new-password" placeholder="8 caractères minimum"></div>
+        </div>
+        <button class="action" onclick="inscriptionBienvenue()">Créer mon accès</button>
+        <div id="bMsg" style="font-size:12px; margin-top:10px;"></div>
+        <div class="toolbar" style="margin-top:12px;">
+          <button class="ghost" onclick="basculeConnexionBienvenue()" id="bBascule">J'ai déjà un compte</button>
+          <button class="ghost" onclick="passerBienvenue()">Passer pour l'instant</button>
+        </div>
+      </div>
+      <div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">
+        <b>Pourquoi cette inscription ?</b> Pour savoir qui utilise l'outil et faire évoluer ce qui sert vraiment. Aucune donnée n'est revendue.<br><br>
+        <b>La vérification de l'email</b> n'est demandée que pour accéder au <b>répertoire partagé de l'équipe</b> — pas pour les calculs.
+      </div>
+    </div>
+  </div>
+
   <div id="barreHorsLigne" style="display:none; background:rgba(255,138,30,0.12); border:1px solid var(--amber-dim); border-radius:5px; padding:8px 12px; margin-bottom:12px; font-size:12.5px; color:var(--amber);">
     Hors ligne — tous les calculs et les 726 références restent disponibles.
   </div>
@@ -1343,11 +1374,12 @@ function goHome(){
 }
 // bouton retour du téléphone / navigateur
 window.addEventListener('hashchange', ()=>{
+  if(location.hash.indexOf('access_token=')!==-1) return;
   const h = location.hash.replace('#','');
   if(h && TITRES[h]) selectTab(h); else goHome();
 });
 // ouverture directe sur un outil via l'ancre
-if(location.hash){
+if(location.hash && location.hash.indexOf('access_token=')===-1){
   const h = location.hash.replace('#','');
   if(TITRES[h]) setTimeout(()=>selectTab(h),0);
 }
@@ -2831,19 +2863,16 @@ async function sbFetch(chemin, options = {}){
 }
 
 // --- authentification ---
-async function sbInscription(email, motdepasse, nom, codeEquipe){
-  // verification du code via une fonction dediee : lisible avant connexion,
-  // sans exposer la liste des equipes ni les codes
-  const eqId = await sbFetch('/rest/v1/rpc/equipe_par_code', {
-    method:'POST', body: JSON.stringify({ code: codeEquipe })
-  });
-  if(!eqId) throw new Error("Code d'équipe inconnu — vérifie la saisie (majuscules et tirets compris).");
-  const eq = [{ id: eqId }];
-  const res = await sbFetch('/auth/v1/signup', { method:'POST', body: JSON.stringify({ email, password: motdepasse }) });
-  if(!res.access_token) throw new Error('Compte créé. Vérifie ta boîte mail pour confirmer, puis connecte-toi.');
+// --- inscription simple : aucun code d'équipe, aucun email à valider ---
+async function sbInscription(email, motdepasse, nom, societe){
+  const res = await sbFetch('/auth/v1/signup', { method:'POST',
+    body: JSON.stringify({ email, password: motdepasse }) });
+  if(!res.access_token){
+    throw new Error("Compte créé. Connecte-toi avec ton email et ton mot de passe.");
+  }
   session = { access_token: res.access_token, refresh_token: res.refresh_token, user: res.user };
   await sbFetch('/rest/v1/profils', { method:'POST', headers:{'Prefer':'return=minimal'},
-    body: JSON.stringify({ id: res.user.id, nom: nom || email, equipe_id: eq[0].id }) });
+    body: JSON.stringify({ id: res.user.id, nom: nom || email, email: email, societe: societe || null }) });
   await sbChargerProfil();
   LS.set('kitht-session', session);
   return true;
@@ -2857,9 +2886,71 @@ async function sbConnexion(email, motdepasse){
   return true;
 }
 async function sbChargerProfil(){
-  const p = await sbFetch('/rest/v1/profils?id=eq.' + session.user.id + '&select=nom,role,equipe_id,equipes(nom)');
+  const p = await sbFetch('/rest/v1/profils?id=eq.' + session.user.id +
+    '&select=nom,role,equipe_id,email_verifie,societe,equipes(nom)');
   if(p && p.length) session.profil = p[0];
 }
+
+// --- vérification de l'email par CODE (aucune redirection, donc aucun 404) ---
+// Envoi du lien de vérification. La redirection pointe sur la page elle-même :
+// au retour, le jeton arrive dans l'adresse et l'application le récupère.
+function urlRetour(){
+  return location.origin + location.pathname;
+}
+async function sbEnvoyerCode(){
+  await sbFetch('/auth/v1/otp?redirect_to=' + encodeURIComponent(urlRetour()), { method:'POST',
+    body: JSON.stringify({ email: session.user.email, create_user: false }) });
+  return true;
+}
+
+// Au retour du lien : Supabase renvoie le jeton dans le fragment de l'adresse
+// (#access_token=...&type=magiclink). On l'exploite puis on nettoie l'adresse.
+async function traiterRetourVerification(){
+  if(!SB_ACTIF()) return false;
+  const h = location.hash || '';
+  if(h.indexOf('access_token=') === -1) return false;
+  const params = new URLSearchParams(h.replace(/^#/,''));
+  const at = params.get('access_token');
+  const rt = params.get('refresh_token');
+  if(!at) return false;
+  try{
+    session = Object.assign({}, session||{}, { access_token: at, refresh_token: rt });
+    const u = await sbFetch('/auth/v1/user');
+    session.user = u;
+    LS.set('kitht-session', session);
+    await sbFetch('/rest/v1/rpc/marquer_email_verifie', { method:'POST', body: JSON.stringify({}) });
+    await sbChargerProfil();
+    LS.set('kitht-bienvenue-passee', true);
+    history.replaceState(null, '', urlRetour());   // on efface le jeton de l'adresse
+    const e=document.getElementById('ecranBienvenue'); if(e) e.style.display='none';
+    return true;
+  }catch(err){
+    console.warn('Retour de vérification :', err.message);
+    return false;
+  }
+}
+async function sbVerifierCode(code){
+  const res = await sbFetch('/auth/v1/verify', { method:'POST',
+    body: JSON.stringify({ email: session.user.email, token: code, type: 'email' }) });
+  if(res && res.access_token){
+    session.access_token = res.access_token;
+    session.refresh_token = res.refresh_token;
+    LS.set('kitht-session', session);
+  }
+  await sbFetch('/rest/v1/rpc/marquer_email_verifie', { method:'POST', body: JSON.stringify({}) });
+  await sbChargerProfil();
+  return true;
+}
+
+// --- rejoindre une équipe avec son code ---
+async function sbRejoindreEquipe(code){
+  const ok = await sbFetch('/rest/v1/rpc/rejoindre_equipe', { method:'POST',
+    body: JSON.stringify({ code: code }) });
+  if(!ok) throw new Error("Code d'équipe inconnu — vérifie la saisie.");
+  await sbChargerProfil();
+  return true;
+}
+
 function sbDeconnexion(){
   session = null; sharedData = [];
   LS.del('kitht-session');
@@ -2911,8 +3002,14 @@ async function loadBdd(){
     try{ await sbChargerProfil(); await sbCharger(); await viderFileAttente(); }
     catch(e){ console.warn('Session expirée ou hors ligne'); }
   }
+  await traiterRetourVerification();
   majAuthUI();
   renderTable();
+  // écran de bienvenue au premier lancement, si pas déjà connecté ni passé
+  if(SB_ACTIF() && !session && !LS.get('kitht-bienvenue-passee', false)){
+    const e=document.getElementById('ecranBienvenue');
+    if(e) e.style.display='block';
+  }
 }
 function saveBdd(){ LS.set('kitht-local', bddCache); }
 
@@ -3170,72 +3267,130 @@ function majAuthUI(){
   if(!box) return;
   if(!SB_ACTIF()){
     box.innerHTML = '<div class="note" style="border-left-color:var(--muted);">'+
-      '<b>Base partagée non configurée.</b> Tes ajouts restent sur cet appareil. '+
-      'Pour activer le partage entre collègues, renseigne les identifiants Supabase en haut du code '+
-      '(voir le guide de mise en route).</div>';
+      '<b>Base partagée non configurée.</b> Tes ajouts restent sur cet appareil.</div>';
     return;
   }
   const enAttente = fileAttente.length
-    ? '<div style="color:var(--amber); font-size:11.5px; margin-top:6px;">'+fileAttente.length+' ajout(s) en attente d\'envoi — ils partiront au retour du réseau.</div>'
-    : '';
-  if(session && session.profil){
-    const eq = (session.profil.equipes && session.profil.equipes.nom) || 'équipe';
-    box.innerHTML = '<div class="note" style="border-left-color:var(--green); background:rgba(73,192,122,0.05);">'+
-      '<div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">'+
-        '<div><b>'+(session.profil.nom||'')+'</b> — '+eq+
-        (session.profil.role==='admin'?' <span class="tag" style="border-color:var(--amber-dim); color:var(--amber);">ADMIN</span>':'')+
-        '<div style="font-size:11.5px; color:var(--muted);">Base partagée active : '+sharedData.length+' contribution(s) d\'équipe.</div>'+enAttente+'</div>'+
-        '<button class="ghost" onclick="sbDeconnexion()">Se déconnecter</button>'+
-      '</div></div>';
-  } else {
+    ? '<div style="color:var(--amber); font-size:11.5px; margin-top:6px;">'+fileAttente.length+' ajout(s) en attente d\'envoi — ils partiront au retour du réseau.</div>' : '';
+
+  // --- pas de compte ---
+  if(!session || !session.profil){
     box.innerHTML = '<div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">'+
-      '<b>Base partagée</b> — connecte-toi pour voir et enrichir le répertoire de ton équipe. '+
-      'Sans compte, l\'outil fonctionne normalement : tes ajouts restent simplement sur cet appareil.'+
-      '<div class="row2" style="margin-top:10px;">'+
-        '<div class="field"><label>Email</label><input type="text" id="aEmail" autocomplete="username"></div>'+
-        '<div class="field"><label>Mot de passe</label><input type="password" id="aPass" autocomplete="current-password"></div>'+
-      '</div>'+
-      '<div id="inscrChamps" style="display:none;">'+
-        '<div class="row2">'+
-          '<div class="field"><label>Nom / prénom</label><input type="text" id="aNom"></div>'+
-          '<div class="field"><label>Code d\'équipe</label><input type="text" id="aCode" placeholder="fourni par ton responsable"></div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="toolbar" style="margin-top:6px;">'+
-        '<button class="action" onclick="actionConnexion()">Se connecter</button>'+
-        '<button class="ghost" onclick="basculerInscription()" id="btnInscr">Créer un compte</button>'+
-      '</div>'+
-      '<div id="authMsg" style="font-size:12px; margin-top:8px;"></div>'+
-    '</div>';
+      '<b>Répertoire partagé de l\'équipe</b><br>Crée ton accès pour voir et enrichir le répertoire commun. Les calculs restent accessibles sans compte.'+
+      '<div class="toolbar" style="margin-top:10px;"><button class="action" onclick="ouvrirBienvenue()">Créer mon accès ou me connecter</button></div></div>';
+    return;
   }
+
+  const p = session.profil;
+  const eq = (p.equipes && p.equipes.nom) || null;
+
+  // --- compte créé, email non vérifié ---
+  if(!p.email_verifie){
+    box.innerHTML = '<div class="note" style="border-left-color:var(--amber); background:rgba(255,138,30,0.06);">'+
+      '<b>'+(p.nom||'')+'</b>'+(p.societe?' — '+p.societe:'')+
+      '<div style="margin-top:6px;">Pour accéder au <b>répertoire partagé</b>, il reste à vérifier ton adresse email. Un <b>lien de vérification</b> va être envoyé par email. Ouvre-le <b>depuis ce même appareil</b> : il te ramènera ici, vérifié.</div>'+
+      '<div class="toolbar" style="margin-top:10px;">'+
+        '<button class="action" onclick="envoyerCodeVerif()">Recevoir le lien de vérification</button>'+
+        '<button class="ghost" onclick="rafraichirProfil()">J\'ai cliqué, actualiser</button>'+
+        '<button class="ghost" onclick="sbDeconnexion()">Se déconnecter</button>'+
+      '</div>'+
+      '<div id="vMsg" style="font-size:12px; margin-top:8px;"></div></div>';
+    return;
+  }
+
+  // --- email vérifié, mais pas encore rattaché à une équipe ---
+  if(!p.equipe_id){
+    box.innerHTML = '<div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">'+
+      '<b>'+(p.nom||'')+'</b>'+(p.societe?' — '+p.societe:'')+' · email vérifié'+
+      '<div style="margin-top:6px;">Saisis le <b>code d\'équipe</b> fourni par ton responsable pour accéder au répertoire partagé.</div>'+
+      '<div class="row2" style="margin-top:8px;">'+
+        '<div class="field"><label>Code d\'équipe</label><input type="text" id="eCode" placeholder="ex. 95640"></div>'+
+        '<div class="field" style="display:flex; align-items:flex-end;"><button class="action" onclick="validerCodeEquipe()">Rejoindre</button></div>'+
+      '</div>'+
+      '<div id="eMsg" style="font-size:12px; margin-top:6px;"></div>'+
+      '<div class="toolbar" style="margin-top:8px;"><button class="ghost" onclick="sbDeconnexion()">Se déconnecter</button></div></div>';
+    return;
+  }
+
+  // --- tout est en place ---
+  box.innerHTML = '<div class="note" style="border-left-color:var(--green); background:rgba(73,192,122,0.05);">'+
+    '<div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">'+
+      '<div><b>'+(p.nom||'')+'</b> — '+(eq||'équipe')+
+      (p.role==='admin'?' <span class="tag" style="border-color:var(--amber-dim); color:var(--amber);">ADMIN</span>':'')+
+      '<div style="font-size:11.5px; color:var(--muted);">Base partagée active : '+sharedData.length+' contribution(s) d\'équipe.</div>'+enAttente+'</div>'+
+      '<button class="ghost" onclick="sbDeconnexion()">Se déconnecter</button>'+
+    '</div></div>';
 }
-let modeInscription = false;
-function basculerInscription(){
-  modeInscription = !modeInscription;
-  document.getElementById('inscrChamps').style.display = modeInscription ? 'block' : 'none';
-  document.getElementById('btnInscr').textContent = modeInscription ? 'J\'ai déjà un compte' : 'Créer un compte';
-  document.querySelector('#authBox .action').textContent = modeInscription ? 'Créer le compte' : 'Se connecter';
-}
-async function actionConnexion(){
-  const msg = document.getElementById('authMsg');
-  const email = document.getElementById('aEmail').value.trim();
-  const pass  = document.getElementById('aPass').value;
-  if(!email || !pass){ msg.innerHTML = '<span style="color:var(--red);">Email et mot de passe requis.</span>'; return; }
-  msg.innerHTML = '<span style="color:var(--muted);">Connexion…</span>';
+
+// --- vérification de l'email par code ---
+async function envoyerCodeVerif(){
+  const m=document.getElementById('vMsg');
+  m.innerHTML='<span style="color:var(--muted);">Envoi du code…</span>';
   try{
-    if(modeInscription){
-      const nom  = document.getElementById('aNom').value.trim();
-      const code = document.getElementById('aCode').value.trim();
-      if(!code){ msg.innerHTML = '<span style="color:var(--red);">Code d\'équipe requis.</span>'; return; }
-      await sbInscription(email, pass, nom, code);
-    } else {
-      await sbConnexion(email, pass);
-    }
+    await sbEnvoyerCode();
+    m.innerHTML='<span style="color:var(--green);">Lien envoyé à '+session.user.email+'. Ouvre-le depuis cet appareil (regarde aussi les indésirables).</span>';
+  }catch(e){ m.innerHTML='<span style="color:var(--red);">'+e.message+'</span>'; }
+}
+async function rafraichirProfil(){
+  const m=document.getElementById('vMsg');
+  if(m) m.innerHTML='<span style="color:var(--muted);">Actualisation…</span>';
+  try{
+    await sbFetch('/rest/v1/rpc/marquer_email_verifie', { method:'POST', body: JSON.stringify({}) });
+    await sbChargerProfil();
+    majAuthUI(); renderTable();
+  }catch(e){ if(m) m.innerHTML='<span style="color:var(--red);">'+e.message+'</span>'; }
+}
+async function validerCodeEquipe(){
+  const m=document.getElementById('eMsg');
+  const code=(document.getElementById('eCode').value||'').trim();
+  if(!code){ m.innerHTML='<span style="color:var(--red);">Saisis le code d\'équipe.</span>'; return; }
+  m.innerHTML='<span style="color:var(--muted);">Vérification…</span>';
+  try{
+    await sbRejoindreEquipe(code);
     await sbCharger(); await viderFileAttente();
     majAuthUI(); renderTable();
-  }catch(e){
-    msg.innerHTML = '<span style="color:var(--red);">'+e.message+'</span>';
-  }
+  }catch(e){ m.innerHTML='<span style="color:var(--red);">'+e.message+'</span>'; }
+}
+
+// ---------- ÉCRAN DE BIENVENUE ----------
+let modeConnexionBienvenue = false;
+function ouvrirBienvenue(){
+  const e=document.getElementById('ecranBienvenue');
+  if(e){ e.style.display='block'; window.scrollTo(0,0); }
+}
+function passerBienvenue(){
+  LS.set('kitht-bienvenue-passee', true);
+  const e=document.getElementById('ecranBienvenue');
+  if(e) e.style.display='none';
+}
+function basculeConnexionBienvenue(){
+  modeConnexionBienvenue = !modeConnexionBienvenue;
+  ['bNom','bSociete'].forEach(id=>{
+    const c=document.getElementById(id); if(c) c.parentElement.style.display = modeConnexionBienvenue?'none':'block';
+  });
+  document.getElementById('bBascule').textContent = modeConnexionBienvenue ? 'Je n\'ai pas encore de compte' : 'J\'ai déjà un compte';
+  document.querySelector('#ecranBienvenue .action').textContent = modeConnexionBienvenue ? 'Me connecter' : 'Créer mon accès';
+}
+async function inscriptionBienvenue(){
+  const m=document.getElementById('bMsg');
+  const email=(document.getElementById('bEmail').value||'').trim();
+  const pass=document.getElementById('bPass').value||'';
+  if(!email || !pass){ m.innerHTML='<span style="color:var(--red);">Email et mot de passe requis.</span>'; return; }
+  m.innerHTML='<span style="color:var(--muted);">Un instant…</span>';
+  try{
+    if(modeConnexionBienvenue){
+      await sbConnexion(email, pass);
+    } else {
+      const nom=(document.getElementById('bNom').value||'').trim();
+      const soc=(document.getElementById('bSociete').value||'').trim();
+      if(!nom){ m.innerHTML='<span style="color:var(--red);">Indique ton nom.</span>'; return; }
+      await sbInscription(email, pass, nom, soc);
+    }
+    LS.set('kitht-bienvenue-passee', true);
+    document.getElementById('ecranBienvenue').style.display='none';
+    await sbCharger(); await viderFileAttente();
+    majAuthUI(); renderTable();
+  }catch(e){ m.innerHTML='<span style="color:var(--amber);">'+e.message+'</span>'; }
 }
 
 // ---------- EMPLACEMENTS PARTENAIRES ----------
