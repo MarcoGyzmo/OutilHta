@@ -184,6 +184,26 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 .pubcard .pubfoot{font-size:10.5px; color:var(--muted); margin-top:8px; opacity:.85;}
 
 
+
+.topbar{position:sticky; top:0; z-index:60; background:var(--bg); display:flex; align-items:center; gap:12px; margin-bottom:14px; padding:8px 0 10px; border-bottom:1px solid var(--line);}
+.backbtn{
+  display:inline-flex; align-items:center; gap:6px; flex-shrink:0;
+  background:var(--amber); color:#1a1200; border:none; border-radius:6px;
+  font-family:var(--disp); font-size:13.5px; font-weight:700; letter-spacing:.05em;
+  padding:11px 18px; min-height:44px; cursor:pointer;
+}
+.backbtn:hover, .backbtn:active{ filter:brightness(1.1); }
+.topbar-title{font-family:var(--disp); font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--amber);}
+
+/* bouton flottant : toujours atteignable, meme en bas d'un ecran long */
+#fabAccueil{
+  position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:120;
+  background:var(--amber); color:#1a1200; border:none; border-radius:24px;
+  font-family:var(--disp); font-size:14px; font-weight:700; letter-spacing:.05em;
+  padding:13px 26px; min-height:48px; cursor:pointer;
+  box-shadow:0 6px 20px rgba(0,0,0,.55);
+}
+
 /* ===== ACCUEIL EN TUILES ===== */
 .home{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;}
 .tile{
@@ -197,9 +217,6 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 .tile .tname{font-family:var(--disp); font-size:15px; font-weight:600; color:var(--text); line-height:1.25;}
 .tile .tdesc{font-size:11.5px; color:var(--muted); line-height:1.35;}
 
-.topbar{display:flex; align-items:center; gap:12px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--line);}
-.backbtn{padding:10px 14px; font-size:13.5px; flex-shrink:0;}
-.topbar-title{font-family:var(--disp); font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--amber);}
 
 @media(min-width:700px){ .home{grid-template-columns:1fr 1fr 1fr;} }
 
@@ -255,7 +272,10 @@ tr:hover td{background:rgba(255,138,30,0.03);}
         <div id="bMsg" style="font-size:12px; margin-top:10px;"></div>
         <div class="toolbar" style="margin-top:12px;">
           <button class="ghost" onclick="basculeConnexionBienvenue()" id="bBascule">J'ai déjà un compte</button>
-          <button class="ghost" onclick="passerBienvenue()">Passer pour l'instant</button>
+        </div>
+        <div class="note" style="margin-top:14px; border-left-color:var(--amber-dim);">
+          <b>Pressé ?</b> Le mode découverte donne accès à tout l'outil pendant <b>15 minutes</b>, sans rien remplir.
+          <div style="margin-top:8px;"><button class="ghost" onclick="lancerDecouverte()">Essayer 15 minutes</button></div>
         </div>
       </div>
       <div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">
@@ -265,6 +285,10 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     </div>
   </div>
 
+  <div id="barreEssai" style="display:none; background:rgba(255,138,30,0.14); border:1px solid var(--amber); border-radius:5px; padding:9px 12px; margin-bottom:12px; font-size:12.5px; color:var(--amber); display:none; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+    <span>Mode découverte — <b id="essaiReste">15:00</b> restantes</span>
+    <button class="action" style="padding:7px 14px; font-size:12.5px;" onclick="ouvrirBienvenue()">Créer mon accès</button>
+  </div>
   <div id="barreHorsLigne" style="display:none; background:rgba(255,138,30,0.12); border:1px solid var(--amber-dim); border-radius:5px; padding:8px 12px; margin-bottom:12px; font-size:12.5px; color:var(--amber);">
     Hors ligne — tous les calculs et les 726 références restent disponibles.
   </div>
@@ -290,9 +314,10 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   </div>
 
   <div class="topbar" id="topbar" style="display:none;">
-    <button class="ghost backbtn" onclick="goHome()">‹ Accueil</button>
+    <button class="backbtn" onclick="goHome()">‹ ACCUEIL</button>
     <span class="topbar-title" id="topbarTitle"></span>
   </div>
+  <button id="fabAccueil" onclick="goHome()" style="display:none;" aria-label="Retour à l'accueil">‹ Accueil</button>
 
   <div class="home" id="home">
     <button class="tile" onclick="selectTab('couplage')"><span class="tnum">01</span><span class="tname">Rapport transfo</span><span class="tdesc">Couplages, câblage TTR</span></button>
@@ -394,8 +419,8 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 
       <div class="row2">
         <div class="field">
-          <label>Tension primaire U1 — ligne (kV)</label>
-          <input type="number" id="u1" value="20" step="0.001">
+          <label>Tension primaire U1 — ligne (V)</label>
+          <input type="number" id="u1" value="20000" step="1">
         </div>
         <div class="field">
           <label>Tension secondaire U2 — ligne (V)</label>
@@ -1356,11 +1381,18 @@ const TITRES = {
   huile:"10 · Analyse d'huile", relais:'11 · Relais de protection', djbt:'12 · Disjoncteur général BT', secu:'13 · Sécurité & obligations', neutre:'14 · Régimes de neutre', info:'15 · À propos'
 };
 function selectTab(name){
+  if(name!=='info' && !accesAutorise()){
+    ouvrirBienvenue();
+    const m=document.getElementById('bMsg');
+    if(m) m.innerHTML='<span style="color:var(--amber);">Crée ton accès pour utiliser l\'outil.</span>';
+    return;
+  }
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
   const p = document.getElementById('p-'+name);
   if(p) p.classList.add('active');
   document.getElementById('home').style.display = 'none';
   document.getElementById('topbar').style.display = 'flex';
+  const fab=document.getElementById('fabAccueil'); if(fab) fab.style.display='block';
   document.getElementById('topbarTitle').textContent = TITRES[name] || '';
   window.scrollTo(0,0);
   location.hash = name;
@@ -1369,6 +1401,7 @@ function goHome(){
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
   document.getElementById('home').style.display = 'grid';
   document.getElementById('topbar').style.display = 'none';
+  const fab=document.getElementById('fabAccueil'); if(fab) fab.style.display='none';
   window.scrollTo(0,0);
   location.hash = '';
 }
@@ -1644,13 +1677,13 @@ function updateCouplage(){
   const hasNeutral1 = primaryPart.length > 1; // 'YN' / 'ZN' -> neutre primaire sorti
   const hasNeutral2 = secondaryPart.includes('n');
 
-  const U1 = parseFloat(document.getElementById('u1').value)||0; // kV
+  const U1 = parseFloat(document.getElementById('u1').value)||0; // V
   const U2 = parseFloat(document.getElementById('u2').value)||0; // V
 
-  const Uph1 = phaseVoltage(type1, U1*1000); // V
+  const Uph1 = phaseVoltage(type1, U1); // V
   const Uph2 = phaseVoltage(type2, U2); // V
   const ratio = Uph2>0 ? Uph1/Uph2 : 0;
-  const mLigne = U2>0 ? (U1*1000)/U2 : 0;
+  const mLigne = U2>0 ? U1/U2 : 0;
   const dephasage = idx*30;
 
   const names = {D:'Triangle', Y:'Étoile', Z:'Zigzag'};
@@ -2887,7 +2920,7 @@ async function sbConnexion(email, motdepasse){
 }
 async function sbChargerProfil(){
   const p = await sbFetch('/rest/v1/profils?id=eq.' + session.user.id +
-    '&select=nom,role,equipe_id,email_verifie,societe,equipes(nom)');
+    '&select=nom,role,equipe_id,email_verifie,societe,statut,equipes(nom)');
   if(p && p.length) session.profil = p[0];
 }
 
@@ -3005,10 +3038,10 @@ async function loadBdd(){
   await traiterRetourVerification();
   majAuthUI();
   renderTable();
-  // écran de bienvenue au premier lancement, si pas déjà connecté ni passé
-  if(SB_ACTIF() && !session && !LS.get('kitht-bienvenue-passee', false)){
-    const e=document.getElementById('ecranBienvenue');
-    if(e) e.style.display='block';
+  // accueil : compte, essai en cours, ou écran d'inscription
+  if(SB_ACTIF() && !session){
+    if(essaiActif()) suivreEssai();
+    else { const e=document.getElementById('ecranBienvenue'); if(e) e.style.display='block'; }
   }
 }
 function saveBdd(){ LS.set('kitht-local', bddCache); }
@@ -3298,7 +3331,24 @@ function majAuthUI(){
     return;
   }
 
-  // --- email vérifié, mais pas encore rattaché à une équipe ---
+  // --- email vérifié mais accès pas encore validé ---
+  if(p.statut !== 'valide'){
+    const refuse = p.statut === 'refuse';
+    box.innerHTML = '<div class="note" style="border-left-color:var('+(refuse?'--red':'--amber')+'); background:rgba('+(refuse?'239,82,82':'255,138,30')+',0.06);">'+
+      '<b>'+(p.nom||'')+'</b>'+(p.societe?' — '+p.societe:'')+' · email vérifié'+
+      '<div style="margin-top:6px;">'+
+        (refuse
+          ? 'Ta demande d\'accès au répertoire partagé n\'a pas été retenue. Contacte le responsable de l\'outil si tu penses qu\'il s\'agit d\'une erreur.'
+          : 'Ta demande d\'accès au <b>répertoire partagé</b> est en attente de validation par le responsable de l\'outil. Tu recevras l\'accès dès qu\'elle sera traitée.<br><br>En attendant, <b>tous les calculs et les 726 références restent disponibles</b>.')+
+      '</div>'+
+      '<div class="toolbar" style="margin-top:10px;">'+
+        (refuse?'':'<button class="ghost" onclick="rafraichirProfil()">Actualiser</button>')+
+        '<button class="ghost" onclick="sbDeconnexion()">Se déconnecter</button>'+
+      '</div></div>';
+    return;
+  }
+
+  // --- validé, mais pas encore rattaché à une équipe ---
   if(!p.equipe_id){
     box.innerHTML = '<div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">'+
       '<b>'+(p.nom||'')+'</b>'+(p.societe?' — '+p.societe:'')+' · email vérifié'+
@@ -3352,16 +3402,65 @@ async function validerCodeEquipe(){
   }catch(e){ m.innerHTML='<span style="color:var(--red);">'+e.message+'</span>'; }
 }
 
+
+// ---------- MODE DÉCOUVERTE ----------
+// 15 minutes d'accès complet sans inscription, une seule fois par appareil.
+// Le but n'est pas de verrouiller l'outil mais d'éviter qu'il circule
+// indéfiniment sans qu'on sache qui l'utilise.
+const DUREE_ESSAI = 15*60*1000;
+let minuteurEssai = null;
+
+function essaiActif(){
+  const fin = LS.get('kitht-essai-fin', 0);
+  return fin && Date.now() < fin;
+}
+function essaiEpuise(){
+  const fin = LS.get('kitht-essai-fin', 0);
+  return fin && Date.now() >= fin;
+}
+function lancerDecouverte(){
+  if(!LS.get('kitht-essai-fin', 0)) LS.set('kitht-essai-fin', Date.now()+DUREE_ESSAI);
+  const e=document.getElementById('ecranBienvenue'); if(e) e.style.display='none';
+  suivreEssai();
+}
+function suivreEssai(){
+  const b=document.getElementById('barreEssai');
+  if(minuteurEssai) clearInterval(minuteurEssai);
+  const tick=()=>{
+    if(session){ if(b) b.style.display='none'; clearInterval(minuteurEssai); return; }
+    const fin=LS.get('kitht-essai-fin',0);
+    const reste=fin-Date.now();
+    if(reste<=0){
+      if(b) b.style.display='none';
+      clearInterval(minuteurEssai);
+      ouvrirBienvenue();
+      const m=document.getElementById('bMsg');
+      if(m) m.innerHTML='<span style="color:var(--amber);">Période de découverte terminée. Crée ton accès pour continuer.</span>';
+      return;
+    }
+    if(b){
+      b.style.display='flex';
+      const mn=Math.floor(reste/60000), sc=Math.floor((reste%60000)/1000);
+      const t=document.getElementById('essaiReste');
+      if(t) t.textContent=mn+':'+String(sc).padStart(2,'0');
+    }
+  };
+  tick();
+  minuteurEssai=setInterval(tick,1000);
+}
+// contrôle à l'ouverture d'un outil : essai épuisé et pas de compte -> inscription
+function accesAutorise(){
+  if(!SB_ACTIF()) return true;
+  if(session) return true;
+  if(essaiActif()) return true;
+  return false;
+}
+
 // ---------- ÉCRAN DE BIENVENUE ----------
 let modeConnexionBienvenue = false;
 function ouvrirBienvenue(){
   const e=document.getElementById('ecranBienvenue');
   if(e){ e.style.display='block'; window.scrollTo(0,0); }
-}
-function passerBienvenue(){
-  LS.set('kitht-bienvenue-passee', true);
-  const e=document.getElementById('ecranBienvenue');
-  if(e) e.style.display='none';
 }
 function basculeConnexionBienvenue(){
   modeConnexionBienvenue = !modeConnexionBienvenue;
