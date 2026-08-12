@@ -1,9 +1,24 @@
 <!DOCTYPE html>
+<!--
+  ===================================================================
+  KIT HT — calculs et références pour postes HTA / HTB
+  © 2026 Marc GELÉ. Tous droits réservés.
+
+  Œuvre protégée par le droit d'auteur (art. L112-2 et L122-4 du code
+  de la propriété intellectuelle).
+  Dépôt e-Soleau INPI n° DSO2026029194 du 12/08/2026.
+
+  Toute reproduction, diffusion, adaptation ou exploitation, totale ou
+  partielle, sans autorisation écrite du titulaire est interdite.
+  ===================================================================
+-->
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>KIT HT — calculs et références poste HTA/HTB</title>
+<meta name="author" content="Marc GELÉ">
+<meta name="copyright" content="© 2026 Marc GELÉ — dépôt e-Soleau INPI DSO2026029194">
 <!-- Ajout à l'écran d'accueil : s'ouvre en plein écran, sans barre de navigateur -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -259,7 +274,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
       </div>
       <div class="card">
         <h2 style="font-size:15px;">Bienvenue</h2>
-        <p class="desc">Dites-nous qui vous êtes. Cela prend dix secondes, et tout l'outil est ensuite accessible — aucun email à valider pour calculer.</p>
+        <p class="desc">Dites-nous qui vous êtes : <b>l'outil est accessible immédiatement après</b>, sans validation ni email à confirmer. Dix secondes, une fois pour toutes.</p>
         <div class="row2">
           <div class="field"><label>Nom et prénom</label><input type="text" id="bNom" placeholder="Prénom Nom"></div>
           <div class="field"><label>Société</label><input type="text" id="bSociete" placeholder="Nom de la société"></div>
@@ -280,7 +295,8 @@ tr:hover td{background:rgba(255,138,30,0.03);}
       </div>
       <div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">
         <b>Pourquoi cette inscription ?</b> Pour savoir qui utilise l'outil et faire évoluer ce qui sert vraiment. Aucune donnée n'est revendue.<br><br>
-        <b>La vérification de l'email</b> n'est demandée que pour accéder au <b>répertoire partagé de l'équipe</b> — pas pour les calculs.
+        <b>Accès immédiat</b> à tous les calculs, aux 726 références et aux schémas dès le compte créé.<br><br>
+        Seul le <b>répertoire partagé de l'équipe</b> demande ensuite une vérification d'email et l'accord du responsable de l'outil — parce qu'on y écrit des valeurs que d'autres vont utiliser.
       </div>
     </div>
   </div>
@@ -336,6 +352,9 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     <button class="tile" onclick="selectTab('neutre')"><span class="tnum">14</span><span class="tname">Régimes de neutre</span><span class="tdesc">TT, TN-C, TN-S, IT</span></button>
     <button class="tile" onclick="selectTab('info')"><span class="tnum">15</span><span class="tname">À propos</span><span class="tdesc">Sources et limites</span></button>
   </div>
+  <p id="mentionCopyright" style="text-align:center; font-size:10.5px; color:var(--muted); margin:-6px 0 18px;">
+    KIT HT — © 2026 Marc GELÉ · dépôt e-Soleau INPI n° DSO2026029194 · tous droits réservés
+  </p>
 
   <!-- ================= PANEL 1 : COUPLAGE ================= -->
   <div class="panel" id="p-couplage">
@@ -1302,6 +1321,12 @@ tr:hover td{background:rgba(255,138,30,0.03);}
         <b>Cet outil n'a pas d'accès internet.</b><br><br>
         C'est une page autonome (HTML/JS) : elle ne peut pas chercher elle-même de nouvelles données sur le web ni se mettre à jour toute seule. Tout ce qui est affiché a été intégré au moment de sa génération. Les mises à jour de données ou de calculs se font en amont, pas depuis cette page.
       </div>
+      <div class="note" style="border-left-color:var(--amber-dim);">
+        <b>Propriété intellectuelle</b><br>
+        KIT HT — © 2026 Marc GELÉ. Tous droits réservés.<br>
+        Œuvre protégée par le droit d'auteur. Dépôt <b>e-Soleau INPI n° DSO2026029194</b> du 12/08/2026.<br><br>
+        Toute reproduction, diffusion, adaptation ou exploitation, totale ou partielle, sans autorisation écrite du titulaire est interdite. Les données de référence, leur structuration, les schémas générés et le code de l'application sont couverts par ce dépôt.
+      </div>
       <div class="note">
         <b>Hypothèses et limites de calcul</b><br>
         — <b>Rapport de transformation :</b> m = U<sub>phase1</sub> / U<sub>phase2</sub>, avec U<sub>phase</sub> = U<sub>ligne</sub> pour un enroulement triangle, U<sub>ligne</sub>/√3 pour un enroulement étoile. Pour le zigzag, léger arrondi (assimilé à une étoile) — pourquoi et à quoi ça sert, voir "Principes & mesure" plus bas.<br>
@@ -1391,6 +1416,7 @@ function selectTab(name){
   const p = document.getElementById('p-'+name);
   if(p) p.classList.add('active');
   document.getElementById('home').style.display = 'none';
+  const mc=document.getElementById('mentionCopyright'); if(mc) mc.style.display='none';
   document.getElementById('topbar').style.display = 'flex';
   const fab=document.getElementById('fabAccueil'); if(fab) fab.style.display='block';
   document.getElementById('topbarTitle').textContent = TITRES[name] || '';
@@ -1400,6 +1426,7 @@ function selectTab(name){
 function goHome(){
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
   document.getElementById('home').style.display = 'grid';
+  const mc=document.getElementById('mentionCopyright'); if(mc) mc.style.display='block';
   document.getElementById('topbar').style.display = 'none';
   const fab=document.getElementById('fabAccueil'); if(fab) fab.style.display='none';
   window.scrollTo(0,0);
@@ -3321,7 +3348,7 @@ function majAuthUI(){
   if(!p.email_verifie){
     box.innerHTML = '<div class="note" style="border-left-color:var(--amber); background:rgba(255,138,30,0.06);">'+
       '<b>'+(p.nom||'')+'</b>'+(p.societe?' — '+p.societe:'')+
-      '<div style="margin-top:6px;">Pour accéder au <b>répertoire partagé</b>, il reste à vérifier ton adresse email. Un <b>lien de vérification</b> va être envoyé par email. Ouvre-le <b>depuis ce même appareil</b> : il te ramènera ici, vérifié.</div>'+
+      '<div style="margin-top:6px;"><b style="color:var(--green);">L\'outil est entièrement accessible.</b> Pour accéder en plus au <b>répertoire partagé de l\'équipe</b>, il reste à vérifier ton adresse email : un <b>lien</b> te sera envoyé, à ouvrir <b>depuis ce même appareil</b>.</div>'+
       '<div class="toolbar" style="margin-top:10px;">'+
         '<button class="action" onclick="envoyerCodeVerif()">Recevoir le lien de vérification</button>'+
         '<button class="ghost" onclick="rafraichirProfil()">J\'ai cliqué, actualiser</button>'+
@@ -3338,8 +3365,8 @@ function majAuthUI(){
       '<b>'+(p.nom||'')+'</b>'+(p.societe?' — '+p.societe:'')+' · email vérifié'+
       '<div style="margin-top:6px;">'+
         (refuse
-          ? 'Ta demande d\'accès au répertoire partagé n\'a pas été retenue. Contacte le responsable de l\'outil si tu penses qu\'il s\'agit d\'une erreur.'
-          : 'Ta demande d\'accès au <b>répertoire partagé</b> est en attente de validation par le responsable de l\'outil. Tu recevras l\'accès dès qu\'elle sera traitée.<br><br>En attendant, <b>tous les calculs et les 726 références restent disponibles</b>.')+
+          ? '<b style=\'color:var(--green);\'>L\'outil reste entièrement accessible.</b><br><br>Seule ta demande d\'accès au <b>répertoire partagé</b> n\'a pas été retenue. Contacte le responsable de l\'outil si tu penses qu\'il s\'agit d\'une erreur.'
+          : '<b style=\'color:var(--green);\'>L\'outil est entièrement accessible</b> — calculs, références, schémas.<br><br>Seul l\'accès au <b>répertoire partagé</b> est en attente de validation par le responsable de l\'outil.')+
       '</div>'+
       '<div class="toolbar" style="margin-top:10px;">'+
         (refuse?'':'<button class="ghost" onclick="rafraichirProfil()">Actualiser</button>')+
