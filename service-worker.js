@@ -1,10 +1,21 @@
 /* KIT HT — service worker
    Rôle : rendre l'application utilisable SANS RÉSEAU (poste enterré, sous-sol, zone blanche).
-   Stratégie : "cache d'abord" sur la coquille de l'application, mise à jour en arrière-plan.
-   Les appels vers Supabase (base partagée) ne sont jamais mis en cache : ils doivent rester
-   temps réel, et l'application gère elle-même le mode hors ligne pour ces données. */
 
-const VERSION = 'kitht-v21';
+   Deux stratégies, selon la nature du fichier :
+
+   • index.html, la racine et le manifeste  →  RÉSEAU D'ABORD.
+     On tente le réseau, on met la réponse en cache, et on ne sert le cache
+     qu'en cas d'échec. Une mise à jour déployée est donc visible dès la
+     première ouverture, sans avoir à vider quoi que ce soit.
+
+   • tout le reste (images, polices…)       →  CACHE D'ABORD.
+     Ces fichiers ne changent pas d'une version à l'autre : inutile de les
+     redemander, et cela garde l'ouverture instantanée.
+
+   Les appels vers Supabase ne sont jamais mis en cache : ils doivent rester
+   temps réel, et l'application gère elle-même son mode hors ligne. */
+
+const VERSION = 'kitht-v22';
 const COQUILLE = [
   './',
   './index.html',
@@ -29,7 +40,14 @@ self.addEventListener('activate', e => {
   );
 });
 
-// --- interception des requêtes ---
+// Un document est-il concerné par le réseau d'abord ?
+function reseauDAbord(requete, url) {
+  return requete.mode === 'navigate'
+      || url.pathname.endsWith('/')
+      || url.pathname.endsWith('.html')
+      || url.pathname.endsWith('.webmanifest');
+}
+
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
@@ -39,9 +57,28 @@ self.addEventListener('fetch', e => {
   // uniquement les GET de même origine
   if (e.request.method !== 'GET' || url.origin !== self.location.origin) return;
 
+  // ---------- RÉSEAU D'ABORD : la page elle-même ----------
+  if (reseauDAbord(e.request, url)) {
+    e.respondWith(
+      fetch(e.request)
+        .then(r => {
+          if (r && r.status === 200) {
+            const copie = r.clone();
+            caches.open(VERSION).then(c => c.put(e.request, copie));
+          }
+          return r;
+        })
+        .catch(() =>
+          // hors ligne : on sert la version en cache, à défaut la page d'accueil
+          caches.match(e.request).then(c => c || caches.match('./index.html'))
+        )
+    );
+    return;
+  }
+
+  // ---------- CACHE D'ABORD : le reste ----------
   e.respondWith(
     caches.match(e.request).then(reponse => {
-      // mise à jour silencieuse en arrière-plan
       const reseau = fetch(e.request).then(r => {
         if (r && r.status === 200) {
           const copie = r.clone();
@@ -50,7 +87,6 @@ self.addEventListener('fetch', e => {
         return r;
       }).catch(() => null);
 
-      // hors ligne : on sert le cache ; à défaut la page d'accueil
       return reponse || reseau.then(r => r || caches.match('./index.html'));
     })
   );
