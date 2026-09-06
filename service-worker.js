@@ -4,15 +4,11 @@
    Les appels vers Supabase (base partagée) ne sont jamais mis en cache : ils doivent rester
    temps réel, et l'application gère elle-même le mode hors ligne pour ces données. */
 
-const VERSION = 'kitht-v3';
+const VERSION = 'kitht-v21';
 const COQUILLE = [
   './',
   './index.html',
-  './manifest.webmanifest',
-  './icons/icone-192.png',
-  './icons/icone-512.png',
-  './icons/icone-maskable-512.png',
-  './icons/icone-180.png'
+  './manifest.webmanifest'
 ];
 
 // --- installation : on met la coquille en cache ---
