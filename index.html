@@ -400,7 +400,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     </span>
   </button>
 
-  <button id="banniereAdmin" onclick="selectTab('admin')" style="display:none; width:100%; text-align:left; background:linear-gradient(90deg, rgba(62,166,255,0.16), rgba(62,166,255,0.05)); border:1px solid var(--blue); border-radius:8px; padding:15px 16px; margin-bottom:14px; cursor:pointer;">
+  <button id="banniereAdmin" onclick="selectTab('admin')" style="width:100%; text-align:left; background:linear-gradient(90deg, rgba(62,166,255,0.16), rgba(62,166,255,0.05)); border:1px solid var(--blue); border-radius:8px; padding:15px 16px; margin-bottom:14px; cursor:pointer;">
     <span style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
       <span>
         <span style="display:block; font-family:var(--disp); font-size:16px; font-weight:700; color:var(--blue); letter-spacing:.02em;">⚙ Administration</span>
@@ -427,6 +427,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     <button class="tile" onclick="selectTab('neutre')"><span class="tnum">14</span><span class="tname">Régimes de neutre</span><span class="tdesc">TT, TN-C, TN-S, IT</span></button>
     <button class="tile" onclick="selectTab('compte')"><span class="tnum">15</span><span class="tname">Mon compte</span><span class="tdesc">Données, export, suppression</span></button>
     <button class="tile" onclick="selectTab('info')"><span class="tnum">16</span><span class="tname">À propos</span><span class="tdesc">Sources et limites</span></button>
+    <button class="tile" id="tuileDeco" onclick="deconnexionTuile()" style="display:none; border-left-color:var(--red);"><span class="tnum" style="color:var(--red);">⏻</span><span class="tname">Déconnexion</span><span class="tdesc" id="tuileDecoNom">Fermer la session</span></button>
   </div>
   <p id="mentionCopyright" style="text-align:center; font-size:10.5px; color:var(--muted); margin:-6px 0 18px;">
     KIT HT — © 2026 Marc GELÉ · dépôt e-Soleau INPI n° DSO2026029194 · tous droits réservés
@@ -2007,6 +2008,29 @@ function majBadgeChat(){
 
 
 
+
+// ---------- TUILE DE DÉCONNEXION ----------
+function majTuileDeco(){
+  const t = document.getElementById('tuileDeco');
+  if(!t) return;
+  if(session && session.profil){
+    t.style.display = '';
+    const n = document.getElementById('tuileDecoNom');
+    if(n) n.textContent = session.profil.nom || 'Fermer la session';
+  } else {
+    t.style.display = 'none';
+  }
+}
+function deconnexionTuile(){
+  if(!session) return;
+  if(!confirm('Fermer la session ?\n\nL\'outil restera utilisable : calculs, références et schémas fonctionnent sans compte.')) return;
+  sbDeconnexion();
+  majTuileDeco();
+  majCompteUI();
+  majBadgeAdmin();
+  goHome();
+}
+
 // ---------- ÉCRAN MON COMPTE ----------
 function majCompteUI(){
   const z = document.getElementById('compteRes');
@@ -2034,9 +2058,8 @@ function majCompteUI(){
     '<div class="line"><span class="k">Accès au répertoire</span><span class="v small">'+etat+'</span></div>'+
     (p.role==='admin'?'<div class="line"><span class="k">Rôle</span><span class="v small"><span style="color:var(--amber);">administrateur</span></span></div>':'')+
   '</div>'+
-  '<div class="toolbar" style="margin-bottom:14px;">'+
-    '<button class="ghost" onclick="sbDeconnexion(); majCompteUI();">Se déconnecter</button>'+
-  '</div>';
+  '<div style="font-size:11px; color:var(--muted); margin:-6px 0 14px;">'+
+    'Pour fermer la session : tuile <b>⏻ Déconnexion</b> sur l\'écran d\'accueil.</div>';
 }
 
 // ---------- DROITS SUR SES DONNÉES ----------
@@ -4389,6 +4412,8 @@ async function loadBdd(){
     sondageChat = setInterval(()=>{ chargerMessages(false); if(estAdmin()) chargerDemandes(); }, 60000);
   }
   majAuthUI();
+  majBadgeAdmin();   // décide de l'affichage du bandeau Administration dès le chargement
+  majTuileDeco();
   renderTable();
   // accueil : compte, essai en cours, ou écran d'inscription
   if(SB_ACTIF() && !session){
@@ -4718,8 +4743,7 @@ function majAuthUI(){
   // --- compte créé, email non vérifié ---
   if(!p.email_verifie){
     box.innerHTML = '<div class="note" style="border-left-color:var(--amber); background:rgba(255,138,30,0.06);">'+
-      '<b>'+(p.nom||'')+'</b>'+(p.societe?' — '+p.societe:'')+
-      '<div style="margin-top:6px;"><b style="color:var(--green);">L\'outil est entièrement accessible.</b> Pour accéder en plus au <b>répertoire partagé de l\'équipe</b>, il reste à vérifier ton adresse email : un <b>lien</b> te sera envoyé, à ouvrir <b>depuis ce même appareil</b>.</div>'+
+      '<div><b style="color:var(--green);">L\'outil est entièrement accessible.</b> Pour accéder en plus au <b>répertoire partagé de l\'équipe</b>, il reste à vérifier ton adresse email : un <b>lien</b> te sera envoyé, à ouvrir <b>depuis ce même appareil</b>.</div>'+
       '<div class="toolbar" style="margin-top:10px;">'+
         '<button class="action" onclick="envoyerCodeVerif()">Recevoir le lien de vérification</button>'+
         '<button class="ghost" onclick="rafraichirProfil()">J\'ai cliqué, actualiser</button>'+
@@ -4733,7 +4757,7 @@ function majAuthUI(){
   if(p.statut !== 'valide'){
     const refuse = p.statut === 'refuse';
     box.innerHTML = '<div class="note" style="border-left-color:var('+(refuse?'--red':'--amber')+'); background:rgba('+(refuse?'239,82,82':'255,138,30')+',0.06);">'+
-      '<b>'+(p.nom||'')+'</b>'+(p.societe?' — '+p.societe:'')+' · email vérifié'+
+      '<b>Répertoire commun</b> · email vérifié'+
       '<div style="margin-top:6px;">'+
         (refuse
           ? '<b style=\'color:var(--green);\'>L\'outil reste entièrement accessible.</b><br><br>Seule ta demande d\'accès au <b>répertoire partagé</b> n\'a pas été retenue. Contacte le responsable de l\'outil si tu penses qu\'il s\'agit d\'une erreur.'
@@ -4904,7 +4928,7 @@ async function inscriptionBienvenue(){
     LS.set('kitht-bienvenue-passee', true);
     document.getElementById('ecranBienvenue').style.display='none';
     await sbCharger(); await viderFileAttente();
-    majAuthUI(); renderTable();
+    majAuthUI(); renderTable(); majTuileDeco(); majBadgeAdmin();
   }catch(e){ m.innerHTML='<span style="color:var(--amber);">'+e.message+'</span>'; }
 }
 

@@ -15,7 +15,7 @@
    Les appels vers Supabase ne sont jamais mis en cache : ils doivent rester
    temps réel, et l'application gère elle-même son mode hors ligne. */
 
-const VERSION = 'kitht-v26';
+const VERSION = 'kitht-v28';
 const COQUILLE = [
   './',
   './index.html',
