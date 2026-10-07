@@ -105,7 +105,7 @@ body{
 @media(max-width:640px){.grid{grid-template-columns:1fr;}}
 
 label{display:block; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:6px; font-family:var(--mono);}
-select, input[type=number], input[type=text]{
+select, input[type=number], input[type=text], input[type=password], input[type=email]{
   width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--text);
   border-radius:4px; padding:10px 11px; font-family:var(--mono); font-size:14px; outline:none;
   transition:border-color .15s;
@@ -279,7 +279,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   .card{padding:14px 12px;}
   
   /* champs plus confortables au doigt, et 16px pour éviter le zoom auto iOS */
-  select, input[type=number], input[type=text]{font-size:16px; padding:12px 11px;}
+  select, input[type=number], input[type=text], input[type=password], input[type=email]{font-size:16px; padding:12px 11px;}
   button.action{padding:14px 18px; font-size:14px; width:100%;}
   button.ghost{padding:11px 14px;}
   .addform{grid-template-columns:1fr; gap:10px;}
@@ -308,8 +308,11 @@ tr:hover td{background:rgba(255,138,30,0.03);}
         <div class="sub" style="padding-left:16px;">calculs et références poste HTA / HTB</div>
       </div>
       <div class="card">
-        <h2 style="font-size:15px;">Bienvenue</h2>
-        <p class="desc">Dites-nous qui vous êtes : <b>l'outil est accessible immédiatement après</b>, sans validation ni email à confirmer.</p>
+        <div style="display:flex; gap:0; margin-bottom:16px; border:1px solid var(--line); border-radius:7px; overflow:hidden;">
+          <button id="ongletConnexion" onclick="choisirMode(true)" style="flex:1; padding:13px 10px; font-family:var(--disp); font-size:14.5px; font-weight:700; border:none; cursor:pointer; background:var(--amber); color:#1a1200;">Me connecter</button>
+          <button id="ongletInscription" onclick="choisirMode(false)" style="flex:1; padding:13px 10px; font-family:var(--disp); font-size:14.5px; font-weight:700; border:none; cursor:pointer; background:transparent; color:var(--muted);">Créer un compte</button>
+        </div>
+        <p class="desc" id="bIntro">Entrez votre email et votre mot de passe.</p>
         <div class="row2">
           <div class="field"><label>Nom et prénom</label><input type="text" id="bNom" placeholder="Prénom Nom"></div>
           <div class="field"><label>Société</label><input type="text" id="bSociete" placeholder="Nom de la société"></div>
@@ -330,15 +333,14 @@ tr:hover td{background:rgba(255,138,30,0.03);}
           <div id="nMdpMsg" style="font-size:12px; margin-top:8px;"></div>
         </div>
         <div class="toolbar" style="margin-top:12px;">
-          <button class="ghost" onclick="basculeConnexionBienvenue()" id="bBascule">J'ai déjà un compte</button>
-          <button class="ghost" onclick="motDePasseOublie()" id="bOubli" style="display:none;">Mot de passe oublié</button>
+          <button class="ghost" onclick="motDePasseOublie()" id="bOubli">Mot de passe oublié</button>
         </div>
       </div>
       <div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">
-        <b>Pourquoi cette inscription ?</b> Pour savoir qui se sert de l'outil et faire évoluer ce qui sert vraiment. Rien n'est revendu, et vos relevés restent sur votre appareil.
-        <div class="toolbar" style="margin-top:10px;">
-          <button class="ghost" onclick="lancerDecouverte()">Essayer 15 minutes sans compte</button>
-        </div>
+        <b>Pourquoi un compte ?</b> Pour savoir qui se sert de l'outil et faire évoluer ce qui sert vraiment.
+        Rien n'est revendu, et vos relevés restent sur votre appareil.<br><br>
+        <span style="color:var(--muted); font-size:11.5px;">Une fois connecté, vous restez connecté : l'outil ne redemandera vos identifiants
+        qu'après un mois sans l'avoir ouvert. Il continue de fonctionner sans réseau.</span>
       </div>
     </div>
   </div>
@@ -2074,7 +2076,6 @@ const ABAQUE_TRANSFO = {
   }
 };
 function updateAbaquePuissances(){
-  if(!ABAQUES && typeof ABAQUES!=="undefined" && !ABAQUES) return;
   const type = document.getElementById('abType').value;
   const puissances = Object.keys(ABAQUE_TRANSFO[type]).map(Number).sort((a,b)=>a-b);
   const sel = document.getElementById('abPuissance');
@@ -2331,13 +2332,20 @@ function dateCourte(iso){
   return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
 }
 
-async function sbFetch(chemin, options = {}){
+async function sbFetch(chemin, options = {}, rejoue){
   const h = Object.assign({ 'apikey': SUPABASE.anonKey, 'Content-Type':'application/json' }, options.headers||{});
   if(session && session.access_token) h['Authorization'] = 'Bearer ' + session.access_token;
   const r = await fetch(SUPABASE.url + chemin, Object.assign({}, options, { headers: h }));
   const txt = await r.text();
   let d=null; try{ d = txt ? JSON.parse(txt) : null; }catch(e){ d = txt; }
-  if(!r.ok) throw new Error((d && (d.message || d.error_description || d.msg)) || ('Erreur '+r.status));
+  if(!r.ok){
+    // jeton expiré en cours d'utilisation : on renouvelle et on rejoue une fois
+    if(r.status === 401 && !rejoue && session && session.refresh_token
+       && chemin.indexOf('/auth/v1/token') === -1){
+      if(await sbRenouveler()) return sbFetch(chemin, options, true);
+    }
+    throw new Error((d && (d.message || d.error_description || d.msg)) || ('Erreur '+r.status));
+  }
   return d;
 }
 async function sbInscription(email, motdepasse, nom, societe){
@@ -2352,7 +2360,7 @@ async function sbInscription(email, motdepasse, nom, societe){
 async function sbConnexion(email, motdepasse){
   const res = await sbFetch('/auth/v1/token?grant_type=password', { method:'POST',
     body: JSON.stringify({ email, password: motdepasse }) });
-  session = { access_token: res.access_token, refresh_token: res.refresh_token, user: res.user };
+  session = { access_token: res.access_token, refresh_token: res.refresh_token, user: res.user, vu_le: Date.now() };
   await sbChargerProfil(); LS.set('kitht-session', session);
   return true;
 }
@@ -2360,6 +2368,38 @@ async function sbChargerProfil(){
   const p = await sbFetch('/rest/v1/profils?id=eq.'+session.user.id+'&select=nom,email,societe,role');
   if(p && p.length) session.profil = p[0];
 }
+// Le jeton d'accès Supabase expire au bout d'une heure. Sans renouvellement,
+// l'utilisateur devait se reconnecter à chaque ouverture. On échange ici le
+// refresh_token contre un nouveau jeton : la session tient tant qu'elle sert.
+const DUREE_SESSION = 30*24*60*60*1000;   // 30 jours sans ouverture → reconnexion
+
+async function sbRenouveler(){
+  if(!session || !session.refresh_token) return false;
+  try{
+    const r = await fetch(SUPABASE.url + '/auth/v1/token?grant_type=refresh_token', {
+      method:'POST',
+      headers:{ 'apikey': SUPABASE.anonKey, 'Content-Type':'application/json' },
+      body: JSON.stringify({ refresh_token: session.refresh_token })
+    });
+    if(!r.ok) return false;
+    const d = await r.json();
+    if(!d.access_token) return false;
+    session.access_token  = d.access_token;
+    session.refresh_token = d.refresh_token || session.refresh_token;
+    if(d.user) session.user = d.user;
+    session.vu_le = Date.now();
+    LS.set('kitht-session', session);
+    return true;
+  }catch(e){ return false; }
+}
+
+// Session trop ancienne : on redemande une connexion.
+function sessionPerimee(){
+  if(!session) return true;
+  const vu = session.vu_le || 0;
+  return vu && (Date.now() - vu) > DUREE_SESSION;
+}
+
 function sbDeconnexion(){
   session = null;
   LS.del('kitht-session');
@@ -2417,20 +2457,38 @@ async function enregistrerMotDePasse(){
 }
 
 // --- écran de bienvenue ---
-let modeConnexionBienvenue = false;
+let modeConnexionBienvenue = true;   // la plupart des gens ont déjà un compte
 function ouvrirBienvenue(){
   const e=document.getElementById('ecranBienvenue');
   if(e){ e.style.display='block'; window.scrollTo(0,0); }
+  choisirMode(modeConnexionBienvenue);
 }
-function basculeConnexionBienvenue(){
-  modeConnexionBienvenue = !modeConnexionBienvenue;
+function choisirMode(connexion){
+  modeConnexionBienvenue = connexion;
   ['bNom','bSociete'].forEach(id=>{
-    const c=document.getElementById(id); if(c) c.parentElement.style.display = modeConnexionBienvenue?'none':'block';
+    const c=document.getElementById(id);
+    if(c) c.parentElement.style.display = connexion ? 'none' : 'block';
   });
-  document.getElementById('bBascule').textContent = modeConnexionBienvenue ? "Je n'ai pas encore de compte" : "J'ai déjà un compte";
-  document.querySelector('#ecranBienvenue .action').textContent = modeConnexionBienvenue ? 'Me connecter' : 'Créer mon accès';
-  const bo=document.getElementById('bOubli'); if(bo) bo.style.display = modeConnexionBienvenue ? 'inline-block' : 'none';
+  const oc=document.getElementById('ongletConnexion'), oi=document.getElementById('ongletInscription');
+  if(oc && oi){
+    oc.style.background = connexion ? 'var(--amber)' : 'transparent';
+    oc.style.color      = connexion ? '#1a1200' : 'var(--muted)';
+    oi.style.background = connexion ? 'transparent' : 'var(--amber)';
+    oi.style.color      = connexion ? 'var(--muted)' : '#1a1200';
+  }
+  const intro=document.getElementById('bIntro');
+  if(intro) intro.textContent = connexion
+    ? 'Entrez votre email et votre mot de passe.'
+    : "Dites-nous qui vous êtes : l'outil est accessible immédiatement après, sans validation ni email à confirmer.";
+  const act=document.querySelector('#ecranBienvenue .action');
+  if(act) act.textContent = connexion ? 'Me connecter' : 'Créer mon compte';
+  const bo=document.getElementById('bOubli');
+  if(bo) bo.style.display = connexion ? 'inline-block' : 'none';
+  const m=document.getElementById('bMsg'); if(m) m.innerHTML='';
 }
+// conservée : d'anciens appels peuvent encore y faire référence
+function basculeConnexionBienvenue(){ choisirMode(!modeConnexionBienvenue); }
+
 async function inscriptionBienvenue(){
   const m=document.getElementById('bMsg');
   const email=(document.getElementById('bEmail').value||'').trim();
@@ -2482,7 +2540,10 @@ function suivreEssai(){
 }
 function accesAutorise(){
   if(!SB_ACTIF()) return true;
-  return !!session && contenuPret;
+  // On se fie à la session, pas au contenu : au démarrage, l'onglet mémorisé
+  // dans l'adresse se restaure avant la fin du chargement. Exiger les données
+  // ici ferait réapparaître l'écran de connexion à tort.
+  return !!session;
 }
 
 // --- tuile de déconnexion ---
@@ -2689,9 +2750,25 @@ async function loadBdd(){
     await chargerContenu();
     return;
   }
+  if(session && sessionPerimee()){
+    // plus de 30 jours sans ouvrir l'outil : on redemande une connexion
+    session = null; LS.del('kitht-session');
+  }
   if(session){
-    try{ await sbChargerProfil(); pingVisite(); }
-    catch(e){ session=null; LS.del('kitht-session'); }
+    try{
+      await sbChargerProfil();
+      session.vu_le = Date.now(); LS.set('kitht-session', session);
+      pingVisite();
+    }catch(e){
+      // jeton expiré : on le renouvelle au lieu de déconnecter
+      if(await sbRenouveler()){
+        try{ await sbChargerProfil(); pingVisite(); }
+        catch(e2){ session=null; LS.del('kitht-session'); }
+      } else if(navigator.onLine){
+        session=null; LS.del('kitht-session');
+      }
+      // hors ligne : on garde la session, le cache prend le relais
+    }
   }
   majTuileDeco(); majBadgeAdmin(); majCompteUI();
 
