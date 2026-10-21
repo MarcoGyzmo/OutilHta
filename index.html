@@ -341,6 +341,60 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   padding:8px 14px; font-size:12.5px; font-family:var(--body); color:var(--text); cursor:pointer;}
 .favchip:hover{border-color:var(--amber); color:var(--amber);}
 
+/* ---------- PV d'intervention ---------- */
+.pvsec{border:1px solid var(--line); border-radius:7px; margin-bottom:10px; background:var(--panel);}
+.pvsec > summary{cursor:pointer; padding:12px 14px; font-family:var(--disp); font-size:14px;
+  font-weight:700; color:var(--text); list-style:none; display:flex; align-items:center;
+  justify-content:space-between; gap:10px;}
+.pvsec > summary::-webkit-details-marker{display:none;}
+.pvsec > summary::after{content:'+'; color:var(--muted); font-family:var(--mono); font-size:18px;}
+.pvsec[open] > summary::after{content:'–';}
+.pvsec[open] > summary{border-bottom:1px solid var(--line); color:var(--amber);}
+.pvsec .pvbody{padding:14px;}
+.pvsec .pvrempli{font-family:var(--mono); font-size:10px; color:var(--green);
+  border:1px solid var(--green); border-radius:10px; padding:2px 8px; font-weight:400;}
+.pvgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.pvgrid .pvlarge{grid-column:1 / -1;}
+.pvgrid label{display:block; font-size:11px; color:var(--muted); margin-bottom:4px;
+  text-transform:uppercase; letter-spacing:.04em;}
+.pvgrid input, .pvgrid select, .pvgrid textarea{width:100%; padding:10px; font-size:16px;
+  background:var(--bg); border:1px solid var(--line); border-radius:5px; color:var(--text);
+  font-family:var(--body);}
+.pvgrid textarea{min-height:68px; resize:vertical;}
+.pvgrid input:focus, .pvgrid select:focus, .pvgrid textarea:focus{outline:none; border-color:var(--amber);}
+.pvcalc{grid-column:1 / -1; border-left:3px solid var(--amber-dim); background:rgba(255,138,30,0.05);
+  border-radius:5px; padding:10px 12px; font-size:12px; color:var(--muted); line-height:1.6;}
+.pvcalc b{color:var(--amber);}
+.pvfiche{display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--amber-dim);
+  border-radius:6px; padding:11px 13px; margin-bottom:7px;}
+.pvfiche .pvinfo{min-width:0; flex:1;}
+.pvfiche .pvn{display:block; font-size:13.5px; color:var(--text); font-weight:600;}
+.pvfiche .pvd{display:block; font-size:11px; color:var(--muted); margin-top:2px;}
+#pvImpression{display:none;}
+
+@media print{
+  @page{margin:12mm;}
+  body{background:#fff !important; color:#000 !important;}
+  .wrap > *{display:none !important;}
+  .wrap > #pvImpression{display:block !important;}
+  #pvImpression{color:#000; font-family:Georgia, 'Times New Roman', serif; font-size:10.5pt; line-height:1.45;}
+  #pvImpression h1{font-size:16pt; margin:0 0 2mm; letter-spacing:.02em;}
+  #pvImpression .pvsous{font-size:9pt; color:#444; margin-bottom:5mm;
+    border-bottom:1.5pt solid #000; padding-bottom:2mm;}
+  #pvImpression h2{font-size:11pt; margin:6mm 0 2mm; padding-bottom:1mm;
+    border-bottom:.5pt solid #999; page-break-after:avoid;}
+  #pvImpression table{width:100%; border-collapse:collapse; page-break-inside:avoid;}
+  #pvImpression td{border-bottom:.4pt solid #ccc; padding:1.6mm 2mm; vertical-align:top;
+    font-size:10pt; font-family:Georgia, serif; white-space:normal;}
+  #pvImpression td.pvk{width:42%; color:#333;}
+  #pvImpression td.pvv{font-weight:600;}
+  #pvImpression .pvnote{font-size:9pt; color:#333; font-style:italic; margin-top:1.5mm;}
+  #pvImpression .pvsign{margin-top:10mm; display:flex; gap:10mm; page-break-inside:avoid;}
+  #pvImpression .pvsign div{flex:1; border-top:.5pt solid #000; padding-top:1.5mm; font-size:9pt;}
+  #pvImpression .pvpied{margin-top:8mm; font-size:7.5pt; color:#666; border-top:.4pt solid #ccc; padding-top:2mm;}
+}
+
 </style>
 </head>
 <body>
@@ -475,8 +529,9 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     <button class="tile" onclick="selectTab('neutre')"><span class="tnum">16</span><span class="tname">Régimes de neutre</span><span class="tdesc">TT, TN-C, TN-S, IT</span></button>
     <button class="tile" onclick="selectTab('habilit')"><span class="tnum">17</span><span class="tname">Habilitation électrique</span><span class="tdesc">Titres, zones, distances</span></button>
     <button class="tile" onclick="selectTab('consign')"><span class="tnum">18</span><span class="tname">Consignation</span><span class="tdesc">Attestation, 5 étapes, schémas</span></button>
-    <button class="tile" onclick="selectTab('compte')"><span class="tnum">19</span><span class="tname">Mon compte</span><span class="tdesc">Identité, suppression</span></button>
-    <button class="tile" onclick="selectTab('info')"><span class="tnum">20</span><span class="tname">À propos</span><span class="tdesc">Installation, sources, limites</span></button>
+    <button class="tile" onclick="selectTab('pv')"><span class="tnum">19</span><span class="tname">PV d'intervention</span><span class="tdesc">Relevés, enregistrement, PDF</span></button>
+    <button class="tile" onclick="selectTab('compte')"><span class="tnum">20</span><span class="tname">Mon compte</span><span class="tdesc">Identité, suppression</span></button>
+    <button class="tile" onclick="selectTab('info')"><span class="tnum">21</span><span class="tname">À propos</span><span class="tdesc">Installation, sources, limites</span></button>
     <button class="tile" id="tuileDeco" onclick="deconnexionTuile()" style="display:none; border-left-color:var(--red);"><span class="tnum" style="color:var(--red);">⏻</span><span class="tname">Déconnexion</span><span class="tdesc" id="tuileDecoNom">Fermer la session</span></button>
   </div>
   <p id="mentionCopyright" style="text-align:center; font-size:10.5px; color:var(--muted); margin:-6px 0 18px;">
@@ -1586,9 +1641,42 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     <div class="pubslot" data-pub="consign"></div>
   </div>
 
+  <!-- ================= PANEL 19 : PV D'INTERVENTION ================= -->
+  <div class="panel" id="p-pv">
+    <div class="card">
+      <h2><span class="idx">19</span> PV d'intervention</h2>
+      <p class="desc">Les relevés de la journée, enregistrés sur l'appareil, et le PV à imprimer ou à enregistrer en PDF. Seules les rubriques renseignées apparaissent sur le document.</p>
+      <div class="toolbar">
+        <button class="action" onclick="pvNouveau()">Nouveau PV</button>
+        <button class="ghost" onclick="pvEnregistrer()">Enregistrer</button>
+        <button class="ghost" onclick="pvImprimer()">Aperçu · PDF</button>
+      </div>
+      <div id="pvMsg" style="font-size:12px; margin-bottom:10px;"></div>
+      <div id="pvForm"></div>
+      <div class="toolbar" style="margin-top:14px;">
+        <button class="action" onclick="pvEnregistrer()">Enregistrer</button>
+        <button class="ghost" onclick="pvImprimer()">Aperçu · PDF</button>
+        <button class="ghost" onclick="pvDupliquer()">Dupliquer</button>
+      </div>
+      <div class="note" style="border-left-color:var(--muted); font-size:12px;">
+        <b>Imprimer ou enregistrer en PDF.</b> Le bouton <b>Aperçu · PDF</b> ouvre la fenêtre
+        d'impression du téléphone ou de l'ordinateur. Sur iPhone, choisir une imprimante n'est
+        pas nécessaire : <b>Partager → Enregistrer dans Fichiers</b>, ou pincer l'aperçu pour
+        l'agrandir puis le partager. Sur Android, choisir <b>Enregistrer au format PDF</b>.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:14px;">PV enregistrés</h2>
+      <p class="desc">Conservés sur cet appareil uniquement. Pensez à exporter le PDF après chaque intervention.</p>
+      <div id="pvListe"></div>
+    </div>
+    <div class="pubslot" data-pub="pv"></div>
+  </div>
+
   <div class="panel" id="p-compte">
     <div class="card">
-      <h2><span class="idx">19</span> Mon compte</h2>
+      <h2><span class="idx">20</span> Mon compte</h2>
       <p class="desc">Ce qui est enregistré à votre sujet, et comment tout effacer.</p>
       <div id="compteRes"></div>
       <div class="note" style="border-left-color:var(--green); background:rgba(73,192,122,0.05);">
@@ -1613,6 +1701,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
       <p class="desc">Les personnes inscrites, leur société et leur fréquentation.</p>
       <div id="adminEtat" class="note" style="margin-top:0; display:none;"></div>
       <div id="adminStats" style="display:none;"></div>
+      <div id="adminOnglets" style="display:none;"></div>
       <div id="zoneMembres"></div>
       <div class="toolbar" style="margin-top:12px;">
         <button class="ghost" onclick="rafraichirAdmin()">Actualiser</button>
@@ -1622,7 +1711,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 
   <div class="panel" id="p-info">
     <div class="card">
-      <h2><span class="idx">20</span> À propos de cet outil</h2>
+      <h2><span class="idx">21</span> À propos de cet outil</h2>
       <p class="desc">Outil de terrain pour technicien HTA/HTB : rapport de transformation, loi d'Ohm, calibre fusible, disjoncteur BT général, régimes de neutre, câbles BT/HT, répertoire de résistances à froid de fusibles.</p>
       <div class="note" style="border-left-color:var(--amber); background:rgba(255,138,30,0.07);">
         <b>Installer KIT HT sur l'écran d'accueil</b><br><br>
@@ -1723,6 +1812,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     </div>
   </div>
 
+<div id="pvImpression"></div>
 </div>
 
 <script>
@@ -1811,8 +1901,8 @@ const TITRES = {
   bdd:'04 · Résistances fusibles', bt:'05 · Disjoncteur BT', ohm:"06 · Loi d'Ohm",
   cablebt:'07 · Câbles BT & HT', access:'08 · Accessoires HTA', couple:'09 · Couples de serrage',
   huile:"10 · Analyse d'huile", relais:'11 · Relais de protection', djbt:'12 · Disjoncteur général BT', secu:'13 · Sécurité & obligations', isol:'14 · Mesures d\'isolement', essaicable:'15 · Essais câbles HT', neutre:'16 · Régimes de neutre', habilit:'17 · Habilitation électrique',
-  consign:'18 · Consignation', compte:'19 · Mon compte', admin:'Administration',
-  info:'20 · À propos'
+  consign:'18 · Consignation', pv:"19 · PV d'intervention", compte:'20 · Mon compte',
+  admin:'Administration', info:'21 · À propos'
 };
 function selectTab(name){
   if(name!=='info' && name!=='compte' && !accesAutorise()){
@@ -1841,6 +1931,7 @@ function selectTab(name){
   if(name === 'admin') ouvrirAdmin();
   if(name === 'compte') majCompteUI();
   if(name === 'info') majVersions();
+  if(name === 'pv') pvInit();
 }
 function goHome(){
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
@@ -2623,6 +2714,7 @@ function sbDeconnexion(){
 async function pingVisite(){
   if(!SB_ACTIF() || !session) return;
   try{ await sbFetch('/rest/v1/rpc/ping_visite', { method:'POST', body: JSON.stringify({}) }); }catch(e){}
+  try{ await remonterUsage(); }catch(e){}
 }
 
 // --- mot de passe oublié ---
@@ -2814,7 +2906,7 @@ async function ouvrirAdmin(){
   const e=document.getElementById('adminEtat');
   if(!estAdmin()){
     if(e){ e.style.display='block'; e.innerHTML="<b>Espace réservé à l'administrateur.</b>"; }
-    ['adminStats','zoneMembres'].forEach(id=>{ const z=document.getElementById(id); if(z) z.innerHTML=''; });
+    ['adminStats','adminOnglets','zoneMembres'].forEach(id=>{ const z=document.getElementById(id); if(z) z.innerHTML=''; });
     return;
   }
   if(e) e.style.display='none';
@@ -2824,7 +2916,8 @@ async function rafraichirAdmin(){
   if(!estAdmin()) return;
   try{ const d=await sbFetch('/rest/v1/rpc/stats_kit', { method:'POST', body: JSON.stringify({}) }); stats=(d&&d.length)?d[0]:null; }catch(e){ stats=null; }
   try{ membres=await sbFetch('/rest/v1/rpc/liste_membres', { method:'POST', body: JSON.stringify({}) })||[]; }catch(e){ membres=[]; }
-  afficherStats(); afficherMembres(); majBadgeAdmin();
+  try{ statsOnglets=await sbFetch('/rest/v1/rpc/stats_onglets', { method:'POST', body: JSON.stringify({}) })||[]; }catch(e){ statsOnglets=null; }
+  afficherStats(); afficherStatsOnglets(); afficherMembres(); majBadgeAdmin();
 }
 function afficherStats(){
   const z=document.getElementById('adminStats');
@@ -3333,6 +3426,7 @@ function demarrerInterface(){
   });
   try{ construireIndexRecherche(); majFavoris(); majVersions(); majBandeauContenu(); }
   catch(e){ console.warn('index', e.message); }
+  try{ pvAfficherListe(); }catch(e){}
 }
 loadBdd();
 
@@ -3342,7 +3436,7 @@ loadBdd();
 // =====================================================================
 // RECHERCHE GLOBALE · RACCOURCIS · GARDE-FOU DE VERSION
 // =====================================================================
-const VERSION_PAGE = 'v36';
+const VERSION_PAGE = 'v37';
 let META_CONTENU = null;
 
 // Sélecteur de sujet -> bloc de données -> conteneur du résultat.
@@ -3695,6 +3789,482 @@ function avertirContenuManquant(onglet){
          '</b> — à publier avec publier-contenu.html.</span>' : '');
     }
   });
+}
+
+// =====================================================================
+// PV D'INTERVENTION
+// Un seul schéma décrit le formulaire, l'enregistrement et l'impression.
+// =====================================================================
+const PV_SECTIONS = [
+  {k:'aff', t:'Intervention', ouvert:true, c:[
+    {k:'client',  l:'Client',               ty:'text', large:true},
+    {k:'poste',   l:'Nom du poste',         ty:'text'},
+    {k:'lieu',    l:'Commune',              ty:'text'},
+    {k:'affaire', l:"N° d'affaire / OT",    ty:'text'},
+    {k:'date',    l:"Date",                 ty:'date'},
+    {k:'nature',  l:'Nature',               ty:'sel', large:true,
+       o:['','Maintenance préventive','Maintenance curative','Mise en service',
+          'Vérification périodique','Dépannage','Expertise','Autre']},
+    {k:'inter',   l:'Intervenants',         ty:'text', large:true},
+    {k:'arrivee', l:'Arrivée sur site',     ty:'time'},
+    {k:'depart',  l:'Départ du site',       ty:'time'}
+  ]},
+  {k:'cons', t:'Consignation', c:[
+    {k:'charge',  l:'Chargé de consignation',  ty:'text', large:true},
+    {k:'numatt',  l:"N° d'attestation",        ty:'text'},
+    {k:'etapes',  l:'Procédure',               ty:'sel',
+       o:['','Consignation en une étape','Consignation en deux étapes','Sans consignation']},
+    {k:'hcons',   l:'Heure de consignation',   ty:'time'},
+    {k:'hdecons', l:'Heure de déconsignation', ty:'time'},
+    {k:'malt',    l:'MALT-CC posée',           ty:'sel', o:['','Oui','Non','Sans objet']},
+    {k:'obs',     l:'Observations',            ty:'area', large:true}
+  ]},
+  {k:'mat', t:'Appareils de mesure',
+   note:"Désignation, n° de série et date d'étalonnage : c'est ce qui donne sa valeur au PV.", c:[
+    {k:'a1', l:'Appareil 1',  ty:'text', large:true},
+    {k:'s1', l:'N° de série', ty:'text'}, {k:'e1', l:'Étalonné le', ty:'date'},
+    {k:'a2', l:'Appareil 2',  ty:'text', large:true},
+    {k:'s2', l:'N° de série', ty:'text'}, {k:'e2', l:'Étalonné le', ty:'date'},
+    {k:'a3', l:'Appareil 3',  ty:'text', large:true},
+    {k:'s3', l:'N° de série', ty:'text'}, {k:'e3', l:'Étalonné le', ty:'date'}
+  ]},
+  {k:'tr', t:'Transformateur — plaque', c:[
+    {k:'marque', l:'Marque',                ty:'text'},
+    {k:'serie',  l:'N° de série',           ty:'text'},
+    {k:'annee',  l:'Année',                 ty:'text'},
+    {k:'puis',   l:'Puissance (kVA)',       ty:'num'},
+    {k:'u1',     l:'Tension primaire (V)',  ty:'num'},
+    {k:'u2',     l:'Tension secondaire (V)',ty:'num'},
+    {k:'coupl',  l:'Couplage',              ty:'text'},
+    {k:'ucc',    l:'Ucc (%)',               ty:'num'},
+    {k:'type',   l:'Type',                  ty:'sel', large:true,
+       o:['','Immergé huile minérale','Immergé huile végétale','Sec enrobé','Autre']}
+  ]},
+  {k:'rap', t:'Rapport de transformation', calc:'rapport', c:[
+    {k:'th',    l:'Rapport théorique',  ty:'num'},
+    {k:'prise', l:'Prise / plot',       ty:'text'},
+    {k:'m1',    l:'Mesure 1 — A',       ty:'num'},
+    {k:'m2',    l:'Mesure 2 — B',       ty:'num'},
+    {k:'m3',    l:'Mesure 3 — C',       ty:'num'},
+    {k:'app',   l:'Appareil utilisé',   ty:'text'}
+  ]},
+  {k:'iso', t:"Mesures d'isolement", c:[
+    {k:'tens', l:"Tension d'essai (V)", ty:'num'},
+    {k:'temp', l:'Température (°C)',    ty:'num'},
+    {k:'htbt', l:'HT / BT (MΩ)',        ty:'num'},
+    {k:'htm',  l:'HT / masse (MΩ)',     ty:'num'},
+    {k:'btm',  l:'BT / masse (MΩ)',     ty:'num'},
+    {k:'dar',  l:'DAR — R60/R15',       ty:'num'},
+    {k:'ip',   l:'IP — R600/R60',       ty:'num'},
+    {k:'obs',  l:'Observations',        ty:'area', large:true}
+  ]},
+  {k:'enr', t:'Résistance des enroulements', calc:'enroul', c:[
+    {k:'ha', l:'HT A (Ω)',  ty:'num'}, {k:'hb', l:'HT B (Ω)',  ty:'num'}, {k:'hc', l:'HT C (Ω)', ty:'num'},
+    {k:'ba', l:'BT a (mΩ)', ty:'num'}, {k:'bb', l:'BT b (mΩ)', ty:'num'}, {k:'bc', l:'BT c (mΩ)', ty:'num'}
+  ]},
+  {k:'hui', t:'Huile', c:[
+    {k:'niv',   l:'Niveau',                     ty:'sel', o:['','Correct','Bas','Complété']},
+    {k:'fuite', l:'Fuite',                      ty:'sel', o:['','Aucune','Suintement','Fuite active']},
+    {k:'rig',   l:'Rigidité diélectrique (kV)', ty:'num'},
+    {k:'dga',   l:'Prélèvement DGA',            ty:'sel', o:['','Non','Oui']},
+    {k:'obs',   l:'Observations',               ty:'area', large:true}
+  ]},
+  {k:'cel', t:'Cellules HTA', c:[
+    {k:'nb',    l:'Nombre de cellules',       ty:'num'},
+    {k:'type',  l:'Type / gamme',             ty:'text'},
+    {k:'etat',  l:'État général',             ty:'sel', o:['','Bon','Acceptable','Dégradé']},
+    {k:'nett',  l:'Nettoyage effectué',       ty:'sel', o:['','Oui','Non']},
+    {k:'coup',  l:'Couples de serrage repris',ty:'sel', o:['','Oui','Non','Partiellement']},
+    {k:'manoe', l:"Manœuvres d'essai",        ty:'sel', o:['','Conformes','Non conformes','Non réalisées']},
+    {k:'obs',   l:'Observations',             ty:'area', large:true}
+  ]},
+  {k:'fus', t:'Fusibles HTA', calc:'fusibles', c:[
+    {k:'marque', l:'Marque',               ty:'text'},
+    {k:'ref',    l:'Référence',            ty:'text'},
+    {k:'cal',    l:'Calibre (A)',          ty:'num'},
+    {k:'tens',   l:'Tension (kV)',         ty:'num'},
+    {k:'r1',     l:'R phase 1 (mΩ)',       ty:'num'},
+    {k:'r2',     l:'R phase 2 (mΩ)',       ty:'num'},
+    {k:'r3',     l:'R phase 3 (mΩ)',       ty:'num'},
+    {k:'rref',   l:'R de référence (mΩ)',  ty:'num'},
+    {k:'remp',   l:'Remplacés',            ty:'sel', large:true,
+       o:['','Non','Oui — les trois','Oui — un seul (à proscrire)']}
+  ]},
+  {k:'dj', t:'Disjoncteur général BT', c:[
+    {k:'marque', l:'Marque / type',           ty:'text'},
+    {k:'cal',    l:'Calibre (A)',             ty:'num'},
+    {k:'ir',     l:'Ir',                      ty:'text'},
+    {k:'tr',     l:'tr',                      ty:'text'},
+    {k:'isd',    l:'Isd',                     ty:'text'},
+    {k:'tsd',    l:'tsd',                     ty:'text'},
+    {k:'ii',     l:'Ii',                      ty:'text'},
+    {k:'ig',     l:'Ig / tg',                 ty:'text'},
+    {k:'essai',  l:'Essai de déclenchement',  ty:'sel', large:true,
+       o:['','Conforme','Non conforme','Non réalisé']},
+    {k:'obs',    l:'Observations',            ty:'area', large:true}
+  ]},
+  {k:'ter', t:'Prise de terre', c:[
+    {k:'masses', l:'Terre des masses (Ω)', ty:'num'},
+    {k:'neutre', l:'Terre du neutre (Ω)',  ty:'num'},
+    {k:'inter',  l:'Interconnexion',       ty:'sel', o:['','Terres interconnectées','Terres séparées']},
+    {k:'meth',   l:'Méthode',              ty:'sel', o:['','62 %','Boucle (pince)','Piquets','Autre']},
+    {k:'obs',    l:'Observations',         ty:'area', large:true}
+  ]},
+  {k:'cab', t:'Essais câble HT', c:[
+    {k:'long',  l:'Longueur (m)',          ty:'num'},
+    {k:'sect',  l:'Section (mm²)',         ty:'text'},
+    {k:'essai', l:"Type d'essai",          ty:'sel', large:true,
+       o:['','VLF 0,1 Hz','Tangente delta','Décharges partielles','Isolement seul']},
+    {k:'tens',  l:"Tension d'essai (kV)",  ty:'num'},
+    {k:'duree', l:'Durée (min)',           ty:'num'},
+    {k:'td',    l:'Tangente delta (10⁻³)', ty:'text'},
+    {k:'res',   l:'Résultat',              ty:'sel', o:['','Satisfaisant','Non satisfaisant','Claquage']},
+    {k:'obs',   l:'Observations',          ty:'area', large:true}
+  ]},
+  {k:'fin', t:'Conclusion', ouvert:true, c:[
+    {k:'concl',    l:'Conclusion',             ty:'sel', large:true,
+       o:['','Installation conforme — remise en service','Conforme avec réserves',
+          'Non conforme — intervention à prévoir']},
+    {k:'reserves', l:'Réserves',               ty:'area', large:true},
+    {k:'travaux',  l:'Travaux à prévoir',      ty:'area', large:true},
+    {k:'obs',      l:'Observations générales', ty:'area', large:true},
+    {k:'redige',   l:'Rédigé par',             ty:'text'},
+    {k:'visa',     l:'Visa client (nom)',      ty:'text'}
+  ]}
+];
+
+let PV_COURANT = null;   // {id, maj, d:{section:{champ:valeur}}}
+
+function pvListeStockee(){ return LS.get('kitht-pv', []); }
+function pvEnregistrerListe(l){ LS.set('kitht-pv', l); }
+function pvVide(){ return {id:'pv-'+Date.now(), maj:new Date().toISOString(), d:{}}; }
+
+function pvIdChamp(s, c){ return 'pv_' + s + '_' + c; }
+
+// ---------- formulaire ----------
+function pvConstruireFormulaire(){
+  const z = document.getElementById('pvForm'); if(!z) return;
+  z.innerHTML = PV_SECTIONS.map(function(s){
+    const champs = s.c.map(function(c){
+      const id = pvIdChamp(s.k, c.k);
+      const cls = c.large ? ' class="pvlarge"' : '';
+      let ch;
+      if(c.ty === 'area'){
+        ch = '<textarea id="' + id + '" oninput="pvMarquer(\'' + s.k + '\')"></textarea>';
+      } else if(c.ty === 'sel'){
+        ch = '<select id="' + id + '" onchange="pvMarquer(\'' + s.k + '\')">' +
+             c.o.map(function(o){ return '<option value="' + echapper(o) + '">' +
+               (o ? echapper(o) : '—') + '</option>'; }).join('') + '</select>';
+      } else {
+        const t = c.ty === 'num' ? 'text' : c.ty;   // clavier décimal maîtrisé, virgule acceptée
+        const im = c.ty === 'num' ? ' inputmode="decimal"' : '';
+        ch = '<input type="' + t + '"' + im + ' id="' + id + '" autocomplete="off" ' +
+             'oninput="pvMarquer(\'' + s.k + '\')" onchange="pvMarquer(\'' + s.k + '\')">';
+      }
+      return '<div' + cls + '><label for="' + id + '">' + echapper(c.l) + '</label>' + ch + '</div>';
+    }).join('');
+    return '<details class="pvsec" id="pvsec-' + s.k + '"' + (s.ouvert ? ' open' : '') + '>' +
+      '<summary>' + echapper(s.t) +
+      '<span class="pvrempli" id="pvtag-' + s.k + '" style="display:none;">rempli</span></summary>' +
+      '<div class="pvbody">' +
+      (s.note ? '<div class="pvcalc" style="margin-bottom:10px;">' + s.note + '</div>' : '') +
+      '<div class="pvgrid">' + champs +
+      (s.calc ? '<div class="pvcalc" id="pvcalc-' + s.k + '" style="display:none;"></div>' : '') +
+      '</div></div></details>';
+  }).join('');
+}
+
+// ---------- lecture / écriture des champs ----------
+function pvNombre(v){
+  const n = parseFloat(String(v == null ? '' : v).replace(',', '.').replace(/\s/g, ''));
+  return isFinite(n) ? n : null;
+}
+function pvLireFormulaire(){
+  const d = {};
+  PV_SECTIONS.forEach(function(s){
+    const o = {};
+    s.c.forEach(function(c){
+      const e = document.getElementById(pvIdChamp(s.k, c.k));
+      if(e && String(e.value).trim() !== '') o[c.k] = String(e.value).trim();
+    });
+    if(Object.keys(o).length) d[s.k] = o;
+  });
+  return d;
+}
+function pvEcrireFormulaire(d){
+  PV_SECTIONS.forEach(function(s){
+    s.c.forEach(function(c){
+      const e = document.getElementById(pvIdChamp(s.k, c.k));
+      if(e) e.value = (d && d[s.k] && d[s.k][c.k] != null) ? d[s.k][c.k] : '';
+    });
+  });
+  PV_SECTIONS.forEach(function(s){ pvMarquer(s.k); });
+}
+
+// ---------- repères et calculs ----------
+function pvSectionRemplie(sk){
+  const s = PV_SECTIONS.filter(function(x){ return x.k === sk; })[0];
+  if(!s) return false;
+  return s.c.some(function(c){
+    const e = document.getElementById(pvIdChamp(sk, c.k));
+    return e && String(e.value).trim() !== '';
+  });
+}
+function pvMarquer(sk){
+  const t = document.getElementById('pvtag-' + sk);
+  if(t) t.style.display = pvSectionRemplie(sk) ? 'inline-block' : 'none';
+  pvCalculer(sk);
+}
+
+function pvDispersion(vals){
+  const v = vals.filter(function(x){ return x != null; });
+  if(v.length < 2) return null;
+  const mx = Math.max.apply(null, v), mn = Math.min.apply(null, v);
+  const moy = v.reduce(function(a, b){ return a + b; }, 0) / v.length;
+  if(!moy) return null;
+  return {ecart: (mx - mn) / moy * 100, moy: moy, min: mn, max: mx, n: v.length};
+}
+function pvPct(x){ return (Math.round(x * 100) / 100).toString().replace('.', ','); }
+
+function pvCalculer(sk){
+  const z = document.getElementById('pvcalc-' + sk);
+  if(!z) return;
+  const val = function(c){ const e = document.getElementById(pvIdChamp(sk, c)); return e ? pvNombre(e.value) : null; };
+  let html = '';
+
+  if(sk === 'rap'){
+    const th = val('th'), m = [val('m1'), val('m2'), val('m3')];
+    const disp = pvDispersion(m);
+    if(disp) html += 'Dispersion entre phases : <b>' + pvPct(disp.ecart) + ' %</b> ' +
+      '<span style="color:var(--muted);">(' + pvPct(disp.min) + ' à ' + pvPct(disp.max) + ')</span><br>';
+    if(th){
+      const e = m.filter(function(x){ return x != null; })
+                 .map(function(x){ return Math.abs(x - th) / th * 100; });
+      if(e.length) html += 'Écart maximal au rapport théorique : <b>' +
+        pvPct(Math.max.apply(null, e)) + ' %</b><br>';
+    }
+    if(html) html += '<span style="color:var(--muted);">Le critère d\'acceptation est celui du ' +
+      'PV d\'essai d\'origine du transformateur ou du constructeur — cet outil calcule l\'écart, ' +
+      'il ne le juge pas.</span>';
+  }
+
+  if(sk === 'enr'){
+    const ht = pvDispersion([val('ha'), val('hb'), val('hc')]);
+    const bt = pvDispersion([val('ba'), val('bb'), val('bc')]);
+    if(ht) html += 'Dispersion HT : <b>' + pvPct(ht.ecart) + ' %</b> ' +
+      '<span style="color:var(--muted);">(moyenne ' + pvPct(ht.moy) + ' Ω)</span><br>';
+    if(bt) html += 'Dispersion BT : <b>' + pvPct(bt.ecart) + ' %</b> ' +
+      '<span style="color:var(--muted);">(moyenne ' + pvPct(bt.moy) + ' mΩ)</span><br>';
+    if(html) html += '<span style="color:var(--muted);">À comparer au PV d\'origine, à température ' +
+      'équivalente — la résistance du cuivre varie fortement avec la température.</span>';
+  }
+
+  if(sk === 'fus'){
+    const d = pvDispersion([val('r1'), val('r2'), val('r3')]);
+    const rr = val('rref');
+    if(d) html += 'Dispersion entre les trois phases : <b>' + pvPct(d.ecart) + ' %</b> ' +
+      '<span style="color:var(--muted);">(moyenne ' + pvPct(d.moy) + ' mΩ)</span><br>';
+    if(d && rr) html += 'Écart de la moyenne à la référence : <b>' +
+      pvPct(Math.abs(d.moy - rr) / rr * 100) + ' %</b><br>';
+    if(html) html += '<span style="color:var(--muted);">La résistance de référence se trouve dans ' +
+      'l\'onglet 04 · Résistances fusibles. Cet outil calcule l\'écart, le jugement reste au ' +
+      'document constructeur.</span>';
+  }
+
+  z.innerHTML = html;
+  z.style.display = html ? 'block' : 'none';
+}
+
+// ---------- enregistrement ----------
+function pvMessage(txt, coul){
+  const m = document.getElementById('pvMsg');
+  if(m) m.innerHTML = txt ? '<span style="color:' + (coul || 'var(--green)') + ';">' + txt + '</span>' : '';
+  if(txt) setTimeout(function(){ const e = document.getElementById('pvMsg'); if(e) e.innerHTML = ''; }, 4000);
+}
+
+function pvNouveau(){
+  PV_COURANT = pvVide();
+  pvEcrireFormulaire({});
+  const d = document.getElementById(pvIdChamp('aff', 'date'));
+  if(d) d.value = new Date().toISOString().slice(0, 10);
+  const i = document.getElementById(pvIdChamp('aff', 'inter'));
+  if(i && session && session.profil && session.profil.nom) i.value = session.profil.nom;
+  const r = document.getElementById(pvIdChamp('fin', 'redige'));
+  if(r && session && session.profil && session.profil.nom) r.value = session.profil.nom;
+  pvAfficherListe();
+  pvMessage('Nouveau PV — les rubriques vides ne seront pas imprimées.', 'var(--muted)');
+  window.scrollTo(0, 0);
+}
+
+function pvEnregistrer(){
+  if(!PV_COURANT) PV_COURANT = pvVide();
+  const d = pvLireFormulaire();
+  if(!Object.keys(d).length){ pvMessage('Rien à enregistrer.', 'var(--amber)'); return; }
+  PV_COURANT.d = d;
+  PV_COURANT.maj = new Date().toISOString();
+  const l = pvListeStockee();
+  const i = l.findIndex(function(x){ return x.id === PV_COURANT.id; });
+  if(i >= 0) l[i] = PV_COURANT; else l.unshift(PV_COURANT);
+  pvEnregistrerListe(l);
+  pvAfficherListe();
+  pvMessage('PV enregistré sur cet appareil.');
+}
+
+function pvOuvrir(id){
+  const p = pvListeStockee().filter(function(x){ return x.id === id; })[0];
+  if(!p) return;
+  PV_COURANT = JSON.parse(JSON.stringify(p));
+  pvEcrireFormulaire(PV_COURANT.d);
+  pvAfficherListe();
+  window.scrollTo(0, 0);
+  pvMessage('PV ouvert.', 'var(--muted)');
+}
+
+function pvDupliquer(){
+  const d = pvLireFormulaire();
+  PV_COURANT = pvVide();
+  PV_COURANT.d = d;
+  // on repart sur un autre poste : on vide ce qui est propre à l'intervention
+  if(PV_COURANT.d.aff){
+    delete PV_COURANT.d.aff.poste;
+    delete PV_COURANT.d.aff.lieu;
+    delete PV_COURANT.d.aff.affaire;
+  }
+  pvEcrireFormulaire(PV_COURANT.d);
+  pvMessage('Copie créée — renseigne le nouveau poste, puis Enregistrer.', 'var(--muted)');
+  window.scrollTo(0, 0);
+}
+
+function pvSupprimer(id){
+  const l = pvListeStockee().filter(function(x){ return x.id !== id; });
+  pvEnregistrerListe(l);
+  if(PV_COURANT && PV_COURANT.id === id) PV_COURANT = null;
+  pvAfficherListe();
+  pvMessage('PV supprimé.', 'var(--amber)');
+}
+
+function pvTitre(p){
+  const a = (p.d && p.d.aff) || {};
+  return (a.poste || a.client || 'PV sans nom');
+}
+function pvDateFr(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d)) return iso;
+  return String(d.getDate()).padStart(2, '0') + '/' +
+         String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+}
+
+function pvAfficherListe(){
+  const z = document.getElementById('pvListe'); if(!z) return;
+  const l = pvListeStockee();
+  if(!l.length){
+    z.innerHTML = '<div class="note" style="border-left-color:var(--muted);">Aucun PV enregistré. ' +
+      'Remplis le formulaire ci-dessus puis <b>Enregistrer</b>.</div>';
+    return;
+  }
+  z.innerHTML = l.map(function(p){
+    const a = (p.d && p.d.aff) || {};
+    const encours = PV_COURANT && PV_COURANT.id === p.id;
+    return '<div class="pvfiche"' + (encours ? ' style="border-left-color:var(--amber);"' : '') + '>' +
+      '<span class="pvinfo"><span class="pvn">' + echapper(pvTitre(p)) +
+        (encours ? ' <span style="color:var(--amber); font-size:11px;">· ouvert</span>' : '') + '</span>' +
+      '<span class="pvd">' + echapper([a.client, a.nature].filter(Boolean).join(' · ') || '—') +
+        ' · ' + (a.date ? pvDateFr(a.date) : 'sans date') +
+        ' · modifié le ' + pvDateFr(p.maj) + '</span></span>' +
+      '<span style="display:flex; gap:6px; flex-shrink:0;">' +
+      '<button class="ghost" style="padding:7px 11px; font-size:12px;" onclick="pvOuvrir(\'' + p.id + '\')">Ouvrir</button>' +
+      '<button class="ghost danger" style="padding:7px 10px; font-size:12px;" onclick="pvSupprimer(\'' + p.id + '\')">×</button>' +
+      '</span></div>';
+  }).join('');
+}
+
+// ---------- impression ----------
+function pvImprimer(){
+  const d = pvLireFormulaire();
+  if(!Object.keys(d).length){ pvMessage('Le PV est vide — rien à imprimer.', 'var(--amber)'); return; }
+  const a = d.aff || {}, f = d.fin || {};
+  let g = '<h1>Procès-verbal d\'intervention</h1><div class="pvsous">' +
+    [a.poste && ('Poste : ' + a.poste), a.client && ('Client : ' + a.client),
+     a.lieu, a.date && pvDateFr(a.date)].filter(Boolean).map(echapper).join(' &nbsp;·&nbsp; ') +
+    '</div>';
+
+  PV_SECTIONS.forEach(function(s){
+    const o = d[s.k];
+    if(!o || !Object.keys(o).length) return;
+    const lignes = s.c.filter(function(c){ return o[c.k] != null && o[c.k] !== ''; })
+      .map(function(c){
+        const v = (c.ty === 'date') ? pvDateFr(o[c.k]) : o[c.k];
+        return '<tr><td class="pvk">' + echapper(c.l) + '</td><td class="pvv">' +
+               echapper(v).replace(/\n/g, '<br>') + '</td></tr>';
+      }).join('');
+    if(!lignes) return;
+    g += '<h2>' + echapper(s.t) + '</h2><table>' + lignes + '</table>';
+    const cz = document.getElementById('pvcalc-' + s.k);
+    if(cz && cz.style.display !== 'none' && cz.textContent.trim()){
+      // texteBrut rend leurs espaces aux phrases séparées par des <br>
+      g += '<div class="pvnote">' + echapper(texteBrut(cz.innerHTML)) + '</div>';
+    }
+  });
+
+  g += '<div class="pvsign"><div>Le technicien' +
+    (f.redige ? ' — ' + echapper(f.redige) : '') + '<br><br><br></div>' +
+    '<div>Le client' + (f.visa ? ' — ' + echapper(f.visa) : '') + '<br><br><br></div></div>';
+  g += '<div class="pvpied">Document établi avec KIT HT — © 2026 Marc GELÉ · ' +
+    'dépôt e-Soleau INPI n° DSO2026029194. Les valeurs portées sur ce PV sont celles relevées ' +
+    'sur site par le technicien signataire. Édité le ' + pvDateFr(new Date().toISOString()) + '.</div>';
+
+  const z = document.getElementById('pvImpression');
+  z.innerHTML = g;
+  setTimeout(function(){ window.print(); }, 60);
+}
+
+function pvInit(){
+  if(document.getElementById('pvForm') && !document.getElementById('pvsec-aff')){
+    pvConstruireFormulaire();
+    const l = pvListeStockee();
+    if(l.length){ PV_COURANT = JSON.parse(JSON.stringify(l[0])); pvEcrireFormulaire(PV_COURANT.d); }
+    else pvNouveau();
+  }
+  pvAfficherListe();
+}
+
+
+// =====================================================================
+// STATISTIQUES D'USAGE PAR ONGLET
+// =====================================================================
+let statsOnglets = null;
+
+async function remonterUsage(){
+  if(!SB_ACTIF() || !session) return;
+  const u = LS.get('kitht-usage', {});
+  if(!Object.keys(u).length) return;
+  try{
+    await sbFetch('/rest/v1/rpc/remonter_usage', {method:'POST', body: JSON.stringify({d: u})});
+  }catch(e){}
+}
+
+function afficherStatsOnglets(){
+  const z = document.getElementById('adminOnglets'); if(!z) return;
+  if(!statsOnglets || !statsOnglets.length){ z.style.display = 'none'; return; }
+  const total = statsOnglets.reduce(function(a, b){ return a + Number(b.ouvertures || 0); }, 0) || 1;
+  const max = Math.max.apply(null, statsOnglets.map(function(x){ return Number(x.ouvertures || 0); })) || 1;
+  z.style.display = 'block';
+  z.innerHTML = '<div class="note" style="border-left-color:var(--amber); background:rgba(255,138,30,0.05);">' +
+    '<b>Ce qui sert vraiment</b><br>' +
+    '<span style="font-size:11.5px;">' + total + ' ouverture' + (total > 1 ? 's' : '') +
+    ' d\'onglet remontées, tous comptes confondus.</span>' +
+    statsOnglets.map(function(x){
+      const n = Number(x.ouvertures || 0);
+      const l = Math.max(2, Math.round(n / max * 100));
+      return '<div style="padding:7px 0; border-top:1px solid var(--line);">' +
+        '<div style="display:flex; justify-content:space-between; gap:10px; font-size:12.5px;">' +
+        '<span style="color:var(--text);">' + echapper(TITRES[x.onglet] || x.onglet) + '</span>' +
+        '<span style="font-family:var(--mono); color:var(--muted); flex-shrink:0;">' + n +
+        ' · ' + x.utilisateurs + ' pers.</span></div>' +
+        '<div style="height:5px; background:var(--panel-2); border-radius:3px; margin-top:4px; overflow:hidden;">' +
+        '<div style="height:100%; width:' + l + '%; background:var(--amber);"></div></div></div>';
+    }).join('') + '</div>';
 }
 
 // ---------- SCHÉMAS DE CÂBLAGE D'ESSAI ----------
