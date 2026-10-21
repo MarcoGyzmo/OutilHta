@@ -342,17 +342,12 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 .favchip:hover{border-color:var(--amber); color:var(--amber);}
 
 /* ---------- PV d'intervention ---------- */
-.pvsec{border:1px solid var(--line); border-radius:7px; margin-bottom:10px; background:var(--panel);}
-.pvsec > summary{cursor:pointer; padding:12px 14px; font-family:var(--disp); font-size:14px;
-  font-weight:700; color:var(--text); list-style:none; display:flex; align-items:center;
-  justify-content:space-between; gap:10px;}
-.pvsec > summary::-webkit-details-marker{display:none;}
-.pvsec > summary::after{content:'+'; color:var(--muted); font-family:var(--mono); font-size:18px;}
-.pvsec[open] > summary::after{content:'–';}
-.pvsec[open] > summary{border-bottom:1px solid var(--line); color:var(--amber);}
-.pvsec .pvbody{padding:14px;}
-.pvsec .pvrempli{font-family:var(--mono); font-size:10px; color:var(--green);
-  border:1px solid var(--green); border-radius:10px; padding:2px 8px; font-weight:400;}
+.pvadd{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px;}
+.pvadd button{background:var(--panel-2); border:1px solid var(--line); border-radius:6px;
+  padding:9px 13px; font-size:12.5px; font-family:var(--body); color:var(--text); cursor:pointer;}
+.pvadd button:hover{border-color:var(--amber); color:var(--amber);}
+.pvadd button span{font-family:var(--mono); color:var(--amber); margin-right:5px;}
+
 .pvgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
 .pvgrid .pvlarge{grid-column:1 / -1;}
 .pvgrid label{display:block; font-size:11px; color:var(--muted); margin-bottom:4px;
@@ -360,11 +355,54 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 .pvgrid input, .pvgrid select, .pvgrid textarea{width:100%; padding:10px; font-size:16px;
   background:var(--bg); border:1px solid var(--line); border-radius:5px; color:var(--text);
   font-family:var(--body);}
-.pvgrid textarea{min-height:68px; resize:vertical;}
+.pvgrid textarea{min-height:66px; resize:vertical;}
 .pvgrid input:focus, .pvgrid select:focus, .pvgrid textarea:focus{outline:none; border-color:var(--amber);}
-.pvcalc{grid-column:1 / -1; border-left:3px solid var(--amber-dim); background:rgba(255,138,30,0.05);
-  border-radius:5px; padding:10px 12px; font-size:12px; color:var(--muted); line-height:1.6;}
-.pvcalc b{color:var(--amber);}
+
+.pveq{border:1px solid var(--line); border-radius:7px; margin-bottom:9px; background:var(--panel);}
+.pveq.ouvert{border-color:var(--amber-dim);}
+.pveqtete{display:flex; align-items:center; gap:11px; padding:12px 14px; cursor:pointer;}
+.pveq.ouvert .pveqtete{border-bottom:1px solid var(--line);}
+.pveqic{font-size:17px; color:var(--amber); flex-shrink:0;}
+.pveqn{flex:1; min-width:0;}
+.pveqn b{display:block; font-size:13.5px; color:var(--text);}
+.pveqn span{display:block; font-size:11px; color:var(--muted); margin-top:2px;}
+.pveqch{font-family:var(--mono); font-size:18px; color:var(--muted); flex-shrink:0;}
+.pveqbody{padding:14px;}
+
+.pvsstitre{font-family:var(--disp); font-size:12.5px; font-weight:700; color:var(--amber);
+  text-transform:uppercase; letter-spacing:.05em; margin:18px 0 9px;
+  border-bottom:1px solid var(--line); padding-bottom:5px;}
+.pveqbody .pvsstitre:first-of-type{margin-top:4px;}
+
+.pvphoto{display:flex; align-items:center; gap:12px; margin:12px 0; flex-wrap:wrap;}
+.pvphoto img{width:120px; height:92px; object-fit:cover; border-radius:5px; border:1px solid var(--line);}
+.pvnophoto{width:120px; height:92px; border:1px dashed var(--line); border-radius:5px;
+  display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--muted);}
+
+.pvops{border:1px solid var(--line); border-radius:6px; overflow:hidden;}
+.pvopg{background:var(--panel-2); padding:9px 12px; font-size:12px; font-weight:700;
+  color:var(--text); border-bottom:1px solid var(--line);}
+.pvop{display:flex; align-items:center; gap:10px; padding:8px 12px; border-bottom:1px solid var(--line);}
+.pvop:last-child{border-bottom:none;}
+.pvop span{flex:1; font-size:12px; color:var(--text); line-height:1.4;}
+.pvop select{flex-shrink:0; width:118px; padding:7px; font-size:13px; background:var(--bg);
+  border:1px solid var(--line); border-radius:5px; color:var(--text);}
+
+.pvobjet{border-left:3px solid var(--line); background:var(--panel-2); padding:10px 12px;
+  border-radius:0 5px 5px 0; font-size:11.5px; color:var(--muted); line-height:1.6; margin-bottom:12px;}
+.pvtblwrap{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+.pvtbl{width:100%; border-collapse:collapse; white-space:nowrap;}
+.pvtbl th{font-family:var(--mono); font-size:10px; color:var(--muted); text-transform:uppercase;
+  letter-spacing:.04em; text-align:left; padding:7px 6px; border-bottom:1px solid var(--line); font-weight:500;}
+.pvtbl td{padding:5px 6px; border-bottom:1px solid var(--line); font-size:12px;}
+.pvtbl td.pvl{color:var(--text); white-space:normal; min-width:92px;}
+.pvtbl td.pvc{font-family:var(--mono); font-size:12px;}
+.pvtbl input, .pvtbl select{width:112px; padding:7px; font-size:15px; background:var(--bg);
+  border:1px solid var(--line); border-radius:4px; color:var(--text); font-family:var(--body);}
+.pvcalc{border-left:3px solid var(--amber-dim); background:rgba(255,138,30,0.05);
+  border-radius:5px; padding:10px 12px; font-size:11.5px; color:var(--muted); line-height:1.6;}
+.pvano{border:1px solid var(--line); border-radius:6px; padding:11px; margin-bottom:9px;}
+
 .pvfiche{display:flex; align-items:center; justify-content:space-between; gap:10px;
   background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--amber-dim);
   border-radius:6px; padding:11px 13px; margin-bottom:7px;}
@@ -373,26 +411,117 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 .pvfiche .pvd{display:block; font-size:11px; color:var(--muted); margin-top:2px;}
 #pvImpression{display:none;}
 
+@media(max-width:560px){
+  .pvgrid{grid-template-columns:1fr;}
+  .pvop{flex-direction:column; align-items:stretch; gap:6px;}
+  .pvop select{width:100%;}
+}
+
 @media print{
-  @page{margin:12mm;}
-  body{background:#fff !important; color:#000 !important;}
+  @page{margin:14mm 13mm;}
+  html, body{background:#fff !important; color:#111 !important;
+    margin:0 !important; padding:0 !important;}
+  /* la marge de la coquille ajouterait une page blanche en fin de document */
+  .wrap{margin:0 !important; padding:0 !important; max-width:none !important;}
   .wrap > *{display:none !important;}
   .wrap > #pvImpression{display:block !important;}
-  #pvImpression{color:#000; font-family:Georgia, 'Times New Roman', serif; font-size:10.5pt; line-height:1.45;}
-  #pvImpression h1{font-size:16pt; margin:0 0 2mm; letter-spacing:.02em;}
-  #pvImpression .pvsous{font-size:9pt; color:#444; margin-bottom:5mm;
-    border-bottom:1.5pt solid #000; padding-bottom:2mm;}
-  #pvImpression h2{font-size:11pt; margin:6mm 0 2mm; padding-bottom:1mm;
-    border-bottom:.5pt solid #999; page-break-after:avoid;}
-  #pvImpression table{width:100%; border-collapse:collapse; page-break-inside:avoid;}
-  #pvImpression td{border-bottom:.4pt solid #ccc; padding:1.6mm 2mm; vertical-align:top;
-    font-size:10pt; font-family:Georgia, serif; white-space:normal;}
-  #pvImpression td.pvk{width:42%; color:#333;}
-  #pvImpression td.pvv{font-weight:600;}
-  #pvImpression .pvnote{font-size:9pt; color:#333; font-style:italic; margin-top:1.5mm;}
-  #pvImpression .pvsign{margin-top:10mm; display:flex; gap:10mm; page-break-inside:avoid;}
-  #pvImpression .pvsign div{flex:1; border-top:.5pt solid #000; padding-top:1.5mm; font-size:9pt;}
-  #pvImpression .pvpied{margin-top:8mm; font-size:7.5pt; color:#666; border-top:.4pt solid #ccc; padding-top:2mm;}
+  #pvImpression{color:#111; font-size:9.5pt; line-height:1.45;
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;}
+  #pvImpression *{box-sizing:border-box;}
+  #pvImpression th, #pvImpression td{font-family:inherit; white-space:normal;
+    text-transform:none; letter-spacing:normal; color:inherit; background:none;}
+  #pvImpression table{width:100%; border-collapse:collapse;}
+  #pvImpression tr{page-break-inside:avoid;}
+
+  /* saut AVANT chaque feuille sauf la première : un saut après la dernière
+     ajouterait une page blanche en fin de document */
+  #pvImpression .dpage{page-break-before:always; display:flex; flex-direction:column;
+    min-height:262mm;}
+  #pvImpression .dpage:first-child{page-break-before:auto;}
+
+  /* en-tête : filet épais, logo à gauche, désignation à droite */
+  #pvImpression .dtete{display:flex; align-items:flex-end; justify-content:space-between;
+    gap:10mm; border-bottom:1.6pt solid #111; padding-bottom:3mm; margin-bottom:6mm;}
+  #pvImpression .dident{flex-shrink:0;}
+  #pvImpression .dlogo{max-width:48mm; max-height:17mm; object-fit:contain; display:block;}
+  #pvImpression .dnom{font-size:13pt; font-weight:700; letter-spacing:-.01em;}
+  #pvImpression .ddroite{text-align:right; flex:1; min-width:0;}
+  #pvImpression .dtitre{font-size:15pt; font-weight:700; line-height:1.15; letter-spacing:-.01em;}
+  #pvImpression .dtitre2{font-size:14pt; font-weight:700; line-height:1.15;}
+  #pvImpression .dnum{font-size:8pt; letter-spacing:.16em; color:#777; text-transform:uppercase;}
+  #pvImpression .dty2{font-size:8.5pt; color:#777; margin-top:.6mm;}
+
+  /* intitulé de section : petites capitales sur filet fin */
+  #pvImpression .dlabel{font-size:7.5pt; font-weight:700; letter-spacing:.17em;
+    text-transform:uppercase; color:#777;}
+  #pvImpression .dlabel-h{border-bottom:.5pt solid #bbb; padding-bottom:1.2mm;
+    margin:5.5mm 0 2.5mm;}
+
+  #pvImpression .dmeta{display:flex; flex-wrap:wrap; gap:0; margin-bottom:6mm;}
+  #pvImpression .dmeta > div{flex:1 1 42%; border-bottom:.4pt solid #ddd; padding:2mm 0;
+    font-size:10pt; font-weight:600;}
+  #pvImpression .dmeta span{display:block; font-size:7.5pt; font-weight:700; color:#888;
+    letter-spacing:.14em; text-transform:uppercase; margin-bottom:.8mm;}
+  #pvImpression .dcols{display:flex; gap:12mm; margin-top:4mm;}
+  #pvImpression .dcols > div{flex:1; font-size:9.5pt;}
+  #pvImpression .dcols .dlabel{display:block; margin-bottom:1.5mm;}
+
+  #pvImpression .dsom td{border-bottom:.4pt solid #ddd; padding:2.2mm 1mm; vertical-align:baseline;}
+  #pvImpression .dsom .dn{width:9mm; font-size:8.5pt; color:#999; font-weight:700;}
+  #pvImpression .dsom .dty{display:block; font-size:8pt; color:#888;}
+  #pvImpression .dsom .dr{text-align:right; width:38mm; font-size:8.5pt;}
+
+  #pvImpression .dident2{display:flex; gap:5mm; align-items:flex-start;}
+  #pvImpression .dphoto{width:34mm; height:27mm; object-fit:cover; flex-shrink:0;
+    border:.4pt solid #ccc;}
+  #pvImpression .dfiche{flex:1;}
+  #pvImpression .dfiche th{text-align:left; font-size:7.5pt; font-weight:700; color:#888;
+    letter-spacing:.08em; text-transform:uppercase; padding:1.6mm 2mm 1.6mm 0;
+    border-bottom:.4pt solid #eee; width:17%; vertical-align:top;}
+  #pvImpression .dfiche td{font-size:9.5pt; padding:1.6mm 5mm 1.6mm 0;
+    border-bottom:.4pt solid #eee; width:33%; vertical-align:top;}
+
+  #pvImpression .dops td{padding:1.2mm 2mm 1.2mm 0; border-bottom:.4pt solid #eee; font-size:9pt;}
+  #pvImpression .dops td:last-child{text-align:right; width:26mm; font-size:8.5pt;
+    color:#555; white-space:nowrap;}
+  #pvImpression .dops .dgrp{font-size:7.5pt; font-weight:700; letter-spacing:.14em;
+    text-transform:uppercase; color:#555; padding-top:3.5mm; border-bottom:none;
+    text-align:left !important;}
+
+  #pvImpression .dessai{page-break-inside:avoid; page-break-after:avoid;}
+  #pvImpression .dobjet{font-size:8pt; color:#555; line-height:1.5; margin:0 0 2mm;}
+  #pvImpression .dparam{font-size:8.5pt; color:#333; margin:0 0 2.5mm;}
+  #pvImpression .dparam b{font-weight:700; color:#777; font-size:7.5pt;
+    letter-spacing:.08em; text-transform:uppercase;}
+
+  #pvImpression .dmes{page-break-inside:avoid;}
+  #pvImpression .dmes th{text-align:left; font-size:7.5pt; font-weight:700; color:#777;
+    letter-spacing:.1em; text-transform:uppercase; padding:1.5mm 2mm 1.5mm 0;
+    border-bottom:.9pt solid #111;}
+  #pvImpression .dmes td{font-size:9.5pt; padding:1.8mm 2mm 1.8mm 0; border-bottom:.4pt solid #eee;}
+  #pvImpression .dmes td.dm{font-weight:600;}
+  #pvImpression .dmes th:last-child, #pvImpression .dmes td:last-child{text-align:right;}
+
+  #pvImpression .dobs{font-size:9.5pt; margin:0; white-space:pre-line;}
+  #pvImpression .dano td{padding:2mm 2mm 2mm 0; border-bottom:.4pt solid #eee;
+    font-size:9.5pt; vertical-align:top;}
+  #pvImpression .dano .dpr{width:22mm; font-size:7.5pt; font-weight:700; letter-spacing:.1em;}
+  #pvImpression .dano .dd{width:24mm; font-size:8.5pt; color:#777;}
+  #pvImpression .dr{text-align:right;}
+
+  #pvImpression .dok{color:#15803d; font-weight:600;}
+  #pvImpression .dko{color:#b3261e; font-weight:600;}
+  #pvImpression .dwarn{color:#b45309; font-weight:600;}
+  #pvImpression .dso{color:#999;}
+
+  #pvImpression .dsign{display:flex; justify-content:space-between; gap:8mm;
+    margin-top:auto; padding-top:4mm; border-top:.5pt solid #bbb;
+    font-size:8.5pt; color:#555;}
+  #pvImpression .dsign b{color:#111;}
+  #pvImpression .dpied{font-size:7pt; color:#888; line-height:1.4;
+    padding-top:2mm; margin-top:3mm; border-top:.4pt solid #e5e5e5;}
+  #pvImpression .dpage > .dpied:first-child + *{margin-top:0;}
+  #pvImpression .dsign + .dpied{margin-top:2mm; border-top:none;}
 }
 
 </style>
@@ -1645,30 +1774,62 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   <div class="panel" id="p-pv">
     <div class="card">
       <h2><span class="idx">19</span> PV d'intervention</h2>
-      <p class="desc">Les relevés de la journée, enregistrés sur l'appareil, et le PV à imprimer ou à enregistrer en PDF. Seules les rubriques renseignées apparaissent sur le document.</p>
+      <p class="desc">Un rapport par intervention, une fiche par équipement contrôlé. Les écarts et les verdicts de conformité se calculent tout seuls ; seules les rubriques renseignées sont imprimées.</p>
       <div class="toolbar">
-        <button class="action" onclick="pvNouveau()">Nouveau PV</button>
-        <button class="ghost" onclick="pvEnregistrer()">Enregistrer</button>
-        <button class="ghost" onclick="pvImprimer()">Aperçu · PDF</button>
-      </div>
-      <div id="pvMsg" style="font-size:12px; margin-bottom:10px;"></div>
-      <div id="pvForm"></div>
-      <div class="toolbar" style="margin-top:14px;">
-        <button class="action" onclick="pvEnregistrer()">Enregistrer</button>
+        <button class="action" onclick="pvNouveau()">Nouveau rapport</button>
         <button class="ghost" onclick="pvImprimer()">Aperçu · PDF</button>
         <button class="ghost" onclick="pvDupliquer()">Dupliquer</button>
       </div>
-      <div class="note" style="border-left-color:var(--muted); font-size:12px;">
-        <b>Imprimer ou enregistrer en PDF.</b> Le bouton <b>Aperçu · PDF</b> ouvre la fenêtre
-        d'impression du téléphone ou de l'ordinateur. Sur iPhone, choisir une imprimante n'est
-        pas nécessaire : <b>Partager → Enregistrer dans Fichiers</b>, ou pincer l'aperçu pour
-        l'agrandir puis le partager. Sur Android, choisir <b>Enregistrer au format PDF</b>.
+      <div id="pvMsg" style="font-size:12px; min-height:16px;"></div>
+    </div>
+
+    <div id="pvBloc" style="display:none;">
+      <div class="card">
+        <h2 style="font-size:14px;">En-tête du rapport</h2>
+        <p class="desc">Ce qui figure sur la page de garde.</p>
+        <div id="pvAffaire"></div>
+      </div>
+
+      <div class="card">
+        <details>
+          <summary style="cursor:pointer; font-family:var(--disp); font-size:14px; font-weight:700; color:var(--text); list-style:none;">
+            Mon en-tête &nbsp;<span style="font-size:11.5px; color:var(--muted); font-weight:400;">— logo et pied de page, à régler une fois</span>
+          </summary>
+          <p class="desc" style="margin-top:12px;">Ce qui apparaît en haut et en bas de chaque feuille. Reste sur cet appareil, et sert à tous vos rapports.</p>
+          <div id="pvSoc"></div>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size:14px;">Équipements</h2>
+        <p class="desc">Un équipement par appareil contrôlé, dans l'ordre où ils apparaîtront sur le rapport. Chaque fiche porte sa plaque, sa liste d'opérations, ses essais et ses anomalies.</p>
+        <div class="pvadd">
+          <button onclick="pvAjouterEq('poste')"><span>▦</span>Poste</button>
+          <button onclick="pvAjouterEq('cellule')"><span>▤</span>Cellule HTA</button>
+          <button onclick="pvAjouterEq('fusibles')"><span>▮</span>Fusibles</button>
+          <button onclick="pvAjouterEq('transfo')"><span>◎</span>Transformateur</button>
+          <button onclick="pvAjouterEq('disjoncteur')"><span>▣</span>Disjoncteur</button>
+          <button onclick="pvAjouterEq('autre')"><span>▪</span>Autre</button>
+        </div>
+        <div id="pvSommaire" style="display:none; margin-bottom:14px;"></div>
+        <div id="pvEquipements"></div>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size:14px;">Éditer le rapport</h2>
+        <div class="toolbar" style="margin-top:4px;">
+          <button class="action" onclick="pvImprimer()">Aperçu · PDF</button>
+          <button class="ghost" onclick="pvDupliquer()">Dupliquer pour un autre site</button>
+        </div>
+        <div class="note" style="border-left-color:var(--muted); font-size:12px;">
+          <b>Enregistrement automatique.</b> Chaque saisie est enregistrée sur l'appareil au fur et à mesure, il n'y a pas de bouton à presser. <b>Aperçu · PDF</b> ouvre la fenêtre d'impression : sur iPhone, <i>Partager → Enregistrer dans Fichiers</i> ; sur Android, <i>Enregistrer au format PDF</i>.
+        </div>
       </div>
     </div>
 
     <div class="card">
-      <h2 style="font-size:14px;">PV enregistrés</h2>
-      <p class="desc">Conservés sur cet appareil uniquement. Pensez à exporter le PDF après chaque intervention.</p>
+      <h2 style="font-size:14px;">Rapports enregistrés</h2>
+      <p class="desc">Conservés sur cet appareil uniquement. Le PDF est la sauvegarde — sors-le après chaque intervention.</p>
       <div id="pvListe"></div>
     </div>
     <div class="pubslot" data-pub="pv"></div>
@@ -3436,7 +3597,7 @@ loadBdd();
 // =====================================================================
 // RECHERCHE GLOBALE · RACCOURCIS · GARDE-FOU DE VERSION
 // =====================================================================
-const VERSION_PAGE = 'v37';
+const VERSION_PAGE = 'v44';
 let META_CONTENU = null;
 
 // Sélecteur de sujet -> bloc de données -> conteneur du résultat.
@@ -3792,443 +3953,1136 @@ function avertirContenuManquant(onglet){
 }
 
 // =====================================================================
-// PV D'INTERVENTION
-// Un seul schéma décrit le formulaire, l'enregistrement et l'impression.
+// PV D'INTERVENTION — un rapport, une fiche par équipement contrôlé
 // =====================================================================
-const PV_SECTIONS = [
-  {k:'aff', t:'Intervention', ouvert:true, c:[
-    {k:'client',  l:'Client',               ty:'text', large:true},
-    {k:'poste',   l:'Nom du poste',         ty:'text'},
-    {k:'lieu',    l:'Commune',              ty:'text'},
-    {k:'affaire', l:"N° d'affaire / OT",    ty:'text'},
-    {k:'date',    l:"Date",                 ty:'date'},
-    {k:'nature',  l:'Nature',               ty:'sel', large:true,
-       o:['','Maintenance préventive','Maintenance curative','Mise en service',
-          'Vérification périodique','Dépannage','Expertise','Autre']},
-    {k:'inter',   l:'Intervenants',         ty:'text', large:true},
-    {k:'arrivee', l:'Arrivée sur site',     ty:'time'},
-    {k:'depart',  l:'Départ du site',       ty:'time'}
-  ]},
-  {k:'cons', t:'Consignation', c:[
-    {k:'charge',  l:'Chargé de consignation',  ty:'text', large:true},
-    {k:'numatt',  l:"N° d'attestation",        ty:'text'},
-    {k:'etapes',  l:'Procédure',               ty:'sel',
-       o:['','Consignation en une étape','Consignation en deux étapes','Sans consignation']},
-    {k:'hcons',   l:'Heure de consignation',   ty:'time'},
-    {k:'hdecons', l:'Heure de déconsignation', ty:'time'},
-    {k:'malt',    l:'MALT-CC posée',           ty:'sel', o:['','Oui','Non','Sans objet']},
-    {k:'obs',     l:'Observations',            ty:'area', large:true}
-  ]},
-  {k:'mat', t:'Appareils de mesure',
-   note:"Désignation, n° de série et date d'étalonnage : c'est ce qui donne sa valeur au PV.", c:[
-    {k:'a1', l:'Appareil 1',  ty:'text', large:true},
-    {k:'s1', l:'N° de série', ty:'text'}, {k:'e1', l:'Étalonné le', ty:'date'},
-    {k:'a2', l:'Appareil 2',  ty:'text', large:true},
-    {k:'s2', l:'N° de série', ty:'text'}, {k:'e2', l:'Étalonné le', ty:'date'},
-    {k:'a3', l:'Appareil 3',  ty:'text', large:true},
-    {k:'s3', l:'N° de série', ty:'text'}, {k:'e3', l:'Étalonné le', ty:'date'}
-  ]},
-  {k:'tr', t:'Transformateur — plaque', c:[
-    {k:'marque', l:'Marque',                ty:'text'},
-    {k:'serie',  l:'N° de série',           ty:'text'},
-    {k:'annee',  l:'Année',                 ty:'text'},
-    {k:'puis',   l:'Puissance (kVA)',       ty:'num'},
-    {k:'u1',     l:'Tension primaire (V)',  ty:'num'},
-    {k:'u2',     l:'Tension secondaire (V)',ty:'num'},
-    {k:'coupl',  l:'Couplage',              ty:'text'},
-    {k:'ucc',    l:'Ucc (%)',               ty:'num'},
-    {k:'type',   l:'Type',                  ty:'sel', large:true,
-       o:['','Immergé huile minérale','Immergé huile végétale','Sec enrobé','Autre']}
-  ]},
-  {k:'rap', t:'Rapport de transformation', calc:'rapport', c:[
-    {k:'th',    l:'Rapport théorique',  ty:'num'},
-    {k:'prise', l:'Prise / plot',       ty:'text'},
-    {k:'m1',    l:'Mesure 1 — A',       ty:'num'},
-    {k:'m2',    l:'Mesure 2 — B',       ty:'num'},
-    {k:'m3',    l:'Mesure 3 — C',       ty:'num'},
-    {k:'app',   l:'Appareil utilisé',   ty:'text'}
-  ]},
-  {k:'iso', t:"Mesures d'isolement", c:[
-    {k:'tens', l:"Tension d'essai (V)", ty:'num'},
-    {k:'temp', l:'Température (°C)',    ty:'num'},
-    {k:'htbt', l:'HT / BT (MΩ)',        ty:'num'},
-    {k:'htm',  l:'HT / masse (MΩ)',     ty:'num'},
-    {k:'btm',  l:'BT / masse (MΩ)',     ty:'num'},
-    {k:'dar',  l:'DAR — R60/R15',       ty:'num'},
-    {k:'ip',   l:'IP — R600/R60',       ty:'num'},
-    {k:'obs',  l:'Observations',        ty:'area', large:true}
-  ]},
-  {k:'enr', t:'Résistance des enroulements', calc:'enroul', c:[
-    {k:'ha', l:'HT A (Ω)',  ty:'num'}, {k:'hb', l:'HT B (Ω)',  ty:'num'}, {k:'hc', l:'HT C (Ω)', ty:'num'},
-    {k:'ba', l:'BT a (mΩ)', ty:'num'}, {k:'bb', l:'BT b (mΩ)', ty:'num'}, {k:'bc', l:'BT c (mΩ)', ty:'num'}
-  ]},
-  {k:'hui', t:'Huile', c:[
-    {k:'niv',   l:'Niveau',                     ty:'sel', o:['','Correct','Bas','Complété']},
-    {k:'fuite', l:'Fuite',                      ty:'sel', o:['','Aucune','Suintement','Fuite active']},
-    {k:'rig',   l:'Rigidité diélectrique (kV)', ty:'num'},
-    {k:'dga',   l:'Prélèvement DGA',            ty:'sel', o:['','Non','Oui']},
-    {k:'obs',   l:'Observations',               ty:'area', large:true}
-  ]},
-  {k:'cel', t:'Cellules HTA', c:[
-    {k:'nb',    l:'Nombre de cellules',       ty:'num'},
-    {k:'type',  l:'Type / gamme',             ty:'text'},
-    {k:'etat',  l:'État général',             ty:'sel', o:['','Bon','Acceptable','Dégradé']},
-    {k:'nett',  l:'Nettoyage effectué',       ty:'sel', o:['','Oui','Non']},
-    {k:'coup',  l:'Couples de serrage repris',ty:'sel', o:['','Oui','Non','Partiellement']},
-    {k:'manoe', l:"Manœuvres d'essai",        ty:'sel', o:['','Conformes','Non conformes','Non réalisées']},
-    {k:'obs',   l:'Observations',             ty:'area', large:true}
-  ]},
-  {k:'fus', t:'Fusibles HTA', calc:'fusibles', c:[
-    {k:'marque', l:'Marque',               ty:'text'},
-    {k:'ref',    l:'Référence',            ty:'text'},
-    {k:'cal',    l:'Calibre (A)',          ty:'num'},
-    {k:'tens',   l:'Tension (kV)',         ty:'num'},
-    {k:'r1',     l:'R phase 1 (mΩ)',       ty:'num'},
-    {k:'r2',     l:'R phase 2 (mΩ)',       ty:'num'},
-    {k:'r3',     l:'R phase 3 (mΩ)',       ty:'num'},
-    {k:'rref',   l:'R de référence (mΩ)',  ty:'num'},
-    {k:'remp',   l:'Remplacés',            ty:'sel', large:true,
-       o:['','Non','Oui — les trois','Oui — un seul (à proscrire)']}
-  ]},
-  {k:'dj', t:'Disjoncteur général BT', c:[
-    {k:'marque', l:'Marque / type',           ty:'text'},
-    {k:'cal',    l:'Calibre (A)',             ty:'num'},
-    {k:'ir',     l:'Ir',                      ty:'text'},
-    {k:'tr',     l:'tr',                      ty:'text'},
-    {k:'isd',    l:'Isd',                     ty:'text'},
-    {k:'tsd',    l:'tsd',                     ty:'text'},
-    {k:'ii',     l:'Ii',                      ty:'text'},
-    {k:'ig',     l:'Ig / tg',                 ty:'text'},
-    {k:'essai',  l:'Essai de déclenchement',  ty:'sel', large:true,
-       o:['','Conforme','Non conforme','Non réalisé']},
-    {k:'obs',    l:'Observations',            ty:'area', large:true}
-  ]},
-  {k:'ter', t:'Prise de terre', c:[
-    {k:'masses', l:'Terre des masses (Ω)', ty:'num'},
-    {k:'neutre', l:'Terre du neutre (Ω)',  ty:'num'},
-    {k:'inter',  l:'Interconnexion',       ty:'sel', o:['','Terres interconnectées','Terres séparées']},
-    {k:'meth',   l:'Méthode',              ty:'sel', o:['','62 %','Boucle (pince)','Piquets','Autre']},
-    {k:'obs',    l:'Observations',         ty:'area', large:true}
-  ]},
-  {k:'cab', t:'Essais câble HT', c:[
-    {k:'long',  l:'Longueur (m)',          ty:'num'},
-    {k:'sect',  l:'Section (mm²)',         ty:'text'},
-    {k:'essai', l:"Type d'essai",          ty:'sel', large:true,
-       o:['','VLF 0,1 Hz','Tangente delta','Décharges partielles','Isolement seul']},
-    {k:'tens',  l:"Tension d'essai (kV)",  ty:'num'},
-    {k:'duree', l:'Durée (min)',           ty:'num'},
-    {k:'td',    l:'Tangente delta (10⁻³)', ty:'text'},
-    {k:'res',   l:'Résultat',              ty:'sel', o:['','Satisfaisant','Non satisfaisant','Claquage']},
-    {k:'obs',   l:'Observations',          ty:'area', large:true}
-  ]},
-  {k:'fin', t:'Conclusion', ouvert:true, c:[
-    {k:'concl',    l:'Conclusion',             ty:'sel', large:true,
-       o:['','Installation conforme — remise en service','Conforme avec réserves',
-          'Non conforme — intervention à prévoir']},
-    {k:'reserves', l:'Réserves',               ty:'area', large:true},
-    {k:'travaux',  l:'Travaux à prévoir',      ty:'area', large:true},
-    {k:'obs',      l:'Observations générales', ty:'area', large:true},
-    {k:'redige',   l:'Rédigé par',             ty:'text'},
-    {k:'visa',     l:'Visa client (nom)',      ty:'text'}
-  ]}
+
+// ---------- identité de celui qui édite le rapport ----------
+// Renseignée une fois par l'utilisateur, conservée sur son appareil.
+const PV_SOC_CHAMPS = [
+  {k:'nom', l:'Raison sociale ou nom',  ty:'text', large:true},
+  {k:'l1',  l:'Pied de page — ligne 1', ty:'text', large:true},
+  {k:'l2',  l:'Pied de page — ligne 2', ty:'text', large:true},
+  {k:'l3',  l:'Pied de page — ligne 3', ty:'text', large:true}
+];
+function pvSoc(){ return LS.get('kitht-societe', {}); }
+function pvMajSoc(k, v){
+  const s = pvSoc(); s[k] = v;
+  try{ LS.set('kitht-societe', s); }catch(e){}
+}
+
+// ---------- en-tête du rapport ----------
+const PV_AFFAIRE = [
+  {k:'num',        l:'N° de rapport',       ty:'text'},
+  {k:'affaire',    l:'Réf. chantier',       ty:'text'},
+  {k:'date',       l:'Date du rapport',     ty:'date'},
+  {k:'dateCr',     l:"Date d'intervention", ty:'date'},
+  {k:'typeRap',    l:'Type de rapport',     ty:'sel', large:true,
+     o:['Rapport de maintenance préventive','Rapport de maintenance curative',
+        'Rapport de mise en service','Rapport de vérification périodique',
+        'Rapport de dépannage','Rapport d\'expertise','Compte rendu d\'intervention']},
+  {k:'technicien', l:'Technicien',          ty:'text', large:true},
+  {k:'livNom',     l:'Site',                ty:'text', large:true},
+  {k:'livAdr',     l:'Adresse du site',     ty:'area', large:true},
+  {k:'cliNom',     l:'Client',              ty:'text', large:true},
+  {k:'cliAtt',     l:"À l'attention de",    ty:'text', large:true},
+  {k:'cliAdr',     l:'Adresse du client',   ty:'area', large:true}
 ];
 
-let PV_COURANT = null;   // {id, maj, d:{section:{champ:valeur}}}
+// ---------- types d'équipement ----------
+const PV_TYPES = {
+  poste: {
+    nom:'Poste', icone:'▦',
+    info:[
+      {k:'typePoste', l:'Type de poste',    ty:'sel', o:['','Intérieur','Extérieur','Sur poteau','Préfabriqué']},
+      {k:'ventil',    l:'Ventilation',      ty:'sel', o:['','Naturelle','Forcée','Aucune']},
+      {k:'clim',      l:'Climatisation',    ty:'sel', o:['','Non','Oui']},
+      {k:'poussiere', l:'Poussières',       ty:'sel', o:['','Non','Oui']},
+      {k:'humidite',  l:'Humidité',         ty:'sel', o:['','Non','Oui']},
+      {k:'tension',   l:'Tension de service', ty:'text'},
+      {k:'tarif',     l:'Tarif',            ty:'text'},
+      {k:'neutre',    l:'Régime de neutre', ty:'sel', o:['','TT','TN-C','TN-S','TN-C-S','IT']}
+    ],
+    ops:[
+      {k:'p1', l:'Accès et dégagements'},
+      {k:'p2', l:'Éclairage, y compris l\'éclairage de secours'},
+      {k:'p3', l:'Propreté du local'},
+      {k:'p4', l:'Affichage réglementaire et consignes'},
+      {k:'p5', l:'Schéma unifilaire présent et à jour'},
+      {k:'p6', l:'Matériel de sécurité : présence et état'},
+      {k:'p7', l:'Ventilation et grilles'},
+      {k:'p8', l:'Humidité, infiltrations, état du génie civil'},
+      {k:'p9', l:'Fermeture et condamnation des enveloppes'}
+    ],
+    essais:[]
+  },
+
+  cellule: {
+    nom:'Cellule HTA', icone:'▤',
+    info:[
+      {k:'fab',    l:'Fabricant',            ty:'text'},
+      {k:'gamme',  l:'Gamme',                ty:'text'},
+      {k:'modele', l:'Modèle',               ty:'text'},
+      {k:'annee',  l:'Année',                ty:'text'},
+      {k:'serie',  l:'Numéro de série',      ty:'text', large:true},
+      {k:'intens', l:'Intensité',            ty:'text'},
+      {k:'cmd',    l:'Type de commande',     ty:'sel', o:['','Manuelle','Motorisée']},
+      {k:'bf',     l:'Bobine de fermeture',  ty:'text'},
+      {k:'bm',     l:'Bobine à manque',      ty:'text'},
+      {k:'bo',     l:'Bobine d\'ouverture',  ty:'text'},
+      {k:'moto',   l:'Motorisation',         ty:'text'}
+    ],
+    ops:[
+      {g:'État'},
+      {k:'a1', l:'Dépoussiérage et nettoyage'},
+      {k:'a2', l:'État des isolateurs et traces d\'effluve'},
+      {k:'a3', l:'Traces d\'échauffement sur les connexions'},
+      {g:'Raccordements'},
+      {k:'a4', l:'Serrage du jeu de barres'},
+      {k:'a5', l:'Serrage des têtes de câbles'},
+      {k:'a6', l:'Sectionneur de terre : contacts et graissage'},
+      {g:'Commande'},
+      {k:'b1', l:'Graissage du mécanisme'},
+      {k:'b2', l:'Manœuvres d\'ouverture et de fermeture'},
+      {k:'b3', l:'Verrouillages et interverrouillages'},
+      {k:'b4', l:'Contacts de position'},
+      {k:'b5', l:'Filerie auxiliaire : état et serrage'},
+      {k:'b6', l:'Bobines : essai de déclenchement'},
+      {k:'b7', l:'Percuteur fusible : mécanisme de déclenchement'}
+    ],
+    essais:[]
+  },
+
+  fusibles: {
+    nom:'Fusibles HTA', icone:'▮',
+    info:[
+      {k:'marque', l:'Marque',                        ty:'text'},
+      {k:'ref',    l:'Référence',                     ty:'text'},
+      {k:'modele', l:'Modèle',                        ty:'text'},
+      {k:'annee',  l:'Année',                         ty:'text'},
+      {k:'perc',   l:'Percuteur',                     ty:'sel', o:['','Avec','Sans']},
+      {k:'rfroid', l:'Résistance à froid (mΩ)',       ty:'num'},
+      {k:'ia',     l:'Courant assigné (A)',           ty:'num'},
+      {k:'ua',     l:'Tension assignée (kV)',         ty:'num'},
+      {k:'i3',     l:'Courant minimum de coupure I3 (A)', ty:'num'},
+      {k:'i1',     l:'Courant max de coupure I1 (kA)',ty:'num'}
+    ],
+    ops:[
+      {k:'u1', l:'État extérieur du fusible'},
+      {k:'u2', l:'Propreté et serrage des pinces de maintien'},
+      {k:'u3', l:'Percuteur présent et non déclenché'},
+      {k:'u4', l:'Adéquation du calibre à la protection'},
+      {k:'u5', l:'Adéquation de la tension assignée au réseau'}
+    ],
+    essais:['impedance']
+  },
+
+  transfo: {
+    nom:'Transformateur', icone:'◎',
+    info:[
+      {k:'fab',    l:'Fabricant',            ty:'text'},
+      {k:'gamme',  l:'Gamme',                ty:'text'},
+      {k:'typefab',l:'Type fabricant',       ty:'text'},
+      {k:'annee',  l:'Année',                ty:'text'},
+      {k:'serie',  l:'Numéro de série',      ty:'text'},
+      {k:'puis',   l:'Puissance (kVA)',      ty:'num'},
+      {k:'coupl',  l:'Couplage',             ty:'coupl'},
+      {k:'ucc',    l:'UCC (%)',              ty:'num'},
+      {k:'u1',     l:'Tension primaire',     ty:'text'},
+      {k:'u2',     l:'Tension secondaire',   ty:'text'},
+      {k:'refroid',l:'Refroidissement',      ty:'sel', o:['','ONAN','ONAF','OFAF','AN','AF']},
+      {k:'poids',  l:'Poids total',          ty:'text'}
+    ],
+    ops:[
+      {k:'t1', l:'État de la cuve et des radiateurs'},
+      {k:'t2', l:'État des bornes HT et de leurs connecteurs'},
+      {k:'t3', l:'État des plages BT'},
+      {k:'t4', l:'Niveau d\'huile'},
+      {k:'t11', l:'Absence de fuite'},
+      {k:'t5', l:'Serrage du raccordement HT'},
+      {k:'t6', l:'Serrage des plages BT'},
+      {k:'t7', l:'Continuité des masses et mise à la terre'},
+      {k:'t8', l:'Protections : essai d\'alarme'},
+      {k:'t9', l:'Protections : essai de déclenchement'},
+      {k:'t10', l:'Prélèvement d\'huile pour analyse'}
+    ],
+    essais:['isolement','rapport']
+  },
+
+  disjoncteur: {
+    nom:'Disjoncteur', icone:'▣',
+    info:[
+      {k:'fab',    l:'Fabricant',                 ty:'text'},
+      {k:'serie',  l:'Numéro de série',           ty:'text'},
+      {k:'modele', l:'Modèle',                    ty:'text'},
+      {k:'annee',  l:'Année',                     ty:'text'},
+      {k:'intens', l:'Intensité',                 ty:'text'},
+      {k:'pdc',    l:'Pouvoir de coupure',        ty:'text'},
+      {k:'poles',  l:'Nombre de pôles',           ty:'sel', o:['','1','2','3','4']},
+      {k:'mn',     l:'Bobine d\'ouverture MN',    ty:'text'},
+      {k:'mx1',    l:'Bobine d\'ouverture MX1',   ty:'text'},
+      {k:'xf',     l:'Bobine de fermeture XF',    ty:'text'},
+      {k:'mx2',    l:'Bobine d\'ouverture MX2',   ty:'text'},
+      {k:'moto',   l:'Motorisation',              ty:'text'}
+    ],
+    ops:[
+      {g:'Appareil'},
+      {k:'d1', l:'Dépoussiérage et nettoyage'},
+      {k:'d2', l:'Serrage des raccordements de puissance'},
+      {k:'d3', l:'Graissage du mécanisme'},
+      {k:'d4', l:'Manœuvres d\'ouverture et de fermeture'},
+      {k:'d5', l:'État des pinces d\'embrochage'},
+      {k:'d6', l:'Embrochage et débrochage'},
+      {g:'Commande et protection'},
+      {k:'d7', l:'Bobines MN, MX et XF'},
+      {k:'d8', l:'Contacts auxiliaires O/F et SDE'},
+      {k:'d9', l:'Réglages du déclencheur relevés'},
+      {k:'d10', l:'Verrouillages et sécurités de manœuvre'}
+    ],
+    essais:['contact','reglages']
+  },
+
+  autre: {
+    nom:'Autre équipement', icone:'▪',
+    info:[
+      {k:'fab',    l:'Fabricant',       ty:'text'},
+      {k:'modele', l:'Modèle',          ty:'text'},
+      {k:'serie',  l:'Numéro de série', ty:'text'},
+      {k:'annee',  l:'Année',           ty:'text'},
+      {k:'carac',  l:'Caractéristiques', ty:'area', large:true}
+    ],
+    ops:[], essais:[]
+  }
+};
+
+// Une même ligne peut être une action (dépoussiérage) ou un constat (état
+// des isolateurs) : ces quatre états couvrent les deux lectures.
+//   OK          fait et bon, ou vérifié et bon
+//   Défaut      à reprendre — à reporter en anomalie
+//   Non fait    pas réalisé cette fois
+//   Sans objet  ne concerne pas cet appareil
+const PV_ETATS = ['', 'OK', 'Défaut', 'Non fait', 'Sans objet'];
+
+// ---------- blocs d'essai ----------
+// Les seuils par défaut sont les valeurs usuelles de la profession ; ils restent
+// modifiables sur chaque essai, puisque c'est le document constructeur
+// ou la procédure du site qui tranche.
+const PV_ESSAIS = {
+  impedance: {
+    t:"Mesure d'impédance fusibles",
+    objet:"La résistance à froid de chaque fusible est comparée à la valeur de référence du constructeur. Un écart signale un élément fusible altéré, un contact dégradé ou un fusible qui a déjà subi un court-circuit sans fondre.",
+    params:[
+      {k:'ref', l:'Résistance de référence (mΩ)', ty:'num', src:'rfroid'},
+      {k:'tol', l:'Tolérance admise (%)',         ty:'num'},
+      {k:'motif', l:'Motif', ty:'sel', o:['','Périodique','Mise en service','Dépannage']},
+      {k:'ident', l:'Identifiant', ty:'text'}
+    ],
+    lignes:[{k:'f1', l:'Valeur fusible 1'}, {k:'f2', l:'Valeur fusible 2'}, {k:'f3', l:'Valeur fusible 3'}],
+    cols:[{k:'val', l:'Résistance mesurée (mΩ)', ty:'num'}],
+    calc:'impedance'
+  },
+
+  isolement: {
+    t:"Mesure d'isolement",
+    objet:"Mesure d'isolement sous tension continue, entre deux points quelconques : haute tension et masse, secondaire et masse, conducteur et écran. Chaque ligne porte sa configuration, sa tension d'essai et la limite attendue, si bien qu'un seul modèle couvre tous les appareils. L'indice de polarisation et le rapport d'absorption complètent la valeur absolue : un isolant humide donne une résistance qui monte peu pendant la mesure, là où un isolant sain continue de grimper.",
+    params:[
+      {k:'limite', l:'Limite appliquée (MΩ)', ty:'num', def:'250'},
+      {k:'temp',   l:'Température (°C)',      ty:'num'},
+      {k:'hygro',  l:'Hygrométrie (%)',       ty:'num'},
+      {k:'ident',  l:'Identifiant',           ty:'text'}
+    ],
+    lignes:[
+      {k:'htbt', l:'HT/BT',    def:{tens:'5', duree:'1'}},
+      {k:'htm',  l:'HT/masse', def:{tens:'5', duree:'1'}},
+      {k:'btm',  l:'BT/masse', def:{tens:'1', duree:'1'}}
+    ],
+    cols:[
+      {k:'tens',  l:"Tension d'essai (kV)", ty:'num'},
+      {k:'duree', l:'Durée (min)',          ty:'num'},
+      {k:'val',   l:'Isolement mesuré',     ty:'num'},
+      {k:'unite', l:'Unité',                ty:'sel', o:['MΩ','GΩ']}
+    ],
+    calc:'isolement'
+  },
+
+  rapport: {
+    t:"Rapport de transformation",
+    objet:"Le rapport de transformation compare la tension recueillie au secondaire à celle appliquée au primaire, prise par prise. Il révèle une spire en court-circuit, une erreur de couplage ou une prise mal positionnée avant qu'elles ne se traduisent par un échauffement. La CEI 60076-1 admet 0,5 % d'écart avec le rapport théorique calculé sur les tensions de plaque.",
+    params:[
+      {k:'tol',       l:'Tolérance (%)',     ty:'num', def:'0.5'},
+      {k:'theorique', l:'Rapport théorique', ty:'num'},
+      {k:'prise',     l:'Prise',             ty:'text', def:'1'},
+      {k:'motif',     l:'Motif', ty:'sel', o:['','Périodique','Mise en service','Dépannage']},
+      {k:'ident',     l:'Identifiant', ty:'text'}
+    ],
+    // les combinaisons de mesure dépendent du couplage de la plaque
+    lignesDe: function(eq){
+      const c = (eq.info && eq.info.coupl) || '';
+      const w = (typeof TTR_WIRING !== 'undefined' && TTR_WIRING) ? TTR_WIRING[c] : null;
+      return ['A','B','C'].map(function(k, i){
+        return {k:k, l:'Phase ' + (i+1) +
+          (w ? ' · ' + w.hv[i] + ' / ' + w.lv[i] : '')};
+      });
+    },
+    lignes:[{k:'A', l:'Phase 1'}, {k:'B', l:'Phase 2'}, {k:'C', l:'Phase 3'}],
+    cols:[{k:'val', l:'Rapport mesuré', ty:'num'}],
+    calc:'rapport'
+  },
+
+  contact: {
+    t:"Résistance de contact",
+    objet:"La résistance de contact se mesure en quatre fils, sous un courant continu de l'ordre de 100 A, pôle par pôle. Elle traduit l'état des surfaces de contact et la qualité du serrage — une valeur élevée s'échauffe en charge et vieillit les isolants voisins. Aucune norme ne fixe de seuil : 200 µΩ est la valeur usuelle, et celle du constructeur prime quand la fiche la porte.",
+    params:[
+      {k:'limite', l:'Limite appliquée (µΩ)',   ty:'num', def:'200'},
+      {k:'inj',    l:"Courant d'injection (A)", ty:'num', def:'100'},
+      {k:'motif',  l:'Motif', ty:'sel', o:['','Périodique','Mise en service','Dépannage']},
+      {k:'ident',  l:'Identifiant', ty:'text'}
+    ],
+    // un disjoncteur peut porter un neutre : les lignes suivent le nombre de pôles
+    lignesDe: function(eq){
+      const n = String((eq.info && eq.info.poles) || '3');
+      if(n === '1') return [{k:'A', l:'Pôle 1'}];
+      if(n === '2') return [{k:'A', l:'Pôle 1'}, {k:'N', l:'Neutre'}];
+      if(n === '4') return [{k:'A', l:'Pôle 1'}, {k:'B', l:'Pôle 2'},
+                            {k:'C', l:'Pôle 3'}, {k:'N', l:'Neutre'}];
+      return [{k:'A', l:'Pôle 1'}, {k:'B', l:'Pôle 2'}, {k:'C', l:'Pôle 3'}];
+    },
+    lignes:[{k:'A', l:'Pôle 1'}, {k:'B', l:'Pôle 2'}, {k:'C', l:'Pôle 3'}, {k:'N', l:'Neutre'}],
+    cols:[{k:'val', l:'Résistance mesurée (µΩ)', ty:'num'}],
+    calc:'contact'
+  },
+
+  reglages: {
+    t:"Réglages du déclencheur",
+    objet:"Les réglages relevés sur l'appareil sont reportés tels quels, avec le seuil et la temporisation de chaque protection. Ils servent de référence à la prochaine intervention et permettent de vérifier la sélectivité avec l'amont et l'aval.",
+    params:[
+      {k:'type', l:'Type de déclencheur', ty:'text'},
+      {k:'in',   l:'Calibre In (A)',      ty:'num'}
+    ],
+    lignes:[
+      {k:'lr', l:'Long retard — Ir / tr'},
+      {k:'cr', l:'Court retard — Isd / tsd'},
+      {k:'in', l:'Instantané — Ii'},
+      {k:'te', l:'Terre — Ig / tg'}
+    ],
+    cols:[
+      {k:'seuil', l:'Seuil',         ty:'text'},
+      {k:'tempo', l:'Temporisation', ty:'text'},
+      {k:'essai', l:'Essai',         ty:'sel', o:['','Conforme','Non conforme','Non réalisé']}
+    ],
+    calc:'reglages'
+  }
+};
+
+// =====================================================================
+// ÉTAT
+// =====================================================================
+let PV_COURANT = null;
+let PV_EQ_OUVERT = null;
 
 function pvListeStockee(){ return LS.get('kitht-pv', []); }
-function pvEnregistrerListe(l){ LS.set('kitht-pv', l); }
-function pvVide(){ return {id:'pv-'+Date.now(), maj:new Date().toISOString(), d:{}}; }
-
-function pvIdChamp(s, c){ return 'pv_' + s + '_' + c; }
-
-// ---------- formulaire ----------
-function pvConstruireFormulaire(){
-  const z = document.getElementById('pvForm'); if(!z) return;
-  z.innerHTML = PV_SECTIONS.map(function(s){
-    const champs = s.c.map(function(c){
-      const id = pvIdChamp(s.k, c.k);
-      const cls = c.large ? ' class="pvlarge"' : '';
-      let ch;
-      if(c.ty === 'area'){
-        ch = '<textarea id="' + id + '" oninput="pvMarquer(\'' + s.k + '\')"></textarea>';
-      } else if(c.ty === 'sel'){
-        ch = '<select id="' + id + '" onchange="pvMarquer(\'' + s.k + '\')">' +
-             c.o.map(function(o){ return '<option value="' + echapper(o) + '">' +
-               (o ? echapper(o) : '—') + '</option>'; }).join('') + '</select>';
-      } else {
-        const t = c.ty === 'num' ? 'text' : c.ty;   // clavier décimal maîtrisé, virgule acceptée
-        const im = c.ty === 'num' ? ' inputmode="decimal"' : '';
-        ch = '<input type="' + t + '"' + im + ' id="' + id + '" autocomplete="off" ' +
-             'oninput="pvMarquer(\'' + s.k + '\')" onchange="pvMarquer(\'' + s.k + '\')">';
-      }
-      return '<div' + cls + '><label for="' + id + '">' + echapper(c.l) + '</label>' + ch + '</div>';
-    }).join('');
-    return '<details class="pvsec" id="pvsec-' + s.k + '"' + (s.ouvert ? ' open' : '') + '>' +
-      '<summary>' + echapper(s.t) +
-      '<span class="pvrempli" id="pvtag-' + s.k + '" style="display:none;">rempli</span></summary>' +
-      '<div class="pvbody">' +
-      (s.note ? '<div class="pvcalc" style="margin-bottom:10px;">' + s.note + '</div>' : '') +
-      '<div class="pvgrid">' + champs +
-      (s.calc ? '<div class="pvcalc" id="pvcalc-' + s.k + '" style="display:none;"></div>' : '') +
-      '</div></div></details>';
-  }).join('');
+function pvVide(){
+  return {id:'pv-'+Date.now(), maj:new Date().toISOString(), aff:{}, eqs:[]};
 }
-
-// ---------- lecture / écriture des champs ----------
 function pvNombre(v){
-  const n = parseFloat(String(v == null ? '' : v).replace(',', '.').replace(/\s/g, ''));
+  const n = parseFloat(String(v==null?'':v).replace(',', '.').replace(/\s/g,''));
   return isFinite(n) ? n : null;
 }
-function pvLireFormulaire(){
-  const d = {};
-  PV_SECTIONS.forEach(function(s){
-    const o = {};
-    s.c.forEach(function(c){
-      const e = document.getElementById(pvIdChamp(s.k, c.k));
-      if(e && String(e.value).trim() !== '') o[c.k] = String(e.value).trim();
-    });
-    if(Object.keys(o).length) d[s.k] = o;
-  });
-  return d;
-}
-function pvEcrireFormulaire(d){
-  PV_SECTIONS.forEach(function(s){
-    s.c.forEach(function(c){
-      const e = document.getElementById(pvIdChamp(s.k, c.k));
-      if(e) e.value = (d && d[s.k] && d[s.k][c.k] != null) ? d[s.k][c.k] : '';
-    });
-  });
-  PV_SECTIONS.forEach(function(s){ pvMarquer(s.k); });
-}
-
-// ---------- repères et calculs ----------
-function pvSectionRemplie(sk){
-  const s = PV_SECTIONS.filter(function(x){ return x.k === sk; })[0];
-  if(!s) return false;
-  return s.c.some(function(c){
-    const e = document.getElementById(pvIdChamp(sk, c.k));
-    return e && String(e.value).trim() !== '';
-  });
-}
-function pvMarquer(sk){
-  const t = document.getElementById('pvtag-' + sk);
-  if(t) t.style.display = pvSectionRemplie(sk) ? 'inline-block' : 'none';
-  pvCalculer(sk);
-}
-
-function pvDispersion(vals){
-  const v = vals.filter(function(x){ return x != null; });
-  if(v.length < 2) return null;
-  const mx = Math.max.apply(null, v), mn = Math.min.apply(null, v);
-  const moy = v.reduce(function(a, b){ return a + b; }, 0) / v.length;
-  if(!moy) return null;
-  return {ecart: (mx - mn) / moy * 100, moy: moy, min: mn, max: mx, n: v.length};
-}
-function pvPct(x){ return (Math.round(x * 100) / 100).toString().replace('.', ','); }
-
-function pvCalculer(sk){
-  const z = document.getElementById('pvcalc-' + sk);
-  if(!z) return;
-  const val = function(c){ const e = document.getElementById(pvIdChamp(sk, c)); return e ? pvNombre(e.value) : null; };
-  let html = '';
-
-  if(sk === 'rap'){
-    const th = val('th'), m = [val('m1'), val('m2'), val('m3')];
-    const disp = pvDispersion(m);
-    if(disp) html += 'Dispersion entre phases : <b>' + pvPct(disp.ecart) + ' %</b> ' +
-      '<span style="color:var(--muted);">(' + pvPct(disp.min) + ' à ' + pvPct(disp.max) + ')</span><br>';
-    if(th){
-      const e = m.filter(function(x){ return x != null; })
-                 .map(function(x){ return Math.abs(x - th) / th * 100; });
-      if(e.length) html += 'Écart maximal au rapport théorique : <b>' +
-        pvPct(Math.max.apply(null, e)) + ' %</b><br>';
-    }
-    if(html) html += '<span style="color:var(--muted);">Le critère d\'acceptation est celui du ' +
-      'PV d\'essai d\'origine du transformateur ou du constructeur — cet outil calcule l\'écart, ' +
-      'il ne le juge pas.</span>';
-  }
-
-  if(sk === 'enr'){
-    const ht = pvDispersion([val('ha'), val('hb'), val('hc')]);
-    const bt = pvDispersion([val('ba'), val('bb'), val('bc')]);
-    if(ht) html += 'Dispersion HT : <b>' + pvPct(ht.ecart) + ' %</b> ' +
-      '<span style="color:var(--muted);">(moyenne ' + pvPct(ht.moy) + ' Ω)</span><br>';
-    if(bt) html += 'Dispersion BT : <b>' + pvPct(bt.ecart) + ' %</b> ' +
-      '<span style="color:var(--muted);">(moyenne ' + pvPct(bt.moy) + ' mΩ)</span><br>';
-    if(html) html += '<span style="color:var(--muted);">À comparer au PV d\'origine, à température ' +
-      'équivalente — la résistance du cuivre varie fortement avec la température.</span>';
-  }
-
-  if(sk === 'fus'){
-    const d = pvDispersion([val('r1'), val('r2'), val('r3')]);
-    const rr = val('rref');
-    if(d) html += 'Dispersion entre les trois phases : <b>' + pvPct(d.ecart) + ' %</b> ' +
-      '<span style="color:var(--muted);">(moyenne ' + pvPct(d.moy) + ' mΩ)</span><br>';
-    if(d && rr) html += 'Écart de la moyenne à la référence : <b>' +
-      pvPct(Math.abs(d.moy - rr) / rr * 100) + ' %</b><br>';
-    if(html) html += '<span style="color:var(--muted);">La résistance de référence se trouve dans ' +
-      'l\'onglet 04 · Résistances fusibles. Cet outil calcule l\'écart, le jugement reste au ' +
-      'document constructeur.</span>';
-  }
-
-  z.innerHTML = html;
-  z.style.display = html ? 'block' : 'none';
-}
-
-// ---------- enregistrement ----------
-function pvMessage(txt, coul){
-  const m = document.getElementById('pvMsg');
-  if(m) m.innerHTML = txt ? '<span style="color:' + (coul || 'var(--green)') + ';">' + txt + '</span>' : '';
-  if(txt) setTimeout(function(){ const e = document.getElementById('pvMsg'); if(e) e.innerHTML = ''; }, 4000);
-}
-
-function pvNouveau(){
-  PV_COURANT = pvVide();
-  pvEcrireFormulaire({});
-  const d = document.getElementById(pvIdChamp('aff', 'date'));
-  if(d) d.value = new Date().toISOString().slice(0, 10);
-  const i = document.getElementById(pvIdChamp('aff', 'inter'));
-  if(i && session && session.profil && session.profil.nom) i.value = session.profil.nom;
-  const r = document.getElementById(pvIdChamp('fin', 'redige'));
-  if(r && session && session.profil && session.profil.nom) r.value = session.profil.nom;
-  pvAfficherListe();
-  pvMessage('Nouveau PV — les rubriques vides ne seront pas imprimées.', 'var(--muted)');
-  window.scrollTo(0, 0);
-}
-
-function pvEnregistrer(){
-  if(!PV_COURANT) PV_COURANT = pvVide();
-  const d = pvLireFormulaire();
-  if(!Object.keys(d).length){ pvMessage('Rien à enregistrer.', 'var(--amber)'); return; }
-  PV_COURANT.d = d;
-  PV_COURANT.maj = new Date().toISOString();
-  const l = pvListeStockee();
-  const i = l.findIndex(function(x){ return x.id === PV_COURANT.id; });
-  if(i >= 0) l[i] = PV_COURANT; else l.unshift(PV_COURANT);
-  pvEnregistrerListe(l);
-  pvAfficherListe();
-  pvMessage('PV enregistré sur cet appareil.');
-}
-
-function pvOuvrir(id){
-  const p = pvListeStockee().filter(function(x){ return x.id === id; })[0];
-  if(!p) return;
-  PV_COURANT = JSON.parse(JSON.stringify(p));
-  pvEcrireFormulaire(PV_COURANT.d);
-  pvAfficherListe();
-  window.scrollTo(0, 0);
-  pvMessage('PV ouvert.', 'var(--muted)');
-}
-
-function pvDupliquer(){
-  const d = pvLireFormulaire();
-  PV_COURANT = pvVide();
-  PV_COURANT.d = d;
-  // on repart sur un autre poste : on vide ce qui est propre à l'intervention
-  if(PV_COURANT.d.aff){
-    delete PV_COURANT.d.aff.poste;
-    delete PV_COURANT.d.aff.lieu;
-    delete PV_COURANT.d.aff.affaire;
-  }
-  pvEcrireFormulaire(PV_COURANT.d);
-  pvMessage('Copie créée — renseigne le nouveau poste, puis Enregistrer.', 'var(--muted)');
-  window.scrollTo(0, 0);
-}
-
-function pvSupprimer(id){
-  const l = pvListeStockee().filter(function(x){ return x.id !== id; });
-  pvEnregistrerListe(l);
-  if(PV_COURANT && PV_COURANT.id === id) PV_COURANT = null;
-  pvAfficherListe();
-  pvMessage('PV supprimé.', 'var(--amber)');
-}
-
-function pvTitre(p){
-  const a = (p.d && p.d.aff) || {};
-  return (a.poste || a.client || 'PV sans nom');
+function pvNum(x, d){
+  if(x == null) return '';
+  const n = Math.round(x * Math.pow(10, d==null?2:d)) / Math.pow(10, d==null?2:d);
+  return String(n).replace('.', ',');
 }
 function pvDateFr(iso){
   if(!iso) return '';
   const d = new Date(iso);
-  if(isNaN(d)) return iso;
-  return String(d.getDate()).padStart(2, '0') + '/' +
-         String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+  if(isNaN(d)) return String(iso);
+  return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+}
+function pvMessage(txt, coul){
+  const m = document.getElementById('pvMsg');
+  if(!m) return;
+  m.innerHTML = txt ? '<span style="color:'+(coul||'var(--green)')+';">'+txt+'</span>' : '';
+  if(txt) setTimeout(function(){ const e=document.getElementById('pvMsg'); if(e) e.innerHTML=''; }, 4500);
+}
+function pvSauver(){
+  if(!PV_COURANT) return false;
+  PV_COURANT.maj = new Date().toISOString();
+  const l = pvListeStockee();
+  const i = l.findIndex(function(x){ return x.id === PV_COURANT.id; });
+  if(i >= 0) l[i] = PV_COURANT; else l.unshift(PV_COURANT);
+  try{
+    LS.set('kitht-pv', l);
+    return true;
+  }catch(e){
+    pvMessage("Mémoire de l'appareil pleine — supprime d'anciens PV ou retire des photos.", 'var(--red)');
+    return false;
+  }
 }
 
+// =====================================================================
+// CHAMPS GÉNÉRIQUES
+// =====================================================================
+function pvCouplages(){
+  if(typeof TTR_WIRING === 'undefined' || !TTR_WIRING) return [];
+  return Object.keys(TTR_WIRING);
+}
+// Les intitulés sont mis en capitales par la feuille de style, ce qui déforme
+// les unités : mΩ deviendrait MΩ, µΩ deviendrait MΩ, kV deviendrait KV.
+// Tout ce qui est entre parenthèses garde donc sa casse.
+function pvMaj(t){
+  return echapper(t).replace(/\(([^)]*)\)/g, function(m, u){
+    return '<span style="text-transform:none;">(' + u + ')</span>';
+  });
+}
+function pvChamp(c, val, onchange){
+  if(c.ty === 'coupl'){
+    const l = pvCouplages();
+    c = l.length ? {k:c.k, l:c.l, large:c.large, ty:'sel', o:[''].concat(l)}
+                 : {k:c.k, l:c.l, large:c.large, ty:'text'};
+  }
+  const v = val == null ? '' : String(val);
+  const cls = c.large ? ' class="pvlarge"' : '';
+  let ch;
+  if(c.ty === 'area'){
+    ch = '<textarea oninput="'+onchange+'">'+echapper(v)+'</textarea>';
+  } else if(c.ty === 'sel'){
+    ch = '<select onchange="'+onchange+'">'+ c.o.map(function(o){
+      return '<option value="'+echapper(o)+'"'+(o===v?' selected':'')+'>'+(o?echapper(o):'—')+'</option>';
+    }).join('') +'</select>';
+  } else {
+    const t = (c.ty==='num') ? 'text' : c.ty;
+    const im = (c.ty==='num') ? ' inputmode="decimal"' : '';
+    ch = '<input type="'+t+'"'+im+' value="'+echapper(v)+'" autocomplete="off" oninput="'+onchange+'" onchange="'+onchange+'">';
+  }
+  return '<div'+cls+'><label>'+pvMaj(c.l)+'</label>'+ch+'</div>';
+}
+
+// =====================================================================
+// EN-TÊTE D'AFFAIRE ET ÉVALUATION
+// =====================================================================
+function pvRendreAffaire(){
+  const z = document.getElementById('pvAffaire'); if(!z || !PV_COURANT) return;
+  z.innerHTML = '<div class="pvgrid">' + PV_AFFAIRE.map(function(c, i){
+    return pvChamp(c, PV_COURANT.aff[c.k], "pvMajAffaire('"+c.k+"',this.value)");
+  }).join('') + '</div>';
+}
+function pvMajAffaire(k, v){ if(PV_COURANT){ PV_COURANT.aff[k] = v; pvSauver(); pvAfficherListe(); } }
+
+function pvRendreSoc(){
+  const z = document.getElementById('pvSoc'); if(!z) return;
+  const s = pvSoc();
+  z.innerHTML =
+    '<div class="pvphoto">' +
+    (s.logo ? '<img src="'+s.logo+'" alt="" style="width:auto; max-width:150px; height:58px; object-fit:contain; background:#fff; padding:5px;">'
+            : '<div class="pvnophoto" style="width:150px; height:58px;">pas de logo</div>') +
+    '<div class="pvphotobtn">' +
+    '<label class="ghost" style="display:inline-block; padding:8px 12px; font-size:12px; cursor:pointer; border:1px solid var(--line); border-radius:5px;">' +
+    (s.logo?'Remplacer le logo':'Ajouter un logo') +
+    '<input type="file" accept="image/*" style="display:none;" onchange="pvChargerLogo(this)"></label>' +
+    (s.logo ? ' <button class="ghost danger" style="padding:8px 12px; font-size:12px;" onclick="pvRetirerLogo()">Retirer</button>' : '') +
+    '</div></div>' +
+    '<div class="pvgrid">' + PV_SOC_CHAMPS.map(function(c){
+      return pvChamp(c, s[c.k], "pvMajSoc('"+c.k+"',this.value)");
+    }).join('') + '</div>';
+}
+function pvChargerLogo(input){
+  const f = input.files && input.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = function(ev){
+    const img = new Image();
+    img.onload = function(){
+      const maxL = 420, maxH = 150;
+      let w = img.width, hh = img.height;
+      const k = Math.min(maxL/w, maxH/hh, 1);
+      w = Math.round(w*k); hh = Math.round(hh*k);
+      const c = document.createElement('canvas'); c.width = w; c.height = hh;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,hh);   // les PNG transparents s'impriment en blanc
+      ctx.drawImage(img, 0, 0, w, hh);
+      try{
+        pvMajSoc('logo', c.toDataURL('image/png'));
+        pvRendreSoc(); pvMessage('Logo enregistré.');
+      }catch(e){ pvMessage('Logo trop lourd.', 'var(--red)'); }
+    };
+    img.src = ev.target.result;
+  };
+  r.readAsDataURL(f);
+}
+function pvRetirerLogo(){ pvMajSoc('logo', null); pvRendreSoc(); }
+
+// =====================================================================
+// ÉQUIPEMENTS
+// =====================================================================
+function pvAjouterEq(type){
+  if(!PV_COURANT) pvNouveau();
+  const t = PV_TYPES[type]; if(!t) return;
+  const n = PV_COURANT.eqs.filter(function(e){ return e.type === type; }).length + 1;
+  const eq = {id:'eq-'+Date.now()+'-'+Math.round(Math.random()*999),
+              type:type, nom:t.nom + ' ' + n,
+              photo:null, info:{}, ops:{}, essais:{}, obs:'', anos:[]};
+  // valeurs par défaut des paramètres d'essai
+  (t.essais||[]).forEach(function(ek){
+    const e = PV_ESSAIS[ek]; if(!e) return;
+    eq.essais[ek] = {p:{}, l:{}};
+    (e.params||[]).forEach(function(p){ if(p.def) eq.essais[ek].p[p.k] = p.def; });
+    (pvLignesEssai(e, eq)||[]).forEach(function(li){
+      const mod = (e.lignes||[]).filter(function(x){ return x.k === li.k; })[0] || li;
+      li = {k:li.k, def:mod.def};
+      eq.essais[ek].l[li.k] = {};
+      if(li.def) Object.keys(li.def).forEach(function(c){ eq.essais[ek].l[li.k][c] = li.def[c]; });
+      (e.cols||[]).forEach(function(c){
+        if(c.ty === 'sel' && eq.essais[ek].l[li.k][c.k] == null) eq.essais[ek].l[li.k][c.k] = c.o[0];
+      });
+    });
+  });
+  PV_COURANT.eqs.push(eq);
+  PV_EQ_OUVERT = eq.id;
+  pvSauver();
+  pvRendreEquipements();
+  pvMessage('Équipement ajouté — renseigne son nom et ses informations.', 'var(--muted)');
+}
+
+function pvEq(id){ return PV_COURANT ? PV_COURANT.eqs.filter(function(e){ return e.id===id; })[0] : null; }
+
+function pvMajEq(id, champ, cle, v){
+  const e = pvEq(id); if(!e) return;
+  if(champ === 'nom') e.nom = v;
+  else if(champ === 'obs') e.obs = v;
+  else if(champ === 'info') e.info[cle] = v;
+  else if(champ === 'ops') e.ops[cle] = v;
+  pvSauver();
+  if(champ === 'nom') pvRendreSommaireEq();
+}
+
+function pvSupprimerEq(id){
+  if(!PV_COURANT) return;
+  PV_COURANT.eqs = PV_COURANT.eqs.filter(function(e){ return e.id !== id; });
+  if(PV_EQ_OUVERT === id) PV_EQ_OUVERT = null;
+  pvSauver();
+  pvRendreEquipements();
+}
+
+function pvDeplacerEq(id, sens){
+  if(!PV_COURANT) return;
+  const i = PV_COURANT.eqs.findIndex(function(e){ return e.id===id; });
+  const j = i + sens;
+  if(i < 0 || j < 0 || j >= PV_COURANT.eqs.length) return;
+  const t = PV_COURANT.eqs[i]; PV_COURANT.eqs[i] = PV_COURANT.eqs[j]; PV_COURANT.eqs[j] = t;
+  pvSauver();
+  pvRendreEquipements();
+}
+
+function pvBasculerEq(id){
+  PV_EQ_OUVERT = (PV_EQ_OUVERT === id) ? null : id;
+  pvRendreEquipements();
+}
+
+// ---------- photo ----------
+function pvChargerPhoto(id, input){
+  const f = input.files && input.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = function(ev){
+    const img = new Image();
+    img.onload = function(){
+      const max = 900;
+      let w = img.width, hh = img.height;
+      if(w > max || hh > max){ const k = max/Math.max(w, hh); w = Math.round(w*k); hh = Math.round(hh*k); }
+      const c = document.createElement('canvas'); c.width = w; c.height = hh;
+      c.getContext('2d').drawImage(img, 0, 0, w, hh);
+      const e = pvEq(id); if(!e) return;
+      try{
+        e.photo = c.toDataURL('image/jpeg', 0.6);
+        if(pvSauver()){ pvRendreEquipements(); pvMessage('Photo ajoutée.'); }
+        else { e.photo = null; }
+      }catch(err){ pvMessage('Photo trop lourde.', 'var(--red)'); }
+    };
+    img.src = ev.target.result;
+  };
+  r.readAsDataURL(f);
+}
+function pvRetirerPhoto(id){
+  const e = pvEq(id); if(!e) return;
+  e.photo = null; pvSauver(); pvRendreEquipements();
+}
+
+// ---------- anomalies ----------
+function pvAjouterAno(id){
+  const e = pvEq(id); if(!e) return;
+  e.anos.push({txt:'', prio:'Mineure', date:new Date().toISOString().slice(0,10)});
+  pvSauver(); pvRendreEquipements();
+}
+function pvMajAno(id, i, k, v){
+  const e = pvEq(id); if(!e || !e.anos[i]) return;
+  e.anos[i][k] = v; pvSauver();
+}
+function pvRetirerAno(id, i){
+  const e = pvEq(id); if(!e) return;
+  e.anos.splice(i, 1); pvSauver(); pvRendreEquipements();
+}
+
+// ---------- essais ----------
+function pvMajEssaiP(id, ek, k, v){
+  const e = pvEq(id); if(!e) return;
+  if(!e.essais[ek]) e.essais[ek] = {p:{}, l:{}};
+  e.essais[ek].p[k] = v; pvSauver(); pvRendreEssai(id, ek);
+}
+function pvMajEssaiL(id, ek, lk, ck, v){
+  const e = pvEq(id); if(!e) return;
+  if(!e.essais[ek]) e.essais[ek] = {p:{}, l:{}};
+  if(!e.essais[ek].l[lk]) e.essais[ek].l[lk] = {};
+  e.essais[ek].l[lk][ck] = v; pvSauver(); pvRendreEssai(id, ek);
+}
+
+// Calcule les résultats d'un essai : une ligne par mesure, avec verdict.
+// Les lignes d'un essai peuvent dépendre de l'équipement : couplage du
+// transformateur, nombre de pôles du disjoncteur.
+function pvLignesEssai(def, eq){
+  if(def.lignesDe){ try{ return def.lignesDe(eq); }catch(e){} }
+  return def.lignes;
+}
+
+function pvResultats(eq, ek){
+  const def = PV_ESSAIS[ek]; if(!def) return null;
+  const d = (eq.essais && eq.essais[ek]) || {p:{}, l:{}};
+  const P = d.p || {}, L = d.l || {};
+  const out = {titre:def.t, params:P, lignes:[], verdictGlobal:null, note:''};
+
+  const lignes = pvLignesEssai(def, eq);
+  const valeurs = lignes.map(function(li){ return pvNombre((L[li.k]||{}).val); });
+
+  lignes.forEach(function(li, i){
+    const row = (L[li.k] || {});
+    const o = {k:li.k, l:li.l, cols:{}, ecart:null, ecart2:null, verdict:null};
+    def.cols.forEach(function(c){ o.cols[c.k] = row[c.k] == null ? '' : row[c.k]; });
+    const v = valeurs[i];
+
+    if(def.calc === 'impedance'){
+      const ref = pvNombre(P.ref), tol = pvNombre(P.tol);
+      if(v != null && ref) o.ecart = (v - ref) / ref * 100;
+      if(o.ecart != null && tol != null) o.verdict = Math.abs(o.ecart) <= tol;
+    }
+    else if(def.calc === 'isolement'){
+      const lim = pvNombre(P.limite);
+      const mult = (row.unite === 'GΩ') ? 1000 : 1;
+      if(v != null) o.mesureMO = v * mult;
+      if(o.mesureMO != null && lim != null) o.verdict = o.mesureMO >= lim;
+    }
+    else if(def.calc === 'rapport'){
+      const th = pvNombre(P.theorique), tol = pvNombre(P.tol);
+      if(v != null && th) o.ecart = (v - th) / th * 100;
+      if(o.ecart != null && tol != null) o.verdict = Math.abs(o.ecart) <= tol;
+    }
+    else if(def.calc === 'contact'){
+      const lim = pvNombre(P.limite);
+      if(v != null && lim != null) o.verdict = v <= lim;
+    }
+    else if(def.calc === 'reglages'){
+      const es = row.essai;
+      if(es === 'Conforme') o.verdict = true;
+      else if(es === 'Non conforme') o.verdict = false;
+    }
+    out.lignes.push(o);
+  });
+
+  const juges = out.lignes.filter(function(x){ return x.verdict !== null; });
+  if(juges.length) out.verdictGlobal = juges.every(function(x){ return x.verdict; });
+  return out;
+}
+
+// Tension de plaque en volts : accepte « 5.5 kV », « 5500 », « 410 V »
+function pvVolts(t){
+  const s = String(t == null ? '' : t).replace(',', '.');
+  const n = parseFloat(s.replace(/[^0-9.\-]/g, ''));
+  if(!isFinite(n)) return null;
+  return /k\s*v/i.test(s) ? n * 1000 : n;
+}
+// Rapport théorique d'après le couplage et les tensions de plaque,
+// avec le même calcul que l'onglet 01.
+function pvRapportTheorique(eq){
+  const c = (eq.info && eq.info.coupl) || '';
+  const m = c.match(/^([A-Z]+?)([a-z]+)(\d+)$/);
+  if(!m) return null;
+  const U1 = pvVolts(eq.info.u1), U2 = pvVolts(eq.info.u2);
+  if(!U1 || !U2) return null;
+  try{
+    const up1 = phaseVoltage(windingType(m[1][0]), U1);
+    const up2 = phaseVoltage(windingType(m[2][0]), U2);
+    return up2 > 0 ? up1 / up2 : null;
+  }catch(e){ return null; }
+}
+function pvAppliquerTheorique(id){
+  const eq = pvEq(id); if(!eq) return;
+  const r = pvRapportTheorique(eq); if(r == null) return;
+  pvMajEssaiP(id, 'rapport', 'theorique', pvNum(r, 3));
+}
+
+function pvRendreEssai(id, ek){
+  const z = document.getElementById('pvessai-'+id+'-'+ek);
+  if(!z) return;
+  const eq = pvEq(id); if(!eq) return;
+  const def = PV_ESSAIS[ek];
+  const d = (eq.essais && eq.essais[ek]) || {p:{}, l:{}};
+  const res = pvResultats(eq, ek);
+
+  let g = '<div class="pvobjet">' + echapper(def.objet) + '</div>';
+
+  g += '<div class="pvgrid" style="margin-bottom:12px;">' + def.params.map(function(p){
+    let v = d.p[p.k];
+    if(v == null && p.src && eq.info[p.src] != null) v = eq.info[p.src];
+    return pvChamp(p, v, "pvMajEssaiP('"+id+"','"+ek+"','"+p.k+"',this.value)");
+  }).join('') + '</div>';
+
+  if(ek === 'rapport'){
+    const th = pvRapportTheorique(eq);
+    if(th != null){
+      const pose = pvNombre(d.p.theorique);
+      const pareil = pose != null && Math.abs(pose - th) < 0.0005;
+      g += '<div class="pvcalc" style="margin-bottom:12px;">' +
+        'Rapport théorique d\'après la plaque (' + echapper(eq.info.coupl) + ', ' +
+        echapper(eq.info.u1||'?') + ' / ' + echapper(eq.info.u2||'?') + ') : <b>' + pvNum(th,3) + '</b>' +
+        (pareil ? ' — appliqué.' :
+          ' <button class="ghost" style="padding:5px 10px; font-size:11.5px; margin-left:6px;" ' +
+          'onclick="pvAppliquerTheorique(\''+id+'\')">Reprendre</button>') +
+        '</div>';
+    } else if(eq.info.coupl){
+      g += '<div class="pvcalc" style="margin-bottom:12px;">Renseigne les tensions primaire et ' +
+        'secondaire sur la plaque pour que le rapport théorique se calcule tout seul.</div>';
+    }
+  }
+
+  g += '<div class="pvtblwrap"><table class="pvtbl"><thead><tr><th>' +
+       (def.calc==='reglages' ? 'Protection' : 'Mesure') + '</th>' +
+       def.cols.map(function(c){ return '<th>'+pvMaj(c.l)+'</th>'; }).join('') +
+       '<th>Conformité</th></tr></thead><tbody>';
+
+  res.lignes.forEach(function(o){
+    g += '<tr><td class="pvl">'+echapper(o.l)+'</td>';
+    def.cols.forEach(function(c){
+      const val = o.cols[c.k];
+      if(c.ty === 'sel'){
+        g += '<td><select onchange="pvMajEssaiL(\''+id+'\',\''+ek+'\',\''+o.k+'\',\''+c.k+'\',this.value)">' +
+          c.o.map(function(x){ return '<option value="'+echapper(x)+'"'+(x===val?' selected':'')+'>'+(x?echapper(x):'—')+'</option>'; }).join('') +
+          '</select></td>';
+      } else {
+        g += '<td><input type="text" inputmode="'+(c.ty==='num'?'decimal':'text')+'" value="'+echapper(val)+'" ' +
+          'oninput="pvMajEssaiL(\''+id+'\',\''+ek+'\',\''+o.k+'\',\''+c.k+'\',this.value)"></td>';
+      }
+    });
+    // l'écart sert à juger la conformité, il n'est pas affiché
+    g += '<td class="pvc">' + (o.verdict===null ? '<span style="color:var(--muted);">—</span>' :
+         (o.verdict ? '<b style="color:var(--green);">Conforme</b>' : '<b style="color:var(--red);">Non conforme</b>')) +
+         '</td></tr>';
+  });
+  g += '</tbody></table></div>';
+
+  if(res.verdictGlobal === null)
+    g += '<div class="pvcalc" style="margin-top:8px;">Renseigne les mesures et les paramètres pour obtenir un verdict. Sans seuil, le PV imprime la mesure sans conclusion.</div>';
+
+  z.innerHTML = g;
+}
+
+// ---------- rendu d'un équipement ----------
+function pvRendreEquipements(){
+  const z = document.getElementById('pvEquipements'); if(!z) return;
+  if(!PV_COURANT || !PV_COURANT.eqs.length){
+    z.innerHTML = '<div class="note" style="border-left-color:var(--muted);">Aucun équipement. ' +
+      'Ajoute le poste, puis chaque cellule, fusible, transformateur et disjoncteur contrôlé — ' +
+      'le PV reprendra une fiche par équipement, dans cet ordre.</div>';
+    return;
+  }
+  z.innerHTML = PV_COURANT.eqs.map(function(eq, i){
+    const t = PV_TYPES[eq.type] || PV_TYPES.autre;
+    const ouvert = PV_EQ_OUVERT === eq.id;
+    const nbAno = (eq.anos||[]).filter(function(a){ return (a.txt||'').trim(); }).length;
+    let g = '<div class="pveq'+(ouvert?' ouvert':'')+'">';
+    g += '<div class="pveqtete" onclick="pvBasculerEq(\''+eq.id+'\')">' +
+      '<span class="pveqic">'+t.icone+'</span>' +
+      '<span class="pveqn"><b>'+echapper(eq.nom||t.nom)+'</b><span>'+echapper(t.nom)+
+        (nbAno ? ' · <span style="color:var(--amber);">'+nbAno+' anomalie'+(nbAno>1?'s':'')+'</span>' : '') +
+        (eq.photo ? ' · photo' : '') + '</span></span>' +
+      '<span class="pveqch">'+(ouvert?'–':'+')+'</span></div>';
+
+    if(ouvert){
+      g += '<div class="pveqbody">';
+
+      // nom + photo
+      g += '<div class="pvgrid">' +
+        '<div class="pvlarge"><label>Nom de l\'équipement, tel qu\'il apparaîtra sur le PV</label>' +
+        '<input type="text" value="'+echapper(eq.nom||'')+'" oninput="pvMajEq(\''+eq.id+'\',\'nom\',null,this.value)"></div>' +
+        '</div>';
+
+      g += '<div class="pvphoto">' +
+        (eq.photo ? '<img src="'+eq.photo+'" alt="">' : '<div class="pvnophoto">pas de photo</div>') +
+        '<div class="pvphotobtn">' +
+        '<label class="ghost" style="display:inline-block; padding:8px 12px; font-size:12px; cursor:pointer; border:1px solid var(--line); border-radius:5px;">' +
+        (eq.photo?'Remplacer':'Ajouter une photo') +
+        '<input type="file" accept="image/*" style="display:none;" onchange="pvChargerPhoto(\''+eq.id+'\',this)"></label>' +
+        (eq.photo ? ' <button class="ghost danger" style="padding:8px 12px; font-size:12px;" onclick="pvRetirerPhoto(\''+eq.id+'\')">Retirer</button>' : '') +
+        '</div></div>';
+
+      // informations
+      if(t.info.length){
+        g += '<div class="pvsstitre">Informations de l\'équipement</div><div class="pvgrid">' +
+          t.info.map(function(c){
+            return pvChamp(c, eq.info[c.k], "pvMajEq('"+eq.id+"','info','"+c.k+"',this.value)");
+          }).join('') + '</div>';
+      }
+
+      // opérations
+      if(t.ops.length){
+        g += '<div class="pvsstitre">Opérations de maintenance de niveau 1 à 3</div><div class="pvops">';
+        t.ops.forEach(function(o){
+          if(o.g){ g += '<div class="pvopg">'+echapper(o.g)+' :</div>'; return; }
+          const v = eq.ops[o.k] || '';
+          g += '<div class="pvop"><span>'+echapper(o.l)+'</span>' +
+            '<select onchange="pvMajEq(\''+eq.id+'\',\'ops\',\''+o.k+'\',this.value)">' +
+            PV_ETATS.map(function(e){ return '<option value="'+e+'"'+(e===v?' selected':'')+'>'+(e||'—')+'</option>'; }).join('') +
+            '</select></div>';
+        });
+        g += '</div>';
+      }
+
+      // essais
+      (t.essais||[]).forEach(function(ek){
+        g += '<div class="pvsstitre">'+echapper(PV_ESSAIS[ek].t)+'</div>' +
+             '<div id="pvessai-'+eq.id+'-'+ek+'"></div>';
+      });
+
+      // observation
+      g += '<div class="pvsstitre">Observation</div><div class="pvgrid">' +
+        '<div class="pvlarge"><textarea oninput="pvMajEq(\''+eq.id+'\',\'obs\',null,this.value)">'+echapper(eq.obs||'')+'</textarea></div></div>';
+
+      // anomalies
+      g += '<div class="pvsstitre">Anomalies constatées</div>';
+      (eq.anos||[]).forEach(function(a, i){
+        g += '<div class="pvano"><div class="pvgrid">' +
+          '<div class="pvlarge"><label>Anomalie</label><textarea oninput="pvMajAno(\''+eq.id+'\','+i+',\'txt\',this.value)">'+echapper(a.txt||'')+'</textarea></div>' +
+          '<div><label>Priorité</label><select onchange="pvMajAno(\''+eq.id+'\','+i+',\'prio\',this.value)">' +
+            ['Mineure','Majeure'].map(function(p){ return '<option'+(p===a.prio?' selected':'')+'>'+p+'</option>'; }).join('') +
+          '</select></div>' +
+          '<div><label>Constatation</label><input type="date" value="'+echapper(a.date||'')+'" onchange="pvMajAno(\''+eq.id+'\','+i+',\'date\',this.value)"></div>' +
+          '</div><button class="ghost danger" style="padding:6px 10px; font-size:12px; margin-top:6px;" onclick="pvRetirerAno(\''+eq.id+'\','+i+')">Retirer cette anomalie</button></div>';
+      });
+      g += '<button class="ghost" style="padding:8px 12px; font-size:12px;" onclick="pvAjouterAno(\''+eq.id+'\')">+ Ajouter une anomalie</button>';
+
+      // ordre et suppression
+      g += '<div class="toolbar" style="margin-top:14px; border-top:1px solid var(--line); padding-top:12px;">' +
+        '<button class="ghost" style="padding:7px 11px; font-size:12px;" onclick="pvDeplacerEq(\''+eq.id+'\',-1)">↑ Monter</button>' +
+        '<button class="ghost" style="padding:7px 11px; font-size:12px;" onclick="pvDeplacerEq(\''+eq.id+'\',1)">↓ Descendre</button>' +
+        '<button class="ghost danger" style="padding:7px 11px; font-size:12px;" onclick="pvSupprimerEq(\''+eq.id+'\')">Supprimer l\'équipement</button></div>';
+
+      g += '</div>';
+    }
+    g += '</div>';
+    return g;
+  }).join('');
+
+  // les blocs d'essai se rendent après l'insertion du squelette
+  PV_COURANT.eqs.forEach(function(eq){
+    if(PV_EQ_OUVERT !== eq.id) return;
+    const t = PV_TYPES[eq.type] || PV_TYPES.autre;
+    (t.essais||[]).forEach(function(ek){ pvRendreEssai(eq.id, ek); });
+  });
+  pvRendreSommaireEq();
+}
+
+function pvRendreSommaireEq(){
+  const z = document.getElementById('pvSommaire'); if(!z) return;
+  if(!PV_COURANT || !PV_COURANT.eqs.length){ z.style.display='none'; return; }
+  z.style.display = 'block';
+  z.innerHTML = '<div class="favlbl">Sommaire du rapport — ' + PV_COURANT.eqs.length + ' équipement' +
+    (PV_COURANT.eqs.length>1?'s':'') + '</div><div class="favrow">' +
+    PV_COURANT.eqs.map(function(e){
+      const nb = (e.anos||[]).filter(function(a){ return (a.txt||'').trim(); }).length;
+      return '<button class="favchip" onclick="PV_EQ_OUVERT=\''+e.id+'\'; pvRendreEquipements(); document.getElementById(\'pvEquipements\').scrollIntoView({behavior:\'smooth\',block:\'start\'});">' +
+        echapper(e.nom) + (nb ? ' <span style="color:var(--amber);">●</span>' : '') + '</button>';
+    }).join('') + '</div>';
+}
+
+// =====================================================================
+// GESTION DES PV
+// =====================================================================
+function pvNouveau(){
+  PV_COURANT = pvVide();
+  const auj = new Date().toISOString().slice(0,10);
+  PV_COURANT.aff.date = auj;
+  PV_COURANT.aff.dateCr = auj;
+  PV_COURANT.aff.typeRap = 'Rapport de maintenance préventive';
+  if(session && session.profil && session.profil.nom) PV_COURANT.aff.technicien = session.profil.nom;
+  PV_EQ_OUVERT = null;
+  pvSauver();
+  pvToutRendre();
+  pvMessage('Nouveau rapport. Commence par l\'en-tête, puis ajoute tes équipements.', 'var(--muted)');
+  window.scrollTo(0,0);
+}
+function pvOuvrir(id){
+  const p = pvListeStockee().filter(function(x){ return x.id===id; })[0];
+  if(!p) return;
+  PV_COURANT = JSON.parse(JSON.stringify(p));
+  if(!PV_COURANT.eqs) PV_COURANT.eqs = [];
+  if(!PV_COURANT.aff) PV_COURANT.aff = {};
+  PV_EQ_OUVERT = null;
+  pvToutRendre();
+  window.scrollTo(0,0);
+  pvMessage('Rapport ouvert.', 'var(--muted)');
+}
+function pvDupliquer(){
+  if(!PV_COURANT) return;
+  const c = JSON.parse(JSON.stringify(PV_COURANT));
+  c.id = 'pv-'+Date.now();
+  c.aff.num = ''; c.aff.livNom = ''; c.aff.livAdr = '';
+  c.aff.date = new Date().toISOString().slice(0,10);
+  c.aff.dateCr = c.aff.date;
+  // on garde les équipements et leurs fiches, on vide les relevés du jour
+  c.eqs.forEach(function(e){
+    e.id = 'eq-'+Date.now()+'-'+Math.round(Math.random()*9999);
+    e.obs = ''; e.anos = []; e.ops = {};
+    Object.keys(e.essais||{}).forEach(function(ek){
+      Object.keys(e.essais[ek].l||{}).forEach(function(lk){
+        const def = PV_ESSAIS[ek];
+        (def.cols||[]).forEach(function(col){
+          if(col.k === 'val' || col.k === 'seuil' || col.k === 'tempo') e.essais[ek].l[lk][col.k] = '';
+          if(col.k === 'essai') e.essais[ek].l[lk][col.k] = '';
+        });
+      });
+    });
+  });
+  PV_COURANT = c;
+  PV_EQ_OUVERT = null;
+  pvSauver(); pvToutRendre();
+  pvMessage('Copie créée : les équipements et leurs plaques sont conservés, les relevés sont vidés.', 'var(--muted)');
+  window.scrollTo(0,0);
+}
+function pvSupprimer(id){
+  const l = pvListeStockee().filter(function(x){ return x.id !== id; });
+  LS.set('kitht-pv', l);
+  if(PV_COURANT && PV_COURANT.id === id){ PV_COURANT = null; }
+  pvToutRendre();
+  pvMessage('Rapport supprimé.', 'var(--amber)');
+}
+function pvTitre(p){
+  const a = p.aff || {};
+  return a.livNom || a.num || a.cliNom || 'Rapport sans nom';
+}
 function pvAfficherListe(){
   const z = document.getElementById('pvListe'); if(!z) return;
   const l = pvListeStockee();
   if(!l.length){
-    z.innerHTML = '<div class="note" style="border-left-color:var(--muted);">Aucun PV enregistré. ' +
-      'Remplis le formulaire ci-dessus puis <b>Enregistrer</b>.</div>';
+    z.innerHTML = '<div class="note" style="border-left-color:var(--muted);">Aucun rapport enregistré.</div>';
     return;
   }
   z.innerHTML = l.map(function(p){
-    const a = (p.d && p.d.aff) || {};
+    const a = p.aff || {};
     const encours = PV_COURANT && PV_COURANT.id === p.id;
-    return '<div class="pvfiche"' + (encours ? ' style="border-left-color:var(--amber);"' : '') + '>' +
-      '<span class="pvinfo"><span class="pvn">' + echapper(pvTitre(p)) +
-        (encours ? ' <span style="color:var(--amber); font-size:11px;">· ouvert</span>' : '') + '</span>' +
-      '<span class="pvd">' + echapper([a.client, a.nature].filter(Boolean).join(' · ') || '—') +
-        ' · ' + (a.date ? pvDateFr(a.date) : 'sans date') +
-        ' · modifié le ' + pvDateFr(p.maj) + '</span></span>' +
+    const nbEq = (p.eqs||[]).length;
+    const nbAno = (p.eqs||[]).reduce(function(n,e){
+      return n + (e.anos||[]).filter(function(x){ return (x.txt||'').trim(); }).length; }, 0);
+    return '<div class="pvfiche"'+(encours?' style="border-left-color:var(--amber);"':'')+'>' +
+      '<span class="pvinfo"><span class="pvn">'+echapper(pvTitre(p)) +
+        (encours?' <span style="color:var(--amber); font-size:11px;">· ouvert</span>':'')+'</span>' +
+      '<span class="pvd">'+echapper([a.num, a.cliNom].filter(Boolean).join(' · ')||'—') +
+        ' · '+(a.date?pvDateFr(a.date):'sans date')+' · '+nbEq+' équipement'+(nbEq>1?'s':'') +
+        (nbAno?' · '+nbAno+' anomalie'+(nbAno>1?'s':''):'')+'</span></span>' +
       '<span style="display:flex; gap:6px; flex-shrink:0;">' +
-      '<button class="ghost" style="padding:7px 11px; font-size:12px;" onclick="pvOuvrir(\'' + p.id + '\')">Ouvrir</button>' +
-      '<button class="ghost danger" style="padding:7px 10px; font-size:12px;" onclick="pvSupprimer(\'' + p.id + '\')">×</button>' +
+      '<button class="ghost" style="padding:7px 11px; font-size:12px;" onclick="pvOuvrir(\''+p.id+'\')">Ouvrir</button>' +
+      '<button class="ghost danger" style="padding:7px 10px; font-size:12px;" onclick="pvSupprimer(\''+p.id+'\')">×</button>' +
       '</span></div>';
   }).join('');
 }
+function pvToutRendre(){
+  const bloc = document.getElementById('pvBloc');
+  if(bloc) bloc.style.display = PV_COURANT ? 'block' : 'none';
+  if(PV_COURANT){ pvRendreAffaire(); pvRendreEquipements(); }
+  pvRendreSoc();
+  pvAfficherListe();
+}
+function pvInit(){
+  if(!PV_COURANT){
+    const l = pvListeStockee();
+    if(l.length){
+      PV_COURANT = JSON.parse(JSON.stringify(l[0]));
+      if(!PV_COURANT.eqs) PV_COURANT.eqs = [];
+      if(!PV_COURANT.aff) PV_COURANT.aff = {};
+    }
+  }
+  pvToutRendre();
+}
 
-// ---------- impression ----------
+// =====================================================================
+// IMPRESSION
+// =====================================================================
+function pvEnteteDoc(titreDroite){
+  const s = pvSoc();
+  const g = '<div class="dtete">' +
+    '<div class="dident">' +
+      (s.logo ? '<img class="dlogo" src="'+s.logo+'" alt="">' :
+       (s.nom ? '<div class="dnom">'+echapper(s.nom)+'</div>' : '')) +
+    '</div>' +
+    '<div class="ddroite">'+titreDroite+'</div></div>';
+  return g;
+}
+function pvPied(){
+  const s = pvSoc();
+  const l = [s.l1, s.l2, s.l3].filter(function(x){ return (x||'').trim(); });
+  if(!s.nom && !l.length) return '<div class="dpied"></div>';
+  return '<div class="dpied">' + (s.nom ? '<b>'+echapper(s.nom)+'</b>' : '') +
+    (l.length ? (s.nom?' · ':'') + l.map(echapper).join(' · ') : '') + '</div>';
+}
+
 function pvImprimer(){
-  const d = pvLireFormulaire();
-  if(!Object.keys(d).length){ pvMessage('Le PV est vide — rien à imprimer.', 'var(--amber)'); return; }
-  const a = d.aff || {}, f = d.fin || {};
-  let g = '<h1>Procès-verbal d\'intervention</h1><div class="pvsous">' +
-    [a.poste && ('Poste : ' + a.poste), a.client && ('Client : ' + a.client),
-     a.lieu, a.date && pvDateFr(a.date)].filter(Boolean).map(echapper).join(' &nbsp;·&nbsp; ') +
+  if(!PV_COURANT || (!PV_COURANT.eqs.length && !PV_COURANT.aff.num)){
+    pvMessage('Le rapport est vide.', 'var(--amber)'); return;
+  }
+  const a = PV_COURANT.aff || {};
+  let g = '';
+
+  // ---------------- page de garde, sommaire inclus ----------------
+  g += '<section class="dpage">' +
+    pvEnteteDoc('<div class="dtitre">'+echapper(a.typeRap||'Rapport d\'intervention')+'</div>' +
+                (a.num ? '<div class="dnum">N° '+echapper(a.num)+'</div>' : ''));
+
+  g += '<div class="dmeta">' +
+    (a.affaire   ? '<div><span>Réf. chantier</span>'+echapper(a.affaire)+'</div>' : '') +
+    (a.dateCr    ? '<div><span>Intervention du</span>'+pvDateFr(a.dateCr)+'</div>' : '') +
+    (a.date      ? '<div><span>Rapport établi le</span>'+pvDateFr(a.date)+'</div>' : '') +
+    (a.technicien? '<div><span>Technicien</span>'+echapper(a.technicien)+'</div>' : '') +
     '</div>';
 
-  PV_SECTIONS.forEach(function(s){
-    const o = d[s.k];
-    if(!o || !Object.keys(o).length) return;
-    const lignes = s.c.filter(function(c){ return o[c.k] != null && o[c.k] !== ''; })
-      .map(function(c){
-        const v = (c.ty === 'date') ? pvDateFr(o[c.k]) : o[c.k];
-        return '<tr><td class="pvk">' + echapper(c.l) + '</td><td class="pvv">' +
-               echapper(v).replace(/\n/g, '<br>') + '</td></tr>';
-      }).join('');
-    if(!lignes) return;
-    g += '<h2>' + echapper(s.t) + '</h2><table>' + lignes + '</table>';
-    const cz = document.getElementById('pvcalc-' + s.k);
-    if(cz && cz.style.display !== 'none' && cz.textContent.trim()){
-      // texteBrut rend leurs espaces aux phrases séparées par des <br>
-      g += '<div class="pvnote">' + echapper(texteBrut(cz.innerHTML)) + '</div>';
-    }
-  });
+  if(a.livNom || a.livAdr || a.cliNom || a.cliAdr){
+    g += '<div class="dcols">';
+    if(a.livNom || a.livAdr)
+      g += '<div><div class="dlabel">Site</div>' +
+           (a.livNom?'<b>'+echapper(a.livNom)+'</b><br>':'') +
+           echapper(a.livAdr||'').replace(/\n/g,'<br>') + '</div>';
+    if(a.cliNom || a.cliAdr || a.cliAtt)
+      g += '<div><div class="dlabel">Client</div>' +
+           (a.cliNom?'<b>'+echapper(a.cliNom)+'</b><br>':'') +
+           (a.cliAtt?'à l\'attention de '+echapper(a.cliAtt)+'<br>':'') +
+           echapper(a.cliAdr||'').replace(/\n/g,'<br>') + '</div>';
+    g += '</div>';
+  }
 
-  g += '<div class="pvsign"><div>Le technicien' +
-    (f.redige ? ' — ' + echapper(f.redige) : '') + '<br><br><br></div>' +
-    '<div>Le client' + (f.visa ? ' — ' + echapper(f.visa) : '') + '<br><br><br></div></div>';
-  g += '<div class="pvpied">Document établi avec KIT HT — © 2026 Marc GELÉ · ' +
-    'dépôt e-Soleau INPI n° DSO2026029194. Les valeurs portées sur ce PV sont celles relevées ' +
-    'sur site par le technicien signataire. Édité le ' + pvDateFr(new Date().toISOString()) + '.</div>';
+  if(PV_COURANT.eqs.length){
+    g += '<div class="dlabel dlabel-h">Équipements contrôlés</div><table class="dsom">';
+    PV_COURANT.eqs.forEach(function(e, i){
+      const t = PV_TYPES[e.type] || PV_TYPES.autre;
+      const anos = (e.anos||[]).filter(function(x){ return (x.txt||'').trim(); });
+      const maj = anos.filter(function(x){ return x.prio === 'Majeure'; }).length;
+      let etat = '<span class="dok">conforme</span>';
+      if(anos.length) etat = '<span class="'+(maj?'dko':'dwarn')+'">' + anos.length +
+        ' anomalie' + (anos.length>1?'s':'') + (maj ? ' · ' + maj + ' majeure' + (maj>1?'s':'') : '') + '</span>';
+      g += '<tr><td class="dn">'+String(i+1).padStart(2,'0')+'</td>' +
+        '<td><b>'+echapper(e.nom)+'</b><span class="dty">'+echapper(t.nom)+'</span></td>' +
+        '<td class="dr">'+etat+'</td></tr>';
+    });
+    g += '</table>';
+  }
+  g += pvPied() + '</section>';
+
+  // ---------------- une feuille par équipement ----------------
+  PV_COURANT.eqs.forEach(function(eq, idx){
+    const t = PV_TYPES[eq.type] || PV_TYPES.autre;
+    g += '<section class="dpage">' +
+      pvEnteteDoc('<div class="dnum">'+String(idx+1).padStart(2,'0')+'</div>' +
+                  '<div class="dtitre2">'+echapper(eq.nom)+'</div>' +
+                  '<div class="dty2">'+echapper(t.nom)+'</div>');
+
+    // identification
+    const infos = t.info.filter(function(c){ return (eq.info[c.k]||'').toString().trim(); });
+    if(infos.length || eq.photo){
+      g += '<div class="dlabel dlabel-h">Identification</div><div class="dident2">';
+      if(eq.photo) g += '<img class="dphoto" src="'+eq.photo+'" alt="">';
+      g += '<table class="dfiche">';
+      for(let i=0; i<infos.length; i+=2){
+        g += '<tr><th>'+pvMaj(infos[i].l)+'</th><td>'+echapper(eq.info[infos[i].k])+'</td>';
+        g += infos[i+1] ? '<th>'+pvMaj(infos[i+1].l)+'</th><td>'+echapper(eq.info[infos[i+1].k])+'</td>'
+                        : '<th></th><td></td>';
+        g += '</tr>';
+      }
+      g += '</table></div>';
+    }
+
+    // opérations
+    // on ne garde un intitulé de groupe que si au moins une de ses lignes est remplie
+    const ops = t.ops.filter(function(o, i){
+      if(!o.g) return (eq.ops[o.k]||'').trim();
+      for(let j = i + 1; j < t.ops.length && !t.ops[j].g; j++){
+        if((eq.ops[t.ops[j].k]||'').trim()) return true;
+      }
+      return false;
+    });
+    if(ops.length){
+      g += '<div class="dlabel dlabel-h">Opérations réalisées</div><table class="dops">';
+      ops.forEach(function(o){
+        if(o.g){ g += '<tr><td class="dgrp" colspan="2">'+echapper(o.g)+'</td></tr>'; return; }
+        const v = eq.ops[o.k];
+        const cl = (v==='Défaut') ? ' class="dko"' :
+                   ((v==='Sans objet' || v==='Non fait') ? ' class="dso"' : '');
+        g += '<tr><td>'+echapper(o.l)+'</td><td'+cl+'>'+echapper(v)+'</td></tr>';
+      });
+      g += '</table>';
+    }
+
+    // essais
+    (t.essais||[]).forEach(function(ek){
+      const def = PV_ESSAIS[ek];
+      const res = pvResultats(eq, ek);
+      const rempli = res.lignes.some(function(o){
+        return def.cols.some(function(c){ return (o.cols[c.k]||'').toString().trim(); }); });
+      if(!rempli) return;
+
+      const pr = def.params.filter(function(p){
+        const v = res.params[p.k]; return v != null && String(v).trim(); });
+
+      g += '<div class="dessai">' +
+        '<div class="dlabel dlabel-h">Essai — '+echapper(def.t)+'</div>' +
+        '<p class="dobjet">'+echapper(def.objet)+'</p>' +
+        (pr.length ? '<p class="dparam">' + pr.map(function(p){
+            return '<b>'+pvMaj(p.l)+'</b> '+echapper(res.params[p.k]); }).join(' &nbsp;·&nbsp; ') + '</p>' : '') +
+        '</div>';
+
+      const cols = def.cols.filter(function(c){ return c.k!=='unite'; });
+      g += '<table class="dmes"><thead><tr><th>'+(def.calc==='reglages'?'Protection':'Mesure')+'</th>' +
+        cols.map(function(c){ return '<th>'+pvMaj(c.l)+'</th>'; }).join('') +
+        '<th>Conformité</th></tr></thead><tbody>';
+      res.lignes.forEach(function(o){
+        g += '<tr><td class="dm">'+echapper(o.l)+'</td>';
+        cols.forEach(function(c){
+          let v = o.cols[c.k];
+          if(c.k === 'val' && def.calc === 'isolement') v = (v===''?'':v+' '+(o.cols.unite||'MΩ'));
+          g += '<td>'+echapper(v)+'</td>';
+        });
+        g += '<td>'+(o.verdict===null?'<span class="dso">non jugé</span>' :
+             (o.verdict?'<span class="dok">conforme</span>':'<span class="dko">non conforme</span>'))+'</td></tr>';
+      });
+      g += '</tbody></table>';
+    });
+
+    if((eq.obs||'').trim())
+      g += '<div class="dlabel dlabel-h">Observation</div><p class="dobs">' +
+           echapper(eq.obs).replace(/\n/g,'<br>') + '</p>';
+
+    const anos = (eq.anos||[]).filter(function(x){ return (x.txt||'').trim(); });
+    if(anos.length){
+      g += '<div class="dlabel dlabel-h">Anomalies constatées</div><table class="dano">';
+      anos.forEach(function(an){
+        g += '<tr><td class="dpr '+(an.prio==='Majeure'?'dko':'dwarn')+'">'+
+          echapper((an.prio||'').toUpperCase())+'</td>' +
+          '<td>'+echapper(an.txt).replace(/\n/g,'<br>')+'</td>' +
+          '<td class="dr dd">'+pvDateFr(an.date)+'</td></tr>';
+      });
+      g += '</table>';
+    }
+
+    g += '<div class="dsign"><span>Technicien <b>'+echapper(a.technicien||'')+'</b></span>' +
+      '<span>'+echapper(eq.nom)+' · intervention du '+pvDateFr(a.dateCr||a.date)+'</span></div>';
+    g += pvPied() + '</section>';
+  });
 
   const z = document.getElementById('pvImpression');
   z.innerHTML = g;
-  setTimeout(function(){ window.print(); }, 60);
+  setTimeout(function(){ window.print(); }, 80);
 }
-
-function pvInit(){
-  if(document.getElementById('pvForm') && !document.getElementById('pvsec-aff')){
-    pvConstruireFormulaire();
-    const l = pvListeStockee();
-    if(l.length){ PV_COURANT = JSON.parse(JSON.stringify(l[0])); pvEcrireFormulaire(PV_COURANT.d); }
-    else pvNouveau();
-  }
-  pvAfficherListe();
-}
-
 
 // =====================================================================
 // STATISTIQUES D'USAGE PAR ONGLET
