@@ -306,6 +306,41 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   .schema{padding:10px; gap:14px;}
   .formula{font-size:11.5px; overflow-x:auto;}
 }
+/* ---------- recherche globale ---------- */
+.qbox{position:relative; margin-bottom:12px;}
+.qbox input{width:100%; padding:14px 42px 14px 40px; font-size:16px; font-family:var(--body);
+  background:var(--panel); border:1px solid var(--line); border-radius:8px; color:var(--text);}
+.qbox input:focus{outline:none; border-color:var(--amber); background:var(--panel-2);}
+.qbox input::placeholder{color:var(--muted);}
+.qbox .qicon{position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  color:var(--muted); font-size:15px; pointer-events:none;}
+.qbox .qclear{position:absolute; right:8px; top:50%; transform:translateY(-50%);
+  background:none; border:none; color:var(--muted); font-size:22px; line-height:1;
+  padding:4px 10px; cursor:pointer;}
+.qbox .qclear:hover{color:var(--text);}
+#qResultats{margin-bottom:14px;}
+.qcount{font-family:var(--mono); font-size:11px; color:var(--muted); text-transform:uppercase;
+  letter-spacing:.05em; margin:4px 0 8px;}
+.qres{display:block; width:100%; text-align:left; background:var(--panel);
+  border:1px solid var(--line); border-left:3px solid var(--amber-dim); border-radius:6px;
+  padding:11px 13px; margin-bottom:7px; cursor:pointer; font-family:var(--body);}
+.qres:hover, .qres:focus{background:var(--panel-2); border-left-color:var(--amber); outline:none;}
+.qres .qo{display:block; font-family:var(--mono); font-size:10.5px; color:var(--muted);
+  text-transform:uppercase; letter-spacing:.04em; margin-bottom:3px;}
+.qres .qt{display:block; font-size:13.5px; color:var(--text); font-weight:600; line-height:1.35;}
+.qres .qx{display:block; font-size:11.5px; color:var(--muted); line-height:1.5; margin-top:4px;}
+.qres mark{background:rgba(255,138,30,.22); color:var(--amber); border-radius:2px; padding:0 2px;}
+.qvide{color:var(--muted); font-size:12.5px; line-height:1.6; padding:14px 2px;}
+
+/* ---------- raccourcis ---------- */
+#zoneFavoris{margin-bottom:14px;}
+.favlbl{font-family:var(--mono); font-size:10.5px; color:var(--muted); text-transform:uppercase;
+  letter-spacing:.05em; margin-bottom:7px;}
+.favrow{display:flex; flex-wrap:wrap; gap:7px;}
+.favchip{background:var(--panel); border:1px solid var(--line); border-radius:20px;
+  padding:8px 14px; font-size:12.5px; font-family:var(--body); color:var(--text); cursor:pointer;}
+.favchip:hover{border-color:var(--amber); color:var(--amber);}
+
 </style>
 </head>
 <body>
@@ -397,6 +432,19 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     <span class="topbar-title" id="topbarTitle"></span>
   </div>
   <button id="fabAccueil" onclick="goHome()" style="display:none;" aria-label="Retour à l'accueil">‹ Accueil</button>
+
+  <div id="barreContenu" style="display:none; background:rgba(239,82,82,0.10); border:1px solid var(--red); border-radius:5px; padding:10px 12px; margin-bottom:12px; font-size:12.5px; color:var(--red);"></div>
+
+  <div class="qbox">
+    <span class="qicon">⌕</span>
+    <input type="text" id="qGlobal" autocomplete="off" autocorrect="off" spellcheck="false"
+           placeholder="Chercher partout — DMA, tangente delta, Dyn11, Siba…"
+           oninput="chercherGlobal()"
+           onkeydown="if(event.key==='Escape'){viderRecherche();} if(event.key==='Enter'){ouvrirPremierResultat();}">
+    <button class="qclear" id="qClear" style="display:none;" onclick="viderRecherche()" aria-label="Effacer">×</button>
+  </div>
+  <div id="qResultats" style="display:none;"></div>
+  <div id="zoneFavoris" style="display:none;"></div>
 
   <button id="banniereAdmin" onclick="selectTab('admin')" style="display:none; width:100%; text-align:left; background:linear-gradient(90deg, rgba(62,166,255,0.16), rgba(62,166,255,0.05)); border:1px solid var(--blue); border-radius:8px; padding:15px 16px; margin-bottom:14px; cursor:pointer;">
     <span style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
@@ -1641,6 +1689,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
         fait aucune recherche, et ne peut pas compléter ses tableaux tout seul. Les ajouts de
         données et les corrections de calcul se font en amont, pas depuis cette page.
       </div>
+      <div class="note" id="noteVersions" style="border-left-color:var(--muted); font-size:12px; font-family:var(--mono);"></div>
       <div class="note" style="border-left-color:var(--amber-dim);">
         <b>Propriété intellectuelle</b><br>
         KIT HT — © 2026 Marc GELÉ. Tous droits réservés.<br>
@@ -1781,10 +1830,17 @@ function selectTab(name){
   document.getElementById('topbar').style.display = 'flex';
   const fab=document.getElementById('fabAccueil'); if(fab) fab.style.display='block';
   document.getElementById('topbarTitle').textContent = TITRES[name] || '';
+  const qb = document.querySelector('.qbox'); if(qb) qb.style.display = 'none';
+  const qr = document.getElementById('qResultats'); if(qr) qr.style.display = 'none';
+  const zf = document.getElementById('zoneFavoris'); if(zf) zf.style.display = 'none';
+  const bcn = document.getElementById('barreContenu'); if(bcn) bcn.style.display = 'none';
   window.scrollTo(0,0);
   location.hash = name;
+  noterUsage(name);
+  try{ avertirContenuManquant(name); }catch(e){}
   if(name === 'admin') ouvrirAdmin();
   if(name === 'compte') majCompteUI();
+  if(name === 'info') majVersions();
 }
 function goHome(){
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
@@ -1794,6 +1850,10 @@ function goHome(){
   const ba=document.getElementById('banniereAdmin'); if(ba) ba.style.display = estAdmin() ? 'block' : 'none';
   document.getElementById('topbar').style.display = 'none';
   const fab=document.getElementById('fabAccueil'); if(fab) fab.style.display='none';
+  const qb = document.querySelector('.qbox'); if(qb) qb.style.display = 'block';
+  viderRecherche();
+  majFavoris();
+  try{ majBandeauContenu(); }catch(e){}
   window.scrollTo(0,0);
   location.hash = '';
 }
@@ -2838,12 +2898,14 @@ let contenuPret = false;
 
 function appliquerContenu(d){
   if(!d) return false;
+  META_CONTENU = d._META || null;
   BLOCS.forEach(n=>{ if(d[n] !== undefined) { try{ eval(n+' = d[n];'); }catch(e){} } });
   contenuPret = !!(CATALOG_XLSX && CATALOG_XLSX.length);
   return contenuPret;
 }
 function viderContenu(){
   BLOCS.forEach(n=>{ try{ eval(n+' = null;'); }catch(e){} });
+  INDEX_RECHERCHE = []; META_CONTENU = null;
   REFERENCE_DATA = [];
   contenuPret = false;
   LS.del('kitht-contenu');
@@ -3269,11 +3331,371 @@ function demarrerInterface(){
    calcPoste,renderTable].forEach(f=>{
     try{ f(); }catch(e){ console.warn('init', e.message); }
   });
+  try{ construireIndexRecherche(); majFavoris(); majVersions(); majBandeauContenu(); }
+  catch(e){ console.warn('index', e.message); }
 }
 loadBdd();
 
 
 
+
+// =====================================================================
+// RECHERCHE GLOBALE · RACCOURCIS · GARDE-FOU DE VERSION
+// =====================================================================
+const VERSION_PAGE = 'v36';
+let META_CONTENU = null;
+
+// Sélecteur de sujet -> bloc de données -> conteneur du résultat.
+// Sert à la fois à l'index de recherche et à l'avertissement de contenu absent.
+const SUJETS_SRC = [
+  {sel:'casSel',      bloc:'CAS_PARTICULIERS', cible:'casRes'},
+  {sel:'matSel',      bloc:'MATERIELS',        cible:'matNote'},
+  {sel:'accSel',      bloc:'ACCESSOIRES',      cible:'accRes'},
+  {sel:'cpSel',       bloc:'COUPLES',          cible:'cpRes'},
+  {sel:'hSel',        bloc:'HUILE',            cible:'hRes'},
+  {sel:'rSel',        bloc:'RELAIS',           cible:'rRes'},
+  {sel:'esSel',       bloc:'ESSAIS',           cible:'esNote'},
+  {sel:'djSel',       bloc:'DJBT',             cible:'djRes'},
+  {sel:'secSel',      bloc:'SECU',             cible:'secRes'},
+  {sel:'isoSel',      bloc:'ISOL',             cible:'isoRes'},
+  {sel:'ecSel',       bloc:'ESSAICABLE',       cible:'ecRes'},
+  {sel:'hbSel',       bloc:'HABILIT',          cible:'hbRes'},
+  {sel:'cgSel',       bloc:'CONSIGN',          cible:'cgRes'},
+  {sel:'principeSel', bloc:'PRINCIPES',        cible:'principeRes'}
+];
+
+// Les blocs sont déclarés en `let` : ils ne sont pas sur window, on les lit
+// dans la portée du script, comme le fait déjà appliquerContenu().
+function lireBloc(nom){ try{ return eval(nom); }catch(e){ return null; } }
+
+// ---------- normalisation ----------
+// Un caractère pour un caractère : les positions trouvées dans le texte
+// normalisé restent valables dans le texte d'origine, pour l'extrait.
+const _ACC = 'àáâãäåçèéêëìíîïñòóôõöùúûüýÿœæ';
+const _SAN = 'aaaaaaceeeeiiiinooooouuuuyyoa';
+function norm(s){
+  s = String(s==null?'':s).toLowerCase();
+  let r = '';
+  for(let i=0;i<s.length;i++){
+    const j = _ACC.indexOf(s[i]);
+    r += (j>=0) ? _SAN[j] : s[i];
+  }
+  return r;
+}
+function texteBrut(html){
+  // les sauts de ligne et fins de bloc deviennent des espaces, sinon les mots
+  // de deux paragraphes se collent dans l'extrait
+  const s = String(html==null?'':html)
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<\/(p|div|li|tr|td|th|h[1-6]|table|thead|tbody)>/gi, ' ');
+  const d = document.createElement('div');
+  d.innerHTML = s;
+  return (d.textContent || '').replace(/\s+/g,' ').trim();
+}
+function texteDeValeur(v){
+  if(v == null) return '';
+  if(typeof v === 'string') return texteBrut(v);
+  if(Array.isArray(v)) return v.map(texteDeValeur).join(' ');
+  if(typeof v === 'object') return Object.keys(v).map(k=>texteDeValeur(v[k])).join(' ');
+  return String(v);
+}
+
+// ---------- index ----------
+let INDEX_RECHERCHE = [];
+function construireIndexRecherche(){
+  const idx = [];
+
+  // les onglets eux-mêmes
+  document.querySelectorAll('#home .tile').forEach(t=>{
+    const oc = t.getAttribute('onclick') || '';
+    const m = oc.match(/selectTab\('([^']+)'\)/);
+    if(!m) return;
+    const nom = t.querySelector('.tname'), des = t.querySelector('.tdesc');
+    idx.push({type:'onglet', onglet:m[1],
+              titre: nom ? nom.textContent.trim() : m[1],
+              texte: des ? des.textContent.trim() : ''});
+  });
+
+  // les sujets de chaque sélecteur
+  SUJETS_SRC.forEach(s=>{
+    const sel = document.getElementById(s.sel);
+    if(!sel) return;
+    const pan = sel.closest('.panel');
+    const onglet = pan ? pan.id.replace(/^p-/, '') : '';
+    const bloc = lireBloc(s.bloc);
+    Array.prototype.forEach.call(sel.options, o=>{
+      idx.push({type:'sujet', onglet:onglet, sel:s.sel, val:o.value,
+                titre:o.textContent.trim(),
+                texte: (bloc && bloc[o.value] !== undefined) ? texteDeValeur(bloc[o.value]) : ''});
+    });
+  });
+
+  idx.forEach(e=>{ e.nTitre = norm(e.titre); e.nTexte = norm(e.texte); });
+  INDEX_RECHERCHE = idx;
+}
+
+// ---------- recherche ----------
+let RESULTATS = [];
+
+function limite(c){ return !c || !/[a-z0-9]/.test(c); }
+
+function scoreEntree(e, mots){
+  let score = 0;
+  for(const mot of mots){
+    let p = e.nTitre.indexOf(mot), trouve = false;
+    if(p >= 0){ score += 14 + (limite(e.nTitre[p-1]) ? 8 : 0); trouve = true; }
+    p = e.nTexte.indexOf(mot);
+    if(p >= 0){ score += 2 + (limite(e.nTexte[p-1]) ? 2 : 0); trouve = true; }
+    if(!trouve) return 0;
+  }
+  if(e.type === 'onglet') score += 6;
+  return score;
+}
+
+function extrait(e, mots){
+  let p = -1, mot = '';
+  for(const m of mots){ const q = e.nTexte.indexOf(m); if(q >= 0 && (p < 0 || q < p)){ p = q; mot = m; } }
+  if(p < 0) return '';
+  const d = Math.max(0, p - 70), f = Math.min(e.texte.length, p + 120);
+  return (d > 0 ? '… ' : '') + e.texte.slice(d, f) + (f < e.texte.length ? ' …' : '');
+}
+
+function surligner(txt, mots){
+  let out = echapper(txt);
+  const nOut = norm(out);
+  const bornes = [];
+  mots.forEach(m=>{
+    let p = nOut.indexOf(m);
+    while(p >= 0){ bornes.push([p, p + m.length]); p = nOut.indexOf(m, p + m.length); }
+  });
+  if(!bornes.length) return out;
+  bornes.sort((a,b)=>a[0]-b[0]);
+  const fus = [];
+  bornes.forEach(b=>{
+    const d = fus[fus.length-1];
+    if(d && b[0] <= d[1]) d[1] = Math.max(d[1], b[1]); else fus.push(b.slice());
+  });
+  let r = '', pos = 0;
+  fus.forEach(b=>{ r += out.slice(pos, b[0]) + '<mark>' + out.slice(b[0], b[1]) + '</mark>'; pos = b[1]; });
+  return r + out.slice(pos);
+}
+
+function chercherFusibles(nq){
+  const base = (typeof REFERENCE_DATA !== 'undefined' ? REFERENCE_DATA : []).concat(bddCache || []);
+  let n = 0;
+  const ex = [];
+  for(let i=0;i<base.length;i++){
+    const r = base[i];
+    if(!r) continue;
+    if(norm(r.ref).indexOf(nq) >= 0 || norm(r.marque).indexOf(nq) >= 0 ||
+       norm(r.gamme).indexOf(nq) >= 0){
+      n++;
+      if(ex.length < 3) ex.push(r.ref + ' · ' + r.marque + (r.cal ? ' · ' + r.cal + ' A' : ''));
+    }
+  }
+  return {n:n, ex:ex};
+}
+
+function chercherGlobal(){
+  const champ = document.getElementById('qGlobal');
+  const q = (champ ? champ.value : '').trim();
+  const zone = document.getElementById('qResultats');
+  const home = document.getElementById('home');
+  const fav  = document.getElementById('zoneFavoris');
+  const ba   = document.getElementById('banniereAdmin');
+  const mc   = document.getElementById('mentionCopyright');
+  const bc   = document.getElementById('qClear');
+  if(bc) bc.style.display = q ? 'block' : 'none';
+
+  if(q.length < 2){
+    zone.style.display = 'none'; zone.innerHTML = '';
+    home.style.display = 'grid';
+    if(mc) mc.style.display = 'block';
+    if(ba) ba.style.display = estAdmin() ? 'block' : 'none';
+    majFavoris();
+    return;
+  }
+
+  if(!INDEX_RECHERCHE.length) construireIndexRecherche();
+
+  home.style.display = 'none';
+  if(fav) fav.style.display = 'none';
+  if(ba) ba.style.display = 'none';
+  if(mc) mc.style.display = 'none';
+
+  const nq = norm(q);
+  const mots = nq.split(/[^a-z0-9]+/).filter(m=>m.length >= 2);
+  if(!mots.length){ zone.style.display='none'; home.style.display='grid'; return; }
+
+  RESULTATS = INDEX_RECHERCHE
+    .map(e=>({e:e, s:scoreEntree(e, mots)}))
+    .filter(x=>x.s > 0)
+    .sort((a,b)=>b.s - a.s)
+    .slice(0, 14)
+    .map(x=>x.e);
+
+  const fus = chercherFusibles(nq);
+  let html = '';
+
+  if(fus.n){
+    html += '<button class="qres" style="border-left-color:var(--blue);" onclick="allerFusibles(' + JSON.stringify(q).replace(/"/g,'&quot;') + ')">' +
+      '<span class="qo">04 · Répertoire des résistances</span>' +
+      '<span class="qt">' + fus.n + ' référence' + (fus.n>1?'s':'') + ' correspond' + (fus.n>1?'ent':'') + ' à « ' + echapper(q) + ' »</span>' +
+      '<span class="qx">' + echapper(fus.ex.join('   ·   ')) + (fus.n > 3 ? ' …' : '') + '</span></button>';
+  }
+
+  RESULTATS.forEach((e,i)=>{
+    const ex = e.type === 'sujet' ? extrait(e, mots) : e.texte;
+    html += '<button class="qres" onclick="allerResultat(' + i + ')">' +
+      '<span class="qo">' + echapper(TITRES[e.onglet] || e.onglet) + (e.type==='onglet' ? '  —  onglet' : '') + '</span>' +
+      '<span class="qt">' + surligner(e.titre, mots) + '</span>' +
+      (ex ? '<span class="qx">' + surligner(ex, mots) + '</span>' : '') +
+      '</button>';
+  });
+
+  if(!html){
+    html = '<div class="qvide">Rien trouvé pour <b>' + echapper(q) + '</b>.<br><br>' +
+      'Essayez un mot plus court, ou le terme technique seul : <i>tangente delta</i>, <i>DMA</i>, ' +
+      '<i>Dyn11</i>, <i>polarisation</i>, <i>consignation</i>. Pour un fusible, tapez la référence ' +
+      'ou la marque.</div>';
+  } else {
+    const nb = RESULTATS.length + (fus.n ? 1 : 0);
+    html = '<div class="qcount">' + nb + ' résultat' + (nb>1?'s':'') + '</div>' + html;
+  }
+
+  zone.innerHTML = html;
+  zone.style.display = 'block';
+}
+
+function allerResultat(i){
+  const e = RESULTATS[i]; if(!e) return;
+  viderRecherche(true);
+  selectTab(e.onglet);
+  if(e.sel){
+    const sel = document.getElementById(e.sel);
+    if(sel){
+      sel.value = e.val;
+      try{ sel.dispatchEvent(new Event('change')); }catch(err){}
+      setTimeout(function(){
+        const c = sel.closest('.card');
+        if(c && c.scrollIntoView) c.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 90);
+    }
+  }
+}
+
+function allerFusibles(q){
+  viderRecherche(true);
+  selectTab('bdd');
+  const r = document.getElementById('sRef');
+  if(r){ r.value = q; try{ renderTable(); }catch(e){} }
+}
+
+function viderRecherche(garderPanneau){
+  const champ = document.getElementById('qGlobal');
+  if(champ) champ.value = '';
+  const z = document.getElementById('qResultats');
+  if(z){ z.style.display = 'none'; z.innerHTML = ''; }
+  const bc = document.getElementById('qClear'); if(bc) bc.style.display = 'none';
+  if(!garderPanneau){
+    const home = document.getElementById('home');
+    if(home) home.style.display = 'grid';
+    const mc = document.getElementById('mentionCopyright'); if(mc) mc.style.display = 'block';
+    const ba = document.getElementById('banniereAdmin'); if(ba) ba.style.display = estAdmin() ? 'block' : 'none';
+    majFavoris();
+  }
+}
+
+function ouvrirPremierResultat(){
+  const z = document.getElementById('qResultats');
+  if(!z || z.style.display === 'none') return;
+  const b = z.querySelector('.qres');
+  if(b){ if(document.activeElement) document.activeElement.blur(); b.click(); }
+}
+
+// ---------- raccourcis ----------
+function noterUsage(onglet){
+  if(!onglet || onglet === 'admin') return;
+  try{
+    const u = LS.get('kitht-usage', {});
+    u[onglet] = (u[onglet] || 0) + 1;
+    LS.set('kitht-usage', u);
+  }catch(e){}
+}
+
+function majFavoris(){
+  const z = document.getElementById('zoneFavoris'); if(!z) return;
+  const u = LS.get('kitht-usage', {});
+  const cles = Object.keys(u).filter(k=>TITRES[k] && k !== 'admin' && k !== 'compte' && k !== 'info');
+  if(cles.length < 3){ z.style.display = 'none'; z.innerHTML = ''; return; }
+  cles.sort((a,b)=>u[b] - u[a]);
+  z.innerHTML = '<div class="favlbl">Vos onglets les plus ouverts</div><div class="favrow">' +
+    cles.slice(0,4).map(k=>'<button class="favchip" onclick="selectTab(\'' + k + '\')">' +
+      echapper(TITRES[k]) + '</button>').join('') + '</div>';
+  z.style.display = 'block';
+}
+
+// ---------- garde-fou de version ----------
+function blocsManquants(){
+  return BLOCS.filter(function(n){
+    const v = lireBloc(n);
+    if(v == null) return true;
+    if(Array.isArray(v)) return v.length === 0;
+    if(typeof v === 'object') return Object.keys(v).length === 0;
+    return false;
+  });
+}
+
+function majVersions(){
+  const n = document.getElementById('noteVersions');
+  if(!n) return;
+  let t = 'Page ' + VERSION_PAGE;
+  if(META_CONTENU){
+    t += ' · contenu ' + (META_CONTENU.version || 'sans numéro');
+    if(META_CONTENU.publie_le){
+      const d = new Date(META_CONTENU.publie_le);
+      if(!isNaN(d)) t += ' publié le ' + d.toLocaleDateString('fr-FR');
+    }
+  } else if(SB_ACTIF()){
+    t += ' · contenu sans numéro de version';
+  }
+  const m = blocsManquants();
+  if(m.length) t += '<br><span style="color:var(--red);">' + m.length + ' bloc' +
+    (m.length>1?'s':'') + ' de contenu absent' + (m.length>1?'s':'') + ' : ' + m.join(', ') + '</span>';
+  n.innerHTML = t;
+}
+
+function majBandeauContenu(){
+  const b = document.getElementById('barreContenu'); if(!b) return;
+  if(!SB_ACTIF() || !session || !contenuPret){ b.style.display = 'none'; return; }
+  const m = blocsManquants();
+  if(!m.length){ b.style.display = 'none'; return; }
+  b.innerHTML = estAdmin()
+    ? '<b>Contenu incomplet.</b> ' + m.length + ' bloc' + (m.length>1?'s':'') +
+      ' absent' + (m.length>1?'s':'') + ' (' + m.join(', ') + '). Publie le contenu avec ' +
+      '<b>publier-contenu.html</b>, puis rouvre l\'outil.'
+    : '<b>Certains onglets ne sont pas encore disponibles.</b> Le contenu est en cours de ' +
+      'mise à jour — préviens Marc si ça dure.';
+  b.style.display = 'block';
+}
+
+// Un onglet dont le bloc n'est pas publié affiche la raison plutôt que de rester vide.
+function avertirContenuManquant(onglet){
+  SUJETS_SRC.forEach(function(s){
+    const sel = document.getElementById(s.sel); if(!sel) return;
+    const pan = sel.closest('.panel');
+    if(!pan || pan.id !== 'p-' + onglet) return;
+    if(lireBloc(s.bloc)) return;
+    const c = document.getElementById(s.cible);
+    if(c && !c.innerHTML.trim()){
+      c.innerHTML = '<b>Ce contenu n\'est pas encore publié.</b><br><br>' +
+        'Les textes de cet onglet sont servis depuis le serveur et n\'ont pas encore été ' +
+        'envoyés. Les calculs et les autres onglets fonctionnent normalement.' +
+        (estAdmin() ? '<br><br><span style="color:var(--red);">Bloc <b>' + s.bloc +
+         '</b> — à publier avec publier-contenu.html.</span>' : '');
+    }
+  });
+}
 
 // ---------- SCHÉMAS DE CÂBLAGE D'ESSAI ----------
 function boite(x,y,w,h,titre,sous,couleur){
