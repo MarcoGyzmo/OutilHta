@@ -285,9 +285,18 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   .addform{grid-template-columns:1fr; gap:10px;}
   .addform button.action{margin-top:4px;}
 
-  /* tableaux : défilement horizontal plutôt que compression illisible */
+  /* tableaux de données : défilement horizontal plutôt que compression illisible */
   table{display:block; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch;}
   th, td{padding:10px 8px;}
+
+  /* tableaux explicatifs (dans les encadrés) : le texte va à la ligne,
+     rien n'est coupé et il n'y a rien à faire glisser */
+  .note table{display:table; width:100%; white-space:normal; overflow:visible; table-layout:fixed;}
+  .note th, .note td{white-space:normal; word-break:break-word; vertical-align:top;
+                     padding:8px 6px; font-size:11.5px; line-height:1.45;}
+  .note td{font-family:var(--body);}
+  .note td:first-child{font-family:var(--mono); color:var(--amber);}
+  .note th:first-child, .note td:first-child{width:34%;}
 
   .toolbar{gap:8px;}
   .toolbar input[type=text]{max-width:100%;}
@@ -341,6 +350,16 @@ tr:hover td{background:rgba(255,138,30,0.03);}
         Rien n'est revendu, et vos relevés restent sur votre appareil.<br><br>
         <span style="color:var(--muted); font-size:11.5px;">Une fois connecté, vous restez connecté : l'outil ne redemandera vos identifiants
         qu'après un mois sans l'avoir ouvert. Il continue de fonctionner sans réseau.</span>
+      </div>
+      <div class="note" style="border-left-color:var(--amber); background:rgba(255,138,30,0.06);">
+        <b>À faire une fois : installer l'outil sur l'écran d'accueil.</b><br><br>
+        <b>iPhone</b> — dans <b>Safari</b> : bouton <b>Partager</b> (le carré avec la flèche) →
+        <b>Sur l'écran d'accueil</b> → <b>Ajouter</b>.<br>
+        <b>Android</b> — dans <b>Chrome</b> : bannière <b>Installer l'application</b>, ou menu
+        <b>⋮</b> → <b>Installer l'application</b>.<br><br>
+        <span style="color:var(--muted); font-size:11.5px;">Il s'ouvre ensuite comme une
+        application, plein écran, et fonctionne sans réseau. Marche à suivre détaillée dans
+        l'onglet <b>20 · À propos</b>.</span>
       </div>
     </div>
   </div>
@@ -406,8 +425,10 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     <button class="tile" onclick="selectTab('isol')"><span class="tnum">14</span><span class="tname">Mesures d'isolement</span><span class="tdesc">Transfo, câbles, branchements</span></button>
     <button class="tile" onclick="selectTab('essaicable')"><span class="tnum">15</span><span class="tname">Essais câbles HT</span><span class="tdesc">Diélectrique, tangente delta</span></button>
     <button class="tile" onclick="selectTab('neutre')"><span class="tnum">16</span><span class="tname">Régimes de neutre</span><span class="tdesc">TT, TN-C, TN-S, IT</span></button>
-    <button class="tile" onclick="selectTab('compte')"><span class="tnum">17</span><span class="tname">Mon compte</span><span class="tdesc">Identité, suppression</span></button>
-    <button class="tile" onclick="selectTab('info')"><span class="tnum">18</span><span class="tname">À propos</span><span class="tdesc">Sources et limites</span></button>
+    <button class="tile" onclick="selectTab('habilit')"><span class="tnum">17</span><span class="tname">Habilitation électrique</span><span class="tdesc">Titres, zones, distances</span></button>
+    <button class="tile" onclick="selectTab('consign')"><span class="tnum">18</span><span class="tname">Consignation</span><span class="tdesc">Attestation, 5 étapes, schémas</span></button>
+    <button class="tile" onclick="selectTab('compte')"><span class="tnum">19</span><span class="tname">Mon compte</span><span class="tdesc">Identité, suppression</span></button>
+    <button class="tile" onclick="selectTab('info')"><span class="tnum">20</span><span class="tname">À propos</span><span class="tdesc">Installation, sources, limites</span></button>
     <button class="tile" id="tuileDeco" onclick="deconnexionTuile()" style="display:none; border-left-color:var(--red);"><span class="tnum" style="color:var(--red);">⏻</span><span class="tname">Déconnexion</span><span class="tdesc" id="tuileDecoNom">Fermer la session</span></button>
   </div>
   <p id="mentionCopyright" style="text-align:center; font-size:10.5px; color:var(--muted); margin:-6px 0 18px;">
@@ -1437,9 +1458,89 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 
 
   <!-- ================= PANEL 5 : INFO ================= -->
+  <!-- ================= PANEL 17 : HABILITATION ================= -->
+  <div class="panel" id="p-habilit">
+    <div class="card">
+      <h2><span class="idx">17</span> Habilitation électrique — NF C 18-510</h2>
+      <p class="desc">Comment se lit un symbole, ce que chaque titre autorise, et où commencent les zones qui décident du symbole nécessaire.</p>
+      <div class="field">
+        <label>Sujet</label>
+        <select id="hbSel" onchange="updateHabilit()">
+          <optgroup label="Comprendre">
+            <option value="principe">À quoi sert l'habilitation</option>
+            <option value="lire">Comment se lit un symbole</option>
+            <option value="domaines">Domaines de tension</option>
+            <option value="zones">Zones d'environnement et distances</option>
+          </optgroup>
+          <optgroup label="Les titres">
+            <option value="bt">Les titres en basse tension</option>
+            <option value="ht">Les titres en haute tension</option>
+            <option value="tableau">Tableau récapitulatif</option>
+          </optgroup>
+          <optgroup label="Sur le terrain">
+            <option value="roles">Qui fait quoi sur un poste</option>
+            <option value="papiers">Les documents à avoir sur soi</option>
+            <option value="terrain">Ce qui coince sur le terrain</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="note" id="hbRes" style="margin-top:0;"></div>
+      <div class="note" style="border-left-color:var(--muted); font-size:12px;">
+        Reprise des prescriptions de la <b>NF C 18-510</b> et de ses guides d'application, à titre
+        de mémo de terrain. En cas d'écart, ce sont la norme, le <b>carnet de prescriptions</b> de
+        ton employeur et les <b>instructions de sécurité du site</b> qui font foi — en particulier
+        pour toute valeur chiffrée de distance.
+      </div>
+    </div>
+    <div class="pubslot" data-pub="habilit"></div>
+  </div>
+
+  <!-- ================= PANEL 18 : CONSIGNATION ================= -->
+  <div class="panel" id="p-consign">
+    <div class="card">
+      <h2><span class="idx">18</span> Attestation de consignation</h2>
+      <p class="desc">Les cinq étapes, le découpage en deux étapes, les rubriques du document, et le déroulement appareil par appareil.</p>
+      <div class="field">
+        <label>Sujet</label>
+        <select id="cgSel" onchange="updateConsign()">
+          <optgroup label="La procédure">
+            <option value="etapes">Les cinq étapes de la consignation</option>
+            <option value="une2">En une étape ou en deux étapes</option>
+            <option value="decon">Déconsignation et fin de travaux</option>
+          </optgroup>
+          <optgroup label="Le document">
+            <option value="contenu">Ce que contient l'attestation</option>
+            <option value="remplir">Remplir l'attestation : ce qui compte</option>
+            <option value="docs">Les autres documents de l'opération</option>
+          </optgroup>
+          <optgroup label="Appareil par appareil">
+            <option value="schIM">Cellule interrupteur-sectionneur (IM)</option>
+            <option value="schQM">Cellule interrupteur-fusible (QM)</option>
+            <option value="schDM">Cellule disjoncteur (DM1-A)</option>
+            <option value="schRM6">Poste compact à isolation gazeuse (RM6)</option>
+            <option value="schH61">Poste sur poteau (H61)</option>
+            <option value="schBT">Côté basse tension (transfo et TGBT)</option>
+          </optgroup>
+          <optgroup label="Terrain">
+            <option value="pieges">Ce qui va de travers</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="schema" id="cgSchema"></div>
+      <div class="note" id="cgRes" style="margin-top:0;"></div>
+      <div class="note" style="border-left-color:var(--muted); font-size:12px;">
+        Les schémas sont des <b>principes de déroulement</b>, pas des schémas d'installation. Le
+        nombre d'organes, l'ordre imposé par les interverrouillages et les points de mise à la
+        terre varient selon l'appareil : <b>le schéma du constructeur et le carnet de
+        prescriptions du poste restent la référence</b>.
+      </div>
+    </div>
+    <div class="pubslot" data-pub="consign"></div>
+  </div>
+
   <div class="panel" id="p-compte">
     <div class="card">
-      <h2><span class="idx">17</span> Mon compte</h2>
+      <h2><span class="idx">19</span> Mon compte</h2>
       <p class="desc">Ce qui est enregistré à votre sujet, et comment tout effacer.</p>
       <div id="compteRes"></div>
       <div class="note" style="border-left-color:var(--green); background:rgba(73,192,122,0.05);">
@@ -1473,21 +1574,72 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 
   <div class="panel" id="p-info">
     <div class="card">
-      <h2><span class="idx">18</span> À propos de cet outil</h2>
+      <h2><span class="idx">20</span> À propos de cet outil</h2>
       <p class="desc">Outil de terrain pour technicien HTA/HTB : rapport de transformation, loi d'Ohm, calibre fusible, disjoncteur BT général, régimes de neutre, câbles BT/HT, répertoire de résistances à froid de fusibles.</p>
+      <div class="note" style="border-left-color:var(--amber); background:rgba(255,138,30,0.07);">
+        <b>Installer KIT HT sur l'écran d'accueil</b><br><br>
+        Une fois installé, l'outil s'ouvre comme une application : une icône sur l'écran
+        d'accueil, plein écran, sans barre d'adresse, et <b>il fonctionne sans réseau</b> — poste
+        enterré, sous-sol, zone blanche. C'est l'installation qui met les données en cache sur
+        l'appareil, donc à faire une fois, tranquillement, avec du réseau.<br><br>
+
+        <b>Sur iPhone et iPad</b><br>
+        1. Ouvrir le lien de l'outil <b>dans Safari</b> — et seulement Safari : Chrome et Firefox
+        sur iOS ne proposent pas l'installation.<br>
+        2. Appuyer sur le bouton <b>Partager</b> en bas de l'écran — le carré avec la flèche qui
+        monte.<br>
+        3. Faire défiler la liste et choisir <b>« Sur l'écran d'accueil »</b>.<br>
+        4. Renommer si besoin, puis <b>Ajouter</b> en haut à droite.<br>
+        L'icône apparaît sur l'écran d'accueil. L'ouvrir une fois avec du réseau pour que tout se
+        mette en cache.<br><br>
+
+        <b>Sur Android</b><br>
+        1. Ouvrir le lien dans <b>Chrome</b> (Edge et Samsung Internet fonctionnent aussi).<br>
+        2. Une bannière <b>« Installer l'application »</b> apparaît souvent en bas : si elle est
+        là, c'est le plus court.<br>
+        3. Sinon, menu <b>⋮</b> en haut à droite → <b>« Installer l'application »</b> ou
+        <b>« Ajouter à l'écran d'accueil »</b> selon la version.<br>
+        4. Confirmer par <b>Installer</b>.<br><br>
+
+        <b>Sur ordinateur</b><br>
+        Dans Chrome ou Edge, une petite icône d'installation apparaît dans la barre d'adresse, à
+        droite. Sinon : menu <b>⋮</b> → <b>Installer</b>. Sur Mac avec Safari : menu
+        <b>Fichier</b> → <b>Ajouter au Dock</b>.<br><br>
+
+        <b>Si l'icône n'apparaît pas</b><br>
+        — Vérifier qu'on est bien <b>dans Safari</b> sur iPhone, et pas dans un navigateur
+        intégré à une autre application : un lien ouvert depuis WhatsApp, Teams ou un mail
+        s'ouvre souvent dans une fenêtre interne qui ne sait pas installer. Dans ce cas, ouvrir
+        le lien dans Safari ou Chrome d'abord.<br>
+        — Vérifier que l'adresse commence bien par <b>https://</b>.<br><br>
+
+        <b>Pour mettre à jour</b><br>
+        Rien à faire : il suffit d'ouvrir l'outil une fois avec du réseau, la nouvelle version
+        se charge toute seule. Si quelque chose semble figé sur une ancienne version, fermer
+        complètement l'application et la rouvrir avec du réseau.<br><br>
+
+        <span style="color:var(--muted); font-size:11.5px;">Désinstaller se fait comme pour une
+        application : appui long sur l'icône puis Supprimer. Attention, cela efface aussi les
+        relevés enregistrés sur l'appareil — <b>les exporter avant</b>.</span>
+      </div>
       <div class="note" style="border-left-color:var(--green); background:rgba(73,192,122,0.05);">
-        <b>Vos données ne quittent pas votre appareil</b><br><br>
-        Aucun compte, aucune inscription, aucun serveur. Les calculs, les 906 références et
-        les schémas fonctionnent entièrement en local.<br><br>
+        <b>Ce qui reste sur votre appareil</b><br><br>
+        Le compte sert uniquement à savoir qui se sert de l'outil : email, nom et société, et la
+        date de dernière ouverture. Rien d'autre n'est transmis, rien n'est revendu.<br><br>
+        Les calculs, les 906 références et les schémas tournent <b>entièrement sur l'appareil</b>,
+        y compris sans réseau.<br><br>
         Les relevés que vous ajoutez au répertoire sont enregistrés <b>sur cet appareil
         uniquement</b>. Rien n'est transmis, rien n'est collecté, rien n'est partagé.<br><br>
         <b>Pensez à les exporter</b> si vous changez de téléphone : effacer les données du
-        navigateur efface aussi vos ajouts.
+        navigateur, ou désinstaller l'application, efface aussi vos ajouts.
       </div>
 
       <div class="note" style="border-left-color:var(--blue); background:rgba(62,166,255,0.05);">
-        <b>Cet outil n'a pas d'accès internet.</b><br><br>
-        C'est une page autonome (HTML/JS) : elle ne peut pas chercher elle-même de nouvelles données sur le web ni se mettre à jour toute seule. Tout ce qui est affiché a été intégré au moment de sa génération. Les mises à jour de données ou de calculs se font en amont, pas depuis cette page.
+        <b>L'outil ne cherche rien de lui-même sur le web.</b><br><br>
+        Il récupère ses données techniques auprès d'un seul serveur, à l'ouverture, puis
+        fonctionne hors ligne sur ce qu'il a mis en cache. Il n'interroge aucun autre site, ne
+        fait aucune recherche, et ne peut pas compléter ses tableaux tout seul. Les ajouts de
+        données et les corrections de calcul se font en amont, pas depuis cette page.
       </div>
       <div class="note" style="border-left-color:var(--amber-dim);">
         <b>Propriété intellectuelle</b><br>
@@ -1609,7 +1761,9 @@ const TITRES = {
   couplage:'01 · Rapport transfo', abaques:'02 · Abaques transfo', fusible:'03 · Calibre fusible',
   bdd:'04 · Résistances fusibles', bt:'05 · Disjoncteur BT', ohm:"06 · Loi d'Ohm",
   cablebt:'07 · Câbles BT & HT', access:'08 · Accessoires HTA', couple:'09 · Couples de serrage',
-  huile:"10 · Analyse d'huile", relais:'11 · Relais de protection', djbt:'12 · Disjoncteur général BT', secu:'13 · Sécurité & obligations', isol:'14 · Mesures d\'isolement', essaicable:'15 · Essais câbles HT', neutre:'16 · Régimes de neutre', compte:'17 · Mon compte', admin:'Administration', info:'18 · À propos'
+  huile:"10 · Analyse d'huile", relais:'11 · Relais de protection', djbt:'12 · Disjoncteur général BT', secu:'13 · Sécurité & obligations', isol:'14 · Mesures d\'isolement', essaicable:'15 · Essais câbles HT', neutre:'16 · Régimes de neutre', habilit:'17 · Habilitation électrique',
+  consign:'18 · Consignation', compte:'19 · Mon compte', admin:'Administration',
+  info:'20 · À propos'
 };
 function selectTab(name){
   if(name!=='info' && name!=='compte' && !accesAutorise()){
@@ -2679,7 +2833,7 @@ function majBadgeAdmin(){
 // le fonctionnement hors ligne. Un compte supprimé n'y a plus accès.
 const BLOCS = ['CATALOG_XLSX','TTR_WIRING','CAS_PARTICULIERS','MATERIELS','COUPLES','HUILE',
                'RELAIS','ESSAIS','DJBT','SECU','ISOL','ESSAICABLE','PRINCIPES','ACCESSOIRES',
-               'FUSE_DIMS','IZ_E_PR3'];
+               'FUSE_DIMS','IZ_E_PR3','HABILIT','CONSIGN'];
 let contenuPret = false;
 
 function appliquerContenu(d){
@@ -3111,7 +3265,8 @@ function demarrerInterface(){
   construireReferences();
   [updateCouplage,drawFuseShape,updateAbaquePuissances,updateRegimePoles,drawEssai,
    updateDj,updateSecu,updateIsol,updateEssaiCable,updateRelais,updateHuile,updateCouple,
-   updateAccess,updateCas,updatePrincipe,calcPoste,renderTable].forEach(f=>{
+   updateAccess,updateCas,updatePrincipe,updateHabilit,updateConsign,
+   calcPoste,renderTable].forEach(f=>{
     try{ f(); }catch(e){ console.warn('init', e.message); }
   });
 }
@@ -3267,6 +3422,195 @@ function updateIsol(){
   document.getElementById('isoRes').innerHTML = o.txt;
 }
 
+
+
+// ---------- HABILITATION ÉLECTRIQUE ----------
+let HABILIT = null;   // chargé depuis le serveur après connexion
+function updateHabilit(){
+  if(!HABILIT) return;
+  const v = HABILIT[document.getElementById('hbSel').value];
+  if(v) document.getElementById('hbRes').innerHTML = v;
+}
+
+
+// ---------- CONSIGNATION ----------
+let CONSIGN = null;   // chargé depuis le serveur après connexion
+function updateConsign(){
+  if(!CONSIGN) return;
+  const o = CONSIGN[document.getElementById('cgSel').value];
+  if(!o) return;
+  document.getElementById('cgSchema').innerHTML = o.svg ? schemaConsign(o.svg) : '';
+  document.getElementById('cgSchema').style.display = o.svg ? 'flex' : 'none';
+  document.getElementById('cgRes').innerHTML = o.txt;
+}
+
+// Schémas de déroulement : un organe par ligne, le repère de l'étape à gauche.
+// t = type d'organe · n = libellé · s = sous-libellé · b = numéro d'étape
+const SCH_CONSIGN = {
+  IM: { titre:"Cellule interrupteur-sectionneur (IM)", el:[
+    {t:'jdb',   n:"Jeu de barres HTA",                  s:"reste sous tension"},
+    {t:'inter', n:"Interrupteur-sectionneur",           s:"ouvrir, puis cadenasser", b:"1·2"},
+    {t:'terre', n:"Sectionneur de mise à la terre",      s:"fermer avant d'ouvrir le panneau", b:"4"},
+    {t:'vat',   n:"VAT 3 phases + MALT-CC",             s:"au plus près du point de travail", b:"5·6"},
+    {t:'dep',   n:"Câble de départ",                     s:"alimentable par l'autre extrémité ?"}
+  ]},
+  QM: { titre:"Cellule interrupteur-fusible (QM)", el:[
+    {t:'jdb',   n:"Jeu de barres HTA",                  s:"reste sous tension"},
+    {t:'inter', n:"Interrupteur-sectionneur",           s:"ouvrir, puis cadenasser", b:"1·2"},
+    {t:'fus',   n:"Fusibles HTA",                       s:"retirer un fusible n'est pas séparer"},
+    {t:'terre', n:"Sectionneur de mise à la terre aval", s:"fermer avant d'ouvrir le panneau", b:"4"},
+    {t:'vat',   n:"VAT de part et d'autre des fusibles",s:"sur les 3 phases", b:"5"},
+    {t:'trafo', n:"Transformateur HTA / BT",            s:"réversible : séparer aussi côté BT"},
+    {t:'bt',    n:"TGBT",                               s:"groupe, onduleur, 2e source ?"}
+  ]},
+  DM: { titre:"Cellule disjoncteur (DM1-A)", el:[
+    {t:'jdb',   n:"Jeu de barres HTA",                  s:"reste sous tension"},
+    {t:'sect',  n:"Sectionneur d'isolement",            s:"c'est lui qui sépare", b:"2"},
+    {t:'disj',  n:"Disjoncteur",                        s:"il coupe, il n'isole pas", b:"1"},
+    {t:'cmd',   n:"Commande et auxiliaires BT",         s:"désarmer les ressorts, condamner", b:"3"},
+    {t:'terre', n:"Sectionneur de mise à la terre aval", s:"fermer avant accès", b:"5"},
+    {t:'vat',   n:"VAT 3 phases + MALT-CC",             s:"de part et d'autre si bouclable", b:"6·7"},
+    {t:'dep',   n:"Câble de départ",                     s:""}
+  ]},
+  RM6: { titre:"Poste compact à isolation gazeuse (RM6)", el:[
+    {t:'jdb',   n:"Arrivée 1 (boucle)",                 s:"poste amont A"},
+    {t:'inter', n:"Interrupteur arrivée 1",             s:"indicateur de position = la preuve"},
+    {t:'jdb',   n:"Arrivée 2 (boucle)",                  s:"poste amont B — à séparer aussi"},
+    {t:'inter', n:"Interrupteur arrivée 2",              s:"une boucle a deux sources"},
+    {t:'fus',   n:"Protection transformateur",          s:"ouvrir, puis cadenasser", b:"1·2"},
+    {t:'terre', n:"Mise à la terre intégrée",            s:"interverrouillée, non contournable", b:"4"},
+    {t:'vat',   n:"VAT au compartiment câbles",         s:"3 phases ou points capacitifs", b:"5"},
+    {t:'trafo', n:"Transformateur HTA / BT",            s:"séparer aussi côté BT"}
+  ]},
+  H61: { titre:"Poste sur poteau (H61)", el:[
+    {t:'ligne', n:"Ligne aérienne HTA",                  s:"alimentable des deux côtés"},
+    {t:'inter', n:"Interrupteur aérien",                s:"ouverture visible des 3 phases", b:"1·2"},
+    {t:'vat',   n:"VAT sur perche + MALT-CC amovible",  s:"pas de sectionneur de terre intégré", b:"5·6"},
+    {t:'trafo', n:"Transformateur sur support",         s:"travail en hauteur"},
+    {t:'bt',    n:"Coffret de coupure BT",              s:"ouvrir et condamner avant de monter", b:"3"}
+  ]},
+  BT: { titre:"Côté basse tension (transformateur et TGBT)", el:[
+    {t:'jdb',   n:"Cellule HTA",                        s:"consignée en premier"},
+    {t:'trafo', n:"Transformateur HTA / BT",            s:"réversible : la BT remonte en HTA"},
+    {t:'disj',  n:"Disjoncteur général BT",              s:"ouvrir, débrocher, cadenasser", b:"2·3"},
+    {t:'cmd',   n:"Alimentation auxiliaire déclencheur", s:"source à part, à condamner", b:"3"},
+    {t:'src',   n:"Groupe · onduleur · 2e transfo · PV", s:"chacun est un point de séparation", b:"4"},
+    {t:'vat',   n:"VAT phases + neutre, puis MALT-CC",  s:"le neutre n'est pas un conducteur de repos", b:"6·7"},
+    {t:'bt',    n:"Départs BT",                          s:"condensateurs et variateurs encore chargés"}
+  ]}
+};
+
+function schemaConsign(cle){
+  const c = SCH_CONSIGN[cle]; if(!c) return '';
+  const A='var(--amber)', B='var(--blue)', G='var(--green)', R='var(--red)',
+        M='var(--muted)', T='var(--text)';
+  const X = 152, W = 530, Y0 = 62, DY = 74;
+  const H = Y0 + c.el.length*DY - 10;
+  let g = '';
+  g += '<text x="'+(W/2)+'" y="24" text-anchor="middle" font-family="var(--disp)" font-size="13.5" fill="'+T+'" font-weight="700">'+c.titre+'</text>';
+  g += '<text x="'+(W/2)+'" y="41" text-anchor="middle" font-family="var(--body)" font-size="10.5" fill="'+M+'">principe de déroulement — les repères renvoient aux étapes</text>';
+
+  c.el.forEach(function(o,i){
+    const y = Y0 + i*DY;
+    const col = (o.t==='bt' || o.t==='cmd' || o.t==='src') ? B : A;
+
+    // conducteur traversant
+    const haut = (i===0) ? y-16 : y-37;
+    const bas  = (i===c.el.length-1) ? y+16 : y+37;
+    g += '<line x1="'+X+'" y1="'+haut+'" x2="'+X+'" y2="'+bas+'" stroke="'+col+'" stroke-width="2.5"/>';
+
+    if(o.t==='jdb' || o.t==='ligne'){
+      g += '<line x1="'+(X-52)+'" y1="'+y+'" x2="'+(X+30)+'" y2="'+y+'" stroke="'+col+'" stroke-width="5"/>';
+      if(o.t==='ligne'){
+        [-40,-22,-4].forEach(function(dx){
+          g += '<line x1="'+(X+dx)+'" y1="'+(y-7)+'" x2="'+(X+dx+10)+'" y2="'+(y+7)+'" stroke="'+col+'" stroke-width="1.6"/>';
+        });
+      }
+    }
+    else if(o.t==='inter' || o.t==='sect'){
+      g += '<circle cx="'+X+'" cy="'+(y-15)+'" r="3.6" fill="'+col+'"/>';
+      g += '<circle cx="'+X+'" cy="'+(y+15)+'" r="3.6" fill="'+col+'"/>';
+      g += '<line x1="'+X+'" y1="'+(y-15)+'" x2="'+X+'" y2="'+(y-15)+'" stroke="'+col+'"/>';
+      g += '<line x1="'+X+'" y1="'+(y+15)+'" x2="'+(X+26)+'" y2="'+(y-12)+'" stroke="'+col+'" stroke-width="2.5"/>';
+      // le conducteur est coupe entre les deux contacts
+      g += '<rect x="'+(X-3)+'" y="'+(y-14)+'" width="6" height="28" fill="#0d1013"/>';
+      if(o.t==='sect'){
+        g += '<line x1="'+(X-8)+'" y1="'+(y-15)+'" x2="'+(X+8)+'" y2="'+(y-15)+'" stroke="'+col+'" stroke-width="2"/>';
+        g += '<line x1="'+(X-8)+'" y1="'+(y+15)+'" x2="'+(X+8)+'" y2="'+(y+15)+'" stroke="'+col+'" stroke-width="2"/>';
+      }
+      g += '<text x="'+(X+30)+'" y="'+(y-18)+'" font-family="var(--mono)" font-size="9.5" fill="'+G+'">ouvert</text>';
+    }
+    else if(o.t==='fus'){
+      g += '<rect x="'+(X-10)+'" y="'+(y-19)+'" width="20" height="38" rx="2" fill="#0d1013" stroke="'+col+'" stroke-width="2.5"/>';
+      g += '<line x1="'+(X-10)+'" y1="'+(y-6)+'" x2="'+(X+10)+'" y2="'+(y-6)+'" stroke="'+col+'" stroke-width="1.4"/>';
+      g += '<line x1="'+(X-10)+'" y1="'+(y+6)+'" x2="'+(X+10)+'" y2="'+(y+6)+'" stroke="'+col+'" stroke-width="1.4"/>';
+    }
+    else if(o.t==='disj'){
+      g += '<rect x="'+(X-17)+'" y="'+(y-22)+'" width="34" height="44" rx="3" fill="#0d1013" stroke="'+col+'" stroke-width="2"/>';
+      g += '<circle cx="'+X+'" cy="'+(y-12)+'" r="3.2" fill="'+col+'"/>';
+      g += '<circle cx="'+X+'" cy="'+(y+12)+'" r="3.2" fill="'+col+'"/>';
+      g += '<line x1="'+X+'" y1="'+(y+12)+'" x2="'+(X+13)+'" y2="'+(y-8)+'" stroke="'+col+'" stroke-width="2.2"/>';
+      g += '<line x1="'+(X-12)+'" y1="'+(y-18)+'" x2="'+(X-4)+'" y2="'+(y-10)+'" stroke="'+col+'" stroke-width="1.6"/>';
+      g += '<line x1="'+(X-12)+'" y1="'+(y-10)+'" x2="'+(X-4)+'" y2="'+(y-18)+'" stroke="'+col+'" stroke-width="1.6"/>';
+    }
+    else if(o.t==='terre'){
+      g += '<circle cx="'+(X-12)+'" cy="'+y+'" r="3.4" fill="'+col+'"/>';
+      g += '<line x1="'+X+'" y1="'+y+'" x2="'+(X-12)+'" y2="'+y+'" stroke="'+col+'" stroke-width="2"/>';
+      g += '<line x1="'+(X-12)+'" y1="'+y+'" x2="'+(X-40)+'" y2="'+(y+5)+'" stroke="'+G+'" stroke-width="2.5"/>';
+      g += '<circle cx="'+(X-40)+'" cy="'+(y+5)+'" r="3.4" fill="'+G+'"/>';
+      g += '<line x1="'+(X-40)+'" y1="'+(y+5)+'" x2="'+(X-40)+'" y2="'+(y+17)+'" stroke="'+G+'" stroke-width="2.5"/>';
+      [[14,17],[9,22],[4,27]].forEach(function(p){
+        g += '<line x1="'+(X-40-p[0])+'" y1="'+(y+p[1])+'" x2="'+(X-40+p[0])+'" y2="'+(y+p[1])+'" stroke="'+G+'" stroke-width="2"/>';
+      });
+      g += '<text x="'+(X-40)+'" y="'+(y-8)+'" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="'+G+'">fermé</text>';
+    }
+    else if(o.t==='vat'){
+      g += '<rect x="'+(X-58)+'" y="'+(y-28)+'" width="112" height="56" rx="5" fill="rgba(73,192,122,.07)" stroke="'+G+'" stroke-width="1.8" stroke-dasharray="6,4"/>';
+      [-14,0,14].forEach(function(dx){
+        g += '<line x1="'+(X+dx)+'" y1="'+(y-11)+'" x2="'+(X+dx)+'" y2="'+(y+11)+'" stroke="'+G+'" stroke-width="2"/>';
+      });
+      g += '<line x1="'+(X-14)+'" y1="'+(y+11)+'" x2="'+(X+14)+'" y2="'+(y+11)+'" stroke="'+G+'" stroke-width="2.5"/>';
+      g += '<line x1="'+X+'" y1="'+(y+11)+'" x2="'+X+'" y2="'+(y+20)+'" stroke="'+G+'" stroke-width="2.5"/>';
+      [[12,20],[8,24],[4,28]].forEach(function(p){
+        g += '<line x1="'+(X-p[0])+'" y1="'+(y+p[1])+'" x2="'+(X+p[0])+'" y2="'+(y+p[1])+'" stroke="'+G+'" stroke-width="2"/>';
+      });
+      g += '<text x="'+(X+30)+'" y="'+(y-16)+'" font-family="var(--mono)" font-size="9" fill="'+G+'">travail</text>';
+    }
+    else if(o.t==='trafo'){
+      g += '<circle cx="'+X+'" cy="'+(y-10)+'" r="15" fill="none" stroke="'+A+'" stroke-width="2.5"/>';
+      g += '<circle cx="'+X+'" cy="'+(y+10)+'" r="15" fill="none" stroke="'+B+'" stroke-width="2.5"/>';
+      g += '<rect x="'+(X-3)+'" y="'+(y-26)+'" width="6" height="52" fill="#0d1013"/>';
+      g += '<line x1="'+X+'" y1="'+(y-37)+'" x2="'+X+'" y2="'+(y-25)+'" stroke="'+A+'" stroke-width="2.5"/>';
+      g += '<line x1="'+X+'" y1="'+(y+25)+'" x2="'+X+'" y2="'+(y+37)+'" stroke="'+B+'" stroke-width="2.5"/>';
+      g += '<text x="'+(X-24)+'" y="'+(y-7)+'" text-anchor="end" font-family="var(--mono)" font-size="10" fill="'+A+'">HT</text>';
+      g += '<text x="'+(X-24)+'" y="'+(y+14)+'" text-anchor="end" font-family="var(--mono)" font-size="10" fill="'+B+'">BT</text>';
+    }
+    else if(o.t==='bt'){
+      g += '<line x1="'+(X-52)+'" y1="'+y+'" x2="'+(X+30)+'" y2="'+y+'" stroke="'+B+'" stroke-width="5"/>';
+      [-38,-20,-2].forEach(function(dx){
+        g += '<line x1="'+(X+dx)+'" y1="'+y+'" x2="'+(X+dx)+'" y2="'+(y+15)+'" stroke="'+B+'" stroke-width="2"/>';
+      });
+    }
+    else if(o.t==='cmd' || o.t==='src'){
+      g += '<rect x="'+(X-3)+'" y="'+(y-18)+'" width="6" height="36" fill="#0d1013"/>';
+      g += '<rect x="'+(X-46)+'" y="'+(y-15)+'" width="60" height="30" rx="4" fill="#0d1013" stroke="'+B+'" stroke-width="2" stroke-dasharray="5,3"/>';
+      g += '<text x="'+(X-16)+'" y="'+(y+4)+'" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="'+B+'">'+(o.t==='cmd'?'aux. BT':'autre source')+'</text>';
+      g += '<line x1="'+(X+14)+'" y1="'+y+'" x2="'+X+'" y2="'+y+'" stroke="'+B+'" stroke-width="2" stroke-dasharray="4,3"/>';
+    }
+
+    // repere d'etape
+    if(o.b){
+      g += '<rect x="20" y="'+(y-12)+'" width="46" height="24" rx="12" fill="'+A+'"/>';
+      g += '<text x="43" y="'+(y+5)+'" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="#1a1200" font-weight="700">'+o.b+'</text>';
+    }
+
+    // libelles
+    g += '<text x="222" y="'+(y-2)+'" font-family="var(--body)" font-size="12.5" fill="'+T+'" font-weight="600">'+o.n+'</text>';
+    if(o.s) g += '<text x="222" y="'+(y+14)+'" font-family="var(--body)" font-size="11" fill="'+M+'">'+o.s+'</text>';
+  });
+
+  return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+g+'</svg>';
+}
 
 
 // ---------- ESSAIS CÂBLES HT ----------
