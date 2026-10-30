@@ -1878,48 +1878,9 @@ canvas.fige{pointer-events:none;}
 
   <!-- ================= PANEL 18 : CONSIGNATION ================= -->
   <div class="panel" id="p-consign">
-    <div class="card">
+        <div class="card">
       <h2><span class="idx">18</span> Attestation de consignation</h2>
-      <p class="desc">Les cinq étapes, le découpage en deux étapes, les rubriques du document, et le déroulement appareil par appareil.</p>
-      <div class="field">
-        <label>Sujet</label>
-        <select id="cgSel" onchange="updateConsign()">
-          <optgroup label="La procédure">
-            <option value="etapes">Les cinq étapes de la consignation</option>
-            <option value="une2">En une étape ou en deux étapes</option>
-            <option value="decon">Déconsignation et fin de travaux</option>
-          </optgroup>
-          <optgroup label="Le document">
-            <option value="contenu">Ce que contient l'attestation</option>
-            <option value="remplir">Remplir l'attestation : ce qui compte</option>
-            <option value="docs">Les autres documents de l'opération</option>
-          </optgroup>
-          <optgroup label="Appareil par appareil">
-            <option value="schIM">Cellule interrupteur-sectionneur (IM)</option>
-            <option value="schQM">Cellule interrupteur-fusible (QM)</option>
-            <option value="schDM">Cellule disjoncteur (DM1-A)</option>
-            <option value="schRM6">Poste compact à isolation gazeuse (RM6)</option>
-            <option value="schH61">Poste sur poteau (H61)</option>
-            <option value="schBT">Côté basse tension (transfo et TGBT)</option>
-          </optgroup>
-          <optgroup label="Terrain">
-            <option value="pieges">Ce qui va de travers</option>
-          </optgroup>
-        </select>
-      </div>
-      <div class="schema" id="cgSchema"></div>
-      <div class="note" id="cgRes" style="margin-top:0;"></div>
-      <div class="note" style="border-left-color:var(--muted); font-size:12px;">
-        Les schémas sont des <b>principes de déroulement</b>, pas des schémas d'installation. Le
-        nombre d'organes, l'ordre imposé par les interverrouillages et les points de mise à la
-        terre varient selon l'appareil : <b>le schéma du constructeur et le carnet de
-        prescriptions du poste restent la référence</b>.
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 style="font-size:14px;">Établir une attestation</h2>
-      <p class="desc">Le document se remplit ici, se signe au doigt et sort en PDF. L'en-tête et le pied de page reprennent <b>Mon en-tête</b>, réglé dans l'onglet 19.</p>
+      <p class="desc">Le document se remplit ici, se signe au doigt et sort en PDF. L'en-tête et le pied de page reprennent <b>Mon en-tête</b>, réglé dans l'onglet 19. Le mémo de la procédure est en bas de l'onglet.</p>
       <div class="toolbar">
         <button class="action" onclick="atNouvelle()">Nouvelle attestation</button>
         <button class="ghost" onclick="atImprimer()">Aperçu · PDF</button>
@@ -1967,6 +1928,45 @@ canvas.fige{pointer-events:none;}
     <div class="card">
       <h2 style="font-size:14px;">Attestations enregistrées</h2>
       <div id="atListe"></div>
+    </div>
+
+<div class="card">
+      <h2 style="font-size:14px;">Le mémo</h2>
+      <p class="desc">Les cinq étapes, le découpage en deux étapes, les rubriques du document, et le déroulement appareil par appareil.</p>
+      <div class="field">
+        <label>Sujet</label>
+        <select id="cgSel" onchange="updateConsign()">
+          <optgroup label="La procédure">
+            <option value="etapes">Les cinq étapes de la consignation</option>
+            <option value="une2">En une étape ou en deux étapes</option>
+            <option value="decon">Déconsignation et fin de travaux</option>
+          </optgroup>
+          <optgroup label="Le document">
+            <option value="contenu">Ce que contient l'attestation</option>
+            <option value="remplir">Remplir l'attestation : ce qui compte</option>
+            <option value="docs">Les autres documents de l'opération</option>
+          </optgroup>
+          <optgroup label="Appareil par appareil">
+            <option value="schIM">Cellule interrupteur-sectionneur (IM)</option>
+            <option value="schQM">Cellule interrupteur-fusible (QM)</option>
+            <option value="schDM">Cellule disjoncteur (DM1-A)</option>
+            <option value="schRM6">Poste compact à isolation gazeuse (RM6)</option>
+            <option value="schH61">Poste sur poteau (H61)</option>
+            <option value="schBT">Côté basse tension (transfo et TGBT)</option>
+          </optgroup>
+          <optgroup label="Terrain">
+            <option value="pieges">Ce qui va de travers</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="schema" id="cgSchema"></div>
+      <div class="note" id="cgRes" style="margin-top:0;"></div>
+      <div class="note" style="border-left-color:var(--muted); font-size:12px;">
+        Les schémas sont des <b>principes de déroulement</b>, pas des schémas d'installation. Le
+        nombre d'organes, l'ordre imposé par les interverrouillages et les points de mise à la
+        terre varient selon l'appareil : <b>le schéma du constructeur et le carnet de
+        prescriptions du poste restent la référence</b>.
+      </div>
     </div>
     <div class="pubslot" data-pub="consign"></div>
   </div>
@@ -3803,7 +3803,7 @@ loadBdd();
 // =====================================================================
 // RECHERCHE GLOBALE · RACCOURCIS · GARDE-FOU DE VERSION
 // =====================================================================
-const VERSION_PAGE = 'v55';
+const VERSION_PAGE = 'v56';
 function numVersion(v){ const n = parseInt(String(v).replace(/[^0-9]/g, ''), 10); return isNaN(n) ? 0 : n; }
 
 // D'où vient cette installation. Relevé tout de suite, avant que
@@ -4190,17 +4190,21 @@ function majBandeauNouveau(){
   const versions = Object.keys(NOUVEAUTES)
     .filter(function(v){ const n = numVersion(v); return n > vu && n <= ici; })
     .sort(function(a, b2){ return numVersion(b2) - numVersion(a); });
-  let corps = versions.map(function(v){
-    return (v === VERSION_PAGE ? '' : '<div style="font-family:var(--mono); font-size:11px; color:var(--muted); margin:9px 0 3px;">' + v + '</div>') +
+  let corps = versions.map(function(v, i){
+    return (i === 0 ? '' : '<div style="font-family:var(--mono); font-size:11px; color:var(--muted); margin:11px 0 3px;">' + v + '</div>') +
       '<ul style="margin:0; padding-left:17px;">' +
       NOUVEAUTES[v].map(function(l){ return '<li style="margin:3px 0;">' + echapper(l) + '</li>'; }).join('') +
       '</ul>';
   }).join('');
-  if(!corps) corps = '<div style="margin-top:4px;">Corrections et réglages internes.</div>';
+  if(!corps){                       // version de mise en page : rien à annoncer
+    LS.set('kitht-vu', VERSION_PAGE);
+    b.style.display = 'none';
+    return;
+  }
   b.innerHTML =
     '<div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px;">' +
       '<b style="color:var(--amber);">Ce qui a changé</b>' +
-      '<span style="font-family:var(--mono); font-size:11px; color:var(--muted);">' + echapper(VERSION_PAGE) + '</span>' +
+      '<span style="font-family:var(--mono); font-size:11px; color:var(--muted);">' + echapper(versions[0]) + '</span>' +
     '</div>' + corps +
     '<div style="margin-top:11px;"><button class="ghost" style="padding:6px 13px; font-size:12px;" ' +
       'onclick="marquerVersionVue()">J\'ai vu</button></div>';
