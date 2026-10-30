@@ -518,11 +518,141 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     margin-top:auto; padding-top:4mm; border-top:.5pt solid #bbb;
     font-size:8.5pt; color:#555;}
   #pvImpression .dsign b{color:#111;}
+
+  /* ---------- attestation de consignation ---------- */
+  /* bloc et non flex : un conteneur flex se fragmente mal en impression
+     et renvoyait la fin de travaux sur une deuxième page */
+  #pvImpression .apage{page-break-before:always;}
+  #pvImpression .apage:first-child{page-break-before:auto;}
+  #pvImpression .acase{display:inline-block; width:3.2mm; height:3.2mm; border:.6pt solid #333;
+    text-align:center; line-height:3mm; font-size:7.5pt; vertical-align:-.4mm;}
+  #pvImpression .ainfo{margin-top:3mm;}
+  #pvImpression .apage .dtete{margin-bottom:4mm;}
+  #pvImpression .ainfo th{text-align:left; font-size:7.5pt; font-weight:700; color:#777;
+    letter-spacing:.1em; text-transform:uppercase; padding:1.1mm 2mm 1.1mm 0;
+    border-bottom:.4pt solid #ddd; width:22%; vertical-align:top;}
+  #pvImpression .ainfo td{font-size:10pt; padding:1.1mm 4mm 1.1mm 0;
+    border-bottom:.4pt solid #ddd; vertical-align:top;}
+  #pvImpression .aman{margin:2.5mm 0 0; font-size:8.5pt; line-height:1.4;}
+  #pvImpression .aman > div{padding:.9mm 0;}
+  #pvImpression .abandeau{font-size:7.5pt; font-weight:700; letter-spacing:.17em;
+    text-transform:uppercase; color:#777; border-bottom:.5pt solid #bbb;
+    padding-bottom:1mm; margin:3mm 0 1.5mm;}
+  #pvImpression .aschema{border:.5pt solid #bbb; padding:2mm;}
+  #pvImpression .aposte{font-size:9pt; margin-bottom:1.5mm;}
+  /* le schéma garde ses proportions mais ne mange pas la page */
+  #pvImpression .aschema img{width:100%; height:auto; max-height:96mm;
+    object-fit:contain; object-position:center; display:block; margin:0 auto;}
+  #pvImpression .aetats{margin-top:2mm; table-layout:fixed;}
+  #pvImpression .aetats th{width:38mm; text-align:left; font-size:6.8pt; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; vertical-align:top;
+    padding:1.2mm 3mm 1.2mm 0; border-bottom:.4pt solid #eee;}
+  #pvImpression .aetats td{font-size:8.5pt; line-height:1.4; vertical-align:top;
+    padding:1.2mm 0; border-bottom:.4pt solid #eee;}
+  #pvImpression .aetats tr.cs th{color:#1b5e20;}
+  #pvImpression .aetats tr.st th{color:#b71c1c;}
+  #pvImpression .aetats tr.ht th{color:#455a64;}
+  #pvImpression .aavert{font-size:8pt; font-weight:700; margin:1.8mm 0 0; line-height:1.4;}
+  #pvImpression .aops{display:flex; flex-wrap:wrap; gap:1.5mm 6mm; margin-top:2mm; font-size:8.5pt;}
+  #pvImpression .asign{table-layout:fixed;}
+  #pvImpression .asign td{width:33.33%; vertical-align:top; padding:0 2.5mm;
+    border-left:.4pt solid #ddd;}
+  #pvImpression .asign td:first-child{padding-left:0; border-left:none;}
+  #pvImpression .arole{font-size:9pt; font-weight:700; margin-bottom:1.5mm;}
+  #pvImpression .anote{font-size:6.5pt; color:#555; line-height:1.45; margin:1.5mm 0 0;
+    border-top:.4pt solid #eee; padding-top:1.5mm;}
+  #pvImpression .anote b{color:#333;}
+  #pvImpression .achamp{font-size:9pt; border-bottom:.4pt solid #eee; padding:.9mm 0;
+    min-height:4.5mm;}
+  #pvImpression .achamp span{display:block; font-size:6.8pt; font-weight:700; color:#999;
+    letter-spacing:.12em; text-transform:uppercase;}
+  #pvImpression .achamp.asig{border-bottom:none; min-height:8mm;}
+  #pvImpression .achamp.asig img{width:100%; height:auto; max-height:9mm;
+    object-fit:contain; object-position:left top;}
+  #pvImpression .asign{page-break-inside:avoid;}
+  /* validation et fin de travaux ensemble sur la feuille suivante :
+     le schéma occupe la première, comme sur un formulaire papier */
+  #pvImpression .asuite{page-break-before:always;}
+  #pvImpression .afin{table-layout:fixed;}
+  #pvImpression .afin th{text-align:left; font-size:6.8pt; font-weight:700; color:#999;
+    letter-spacing:.12em; text-transform:uppercase; padding:1.2mm 2mm 1.2mm 0;
+    border-bottom:.6pt solid #888;}
+  #pvImpression .afin td{font-size:9pt; padding:1mm 2mm 1mm 0;
+    border-bottom:.4pt solid #eee; vertical-align:middle;}
+  #pvImpression .afin th:nth-child(1), #pvImpression .afin td:nth-child(1){width:34%;}
+  #pvImpression .afin th:nth-child(2), #pvImpression .afin td:nth-child(2){width:22%;}
+  #pvImpression .afin th:nth-child(3), #pvImpression .afin td:nth-child(3){width:22%;}
+  #pvImpression .afin .afsig img{width:100%; height:auto; max-height:9mm;
+    object-fit:contain; object-position:left center;}
   #pvImpression .dpied{font-size:7pt; color:#888; line-height:1.4;
     padding-top:2mm; margin-top:3mm; border-top:.4pt solid #e5e5e5;}
   #pvImpression .dpage > .dpied:first-child + *{margin-top:0;}
   #pvImpression .dsign + .dpied{margin-top:2mm; border-top:none;}
 }
+
+/* ---------- attestation de consignation ---------- */
+.atchoix{display:flex; align-items:flex-start; gap:10px; width:100%; text-align:left;
+  background:var(--panel); border:1px solid var(--line); border-radius:6px;
+  padding:11px 13px; margin-bottom:7px; cursor:pointer; font-family:var(--body);
+  font-size:12.5px; color:var(--text); line-height:1.45;}
+.atchoix.on{border-color:var(--amber); background:rgba(255,138,30,.06);}
+.atchoix .atcase{flex-shrink:0; width:17px; height:17px; border:1.5px solid var(--muted);
+  border-radius:3px; display:flex; align-items:center; justify-content:center;
+  font-size:12px; color:var(--amber); margin-top:1px;}
+.atchoix.on .atcase{border-color:var(--amber);}
+.atmodeles{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+.atmod{background:var(--panel-2); border:1px solid var(--line); border-radius:6px;
+  padding:8px 12px; font-size:12px; font-family:var(--body); color:var(--text); cursor:pointer;
+  display:inline-flex; align-items:center; gap:7px;}
+.atmod:hover{border-color:var(--amber); color:var(--amber);}
+.atmod span{font-family:var(--mono); color:var(--amber); font-size:14px; line-height:1;}
+.atsuite{display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; align-items:center;}
+.atcells{display:flex; flex-direction:column; gap:7px; margin-bottom:10px;}
+.atcell{border:1px solid var(--line); border-left:3px solid var(--line); border-radius:7px;
+  padding:9px 11px; background:var(--panel-2);}
+.atcell[data-etat="st"]{border-left-color:#e05252;}
+.atcell[data-etat="ht"]{border-left-color:#8aa0b4;}
+.atcell[data-etat="cs"]{border-left-color:#4caf50;}
+.atcellh{display:flex; align-items:center; gap:7px; margin-bottom:8px;}
+.atcelln{font-family:var(--mono); font-size:11px; color:var(--amber); flex-shrink:0;}
+.atcellt{font-size:12.5px; color:var(--text); flex:1; min-width:0;}
+.atcellh button{background:transparent; border:1px solid var(--line); border-radius:5px;
+  color:var(--muted); font-size:12px; padding:3px 8px; cursor:pointer; font-family:var(--body);
+  flex-shrink:0; line-height:1.2;}
+.atcellh button:hover{border-color:var(--amber); color:var(--amber);}
+.atcellh button.x:hover{border-color:var(--red); color:var(--red);}
+.atcellg{display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;}
+.atcellg.seul{grid-template-columns:1fr;}
+.atcellg input{width:100%; background:var(--panel); border:1px solid var(--line); border-radius:5px;
+  color:var(--text); font-family:var(--body); font-size:12px; padding:6px 8px;}
+.atcellg input:focus{outline:none; border-color:var(--amber);}
+.atetats{display:flex; flex-wrap:wrap; gap:5px;}
+.atet{background:transparent; border:1px solid var(--line); border-radius:5px; cursor:pointer;
+  font-family:var(--body); font-size:11.5px; padding:5px 10px; color:var(--muted);}
+.atet.on[data-e="st"]{border-color:#e05252; color:#e05252; background:rgba(224,82,82,.10);}
+.atet.on[data-e="ht"]{border-color:#8aa0b4; color:#8aa0b4; background:rgba(138,160,180,.10);}
+.atet.on[data-e="cs"]{border-color:#4caf50; color:#4caf50; background:rgba(76,175,80,.10);}
+@media(max-width:560px){ .atcellg{grid-template-columns:1fr;} }
+.atpas{background:rgba(255,138,30,.10); border:1px solid var(--amber-dim); border-radius:4px;
+  padding:5px 10px; font-size:11.5px; color:var(--amber); font-family:var(--body);}
+.atpas.sous{background:rgba(62,166,255,.10); border-color:var(--blue); color:var(--blue);}
+.atvide{font-size:12px; color:var(--muted); line-height:1.5;}
+.atoutils{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; align-items:center;}
+.atoutil{background:var(--panel-2); border:1px solid var(--line); border-radius:6px;
+  padding:7px 12px; font-size:12px; font-family:var(--body); color:var(--text); cursor:pointer;}
+.atoutil.on{border-color:var(--amber); color:var(--amber); background:rgba(255,138,30,.08);}
+.atcanvas{width:100%; height:auto; aspect-ratio:1100/640; background:#fff;
+  border:1px solid var(--line); border-radius:6px; touch-action:none; cursor:crosshair;
+  display:block;}
+.atsig{width:100%; height:auto; aspect-ratio:520/170; background:#fff;
+  border:1px solid var(--line); border-radius:6px; touch-action:none; cursor:crosshair;
+  display:block;}
+.atrole{border:1px solid var(--line); border-radius:7px; padding:14px; margin-bottom:10px;
+  background:var(--panel);}
+.atrolet{font-family:var(--disp); font-size:13.5px; font-weight:700; color:var(--amber);
+  margin-bottom:8px;}
+.atengage{font-size:11.5px; color:var(--muted); line-height:1.55; margin:0 0 12px;
+  border-left:2px solid var(--line); padding-left:10px;}
 
 </style>
 </head>
@@ -616,6 +746,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   </div>
   <button id="fabAccueil" onclick="goHome()" style="display:none;" aria-label="Retour à l'accueil">‹ Accueil</button>
 
+  <div id="barreNouveau" style="display:none; background:rgba(255,138,30,0.08); border:1px solid var(--amber-dim); border-radius:7px; padding:13px 14px; margin-bottom:12px; font-size:12.5px; color:var(--text); line-height:1.55;"></div>
   <div id="barreContenu" style="display:none; background:rgba(239,82,82,0.10); border:1px solid var(--red); border-radius:5px; padding:10px 12px; margin-bottom:12px; font-size:12.5px; color:var(--red);"></div>
 
   <div class="qbox">
@@ -1767,6 +1898,59 @@ tr:hover td{background:rgba(255,138,30,0.03);}
         prescriptions du poste restent la référence</b>.
       </div>
     </div>
+
+    <div class="card">
+      <h2 style="font-size:14px;">Établir une attestation</h2>
+      <p class="desc">Le document se remplit ici, se signe au doigt et sort en PDF. L'en-tête et le pied de page reprennent <b>Mon en-tête</b>, réglé dans l'onglet 19.</p>
+      <div class="toolbar">
+        <button class="action" onclick="atNouvelle()">Nouvelle attestation</button>
+        <button class="ghost" onclick="atImprimer()">Aperçu · PDF</button>
+      </div>
+      <div id="atMsg" style="font-size:12px; min-height:16px;"></div>
+    </div>
+
+    <div id="atBloc" style="display:none;">
+      <div class="card">
+        <h2 style="font-size:14px;">Intervention</h2>
+        <div id="atIntervention"></div>
+        <div class="pvsstitre">Qui réalise les manœuvres</div>
+        <div id="atManoeuvre"></div>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size:14px;">Schéma de l'installation</h2>
+        <p class="desc">Les zones hors tension et sous tension, et les mises à la terre.</p>
+        <div id="atSchema"></div>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size:14px;">Opérations réalisées</h2>
+        <div id="atOps"></div>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size:14px;">Validation</h2>
+        <p class="desc">Chacun saisit son nom et signe à l'écran, au doigt ou au stylet.</p>
+        <div id="atValidation"></div>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size:14px;">Fin de travaux</h2>
+        <p class="desc">À remplir au moment de la restitution, avant déconsignation.</p>
+        <div id="atFinTravaux"></div>
+        <div class="toolbar" style="margin-top:16px;">
+          <button class="action" onclick="atImprimer()">Aperçu · PDF</button>
+        </div>
+        <div class="note" style="border-left-color:var(--muted); font-size:12px;">
+          <b>Enregistrement automatique.</b> Tout est conservé sur cet appareil au fil de la saisie. Le PDF reste la seule sauvegarde durable : sors-le une fois le document signé.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:14px;">Attestations enregistrées</h2>
+      <div id="atListe"></div>
+    </div>
     <div class="pubslot" data-pub="consign"></div>
   </div>
 
@@ -1940,6 +2124,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
         données et les corrections de calcul se font en amont, pas depuis cette page.
       </div>
       <div class="note" id="noteVersions" style="border-left-color:var(--muted); font-size:12px; font-family:var(--mono);"></div>
+      <div class="note" id="noteHistorique" style="border-left-color:var(--amber-dim);"></div>
       <div class="note" style="border-left-color:var(--amber-dim);">
         <b>Propriété intellectuelle</b><br>
         KIT HT — © 2026 Marc GELÉ. Tous droits réservés.<br>
@@ -2085,6 +2270,7 @@ function selectTab(name){
   const qr = document.getElementById('qResultats'); if(qr) qr.style.display = 'none';
   const zf = document.getElementById('zoneFavoris'); if(zf) zf.style.display = 'none';
   const bcn = document.getElementById('barreContenu'); if(bcn) bcn.style.display = 'none';
+  const bnv = document.getElementById('barreNouveau'); if(bnv) bnv.style.display = 'none';
   window.scrollTo(0,0);
   location.hash = name;
   noterUsage(name);
@@ -2093,6 +2279,7 @@ function selectTab(name){
   if(name === 'compte') majCompteUI();
   if(name === 'info') majVersions();
   if(name === 'pv') pvInit();
+  if(name === 'consign') { try{ atInit(); }catch(e){ console.warn('attestation', e.message); } }
 }
 function goHome(){
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
@@ -2106,6 +2293,7 @@ function goHome(){
   viderRecherche();
   majFavoris();
   try{ majBandeauContenu(); }catch(e){}
+  try{ majBandeauNouveau(); }catch(e){}
   window.scrollTo(0,0);
   location.hash = '';
 }
@@ -3585,9 +3773,10 @@ function demarrerInterface(){
    calcPoste,renderTable].forEach(f=>{
     try{ f(); }catch(e){ console.warn('init', e.message); }
   });
-  try{ construireIndexRecherche(); majFavoris(); majVersions(); majBandeauContenu(); }
+  try{ construireIndexRecherche(); majFavoris(); majVersions(); majBandeauContenu(); majBandeauNouveau(); }
   catch(e){ console.warn('index', e.message); }
   try{ pvAfficherListe(); }catch(e){}
+  try{ atAfficherListe(); }catch(e){}
 }
 loadBdd();
 
@@ -3597,7 +3786,26 @@ loadBdd();
 // =====================================================================
 // RECHERCHE GLOBALE · RACCOURCIS · GARDE-FOU DE VERSION
 // =====================================================================
-const VERSION_PAGE = 'v44';
+const VERSION_PAGE = 'v53';
+function numVersion(v){ const n = parseInt(String(v).replace(/[^0-9]/g, ''), 10); return isNaN(n) ? 0 : n; }
+
+// D'où vient cette installation. Relevé tout de suite, avant que
+// l'application n'écrive la session ou le cache de contenu : après, une
+// installation toute neuve passerait pour une ancienne.
+const VERSION_DEPART = (function(){
+  try{
+    const v = localStorage.getItem('kitht-vu');
+    if(v) return JSON.parse(v);
+    for(let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k && k.indexOf('kitht-') === 0)        // déjà utilisée : elle vient de la version d'avant
+        return 'v' + Math.max(0, numVersion(VERSION_PAGE) - 1);
+    }
+    localStorage.setItem('kitht-vu', JSON.stringify(VERSION_PAGE));
+  }catch(e){}
+  return VERSION_PAGE;
+})();
+
 let META_CONTENU = null;
 
 // Sélecteur de sujet -> bloc de données -> conteneur du résultat.
@@ -3901,7 +4109,20 @@ function blocsManquants(){
   });
 }
 
+// L'historique reste consultable après que le bandeau a été refermé.
+function majHistorique(){
+  const z = document.getElementById('noteHistorique'); if(!z) return;
+  const vs = Object.keys(NOUVEAUTES).sort(function(a, b){ return numVersion(b) - numVersion(a); });
+  z.innerHTML = '<b>Ce qui a changé, version par version</b>' + vs.map(function(v){
+    return '<div style="margin-top:10px;"><span style="font-family:var(--mono); font-size:11px; color:var(--amber);">' +
+      echapper(v) + '</span><ul style="margin:3px 0 0; padding-left:17px;">' +
+      NOUVEAUTES[v].map(function(l){ return '<li style="margin:3px 0;">' + echapper(l) + '</li>'; }).join('') +
+      '</ul></div>';
+  }).join('');
+}
+
 function majVersions(){
+  try{ majHistorique(); }catch(e){}
   const n = document.getElementById('noteVersions');
   if(!n) return;
   let t = 'Page ' + VERSION_PAGE;
@@ -3918,6 +4139,50 @@ function majVersions(){
   if(m.length) t += '<br><span style="color:var(--red);">' + m.length + ' bloc' +
     (m.length>1?'s':'') + ' de contenu absent' + (m.length>1?'s':'') + ' : ' + m.join(', ') + '</span>';
   n.innerHTML = t;
+}
+
+// =====================================================================
+// CE QUI A CHANGÉ — signalé une fois après chaque mise à jour
+// =====================================================================
+// Une entrée par version livrée, de la plus récente à la plus ancienne.
+// Trois ou quatre lignes suffisent : c'est un rappel, pas une notice.
+const NOUVEAUTES = {
+  v53: ["Après chaque mise à jour, l'outil signale ici ce qui a changé — une seule fois.",
+        "Les versions sautées sont rattrapées : tu vois tout ce que tu n'as pas encore lu."],
+  v52: ["La double sectionnement coupe le jeu de barres en deux : NF C 13-100 d'un côté, NF C 13-200 de l'autre.",
+        "Disjoncteur BT fixe ou débrochable, au choix, et facultatif comme le transformateur.",
+        "Protection à fusibles : la mise à la terre est au-dessus et en dessous des fusibles."],
+  v51: ["Sur l'attestation, chaque cellule a son état : sous tension, hors tension ou consignée.",
+        "Un repère au-dessus et un nom en dessous de chaque cellule.",
+        "Le document imprimé liste ce qui reste sous tension pendant les travaux."],
+  v50: ["Schéma de poste composé cellule par cellule dans l'attestation de consignation."]
+};
+function marquerVersionVue(){
+  LS.set('kitht-vu', VERSION_PAGE);
+  const b = document.getElementById('barreNouveau'); if(b) b.style.display = 'none';
+}
+function majBandeauNouveau(){
+  const b = document.getElementById('barreNouveau'); if(!b) return;
+  const vu = numVersion(VERSION_DEPART), ici = numVersion(VERSION_PAGE);
+  if(!ici || vu >= ici){ b.style.display = 'none'; return; }
+  const versions = Object.keys(NOUVEAUTES)
+    .filter(function(v){ const n = numVersion(v); return n > vu && n <= ici; })
+    .sort(function(a, b2){ return numVersion(b2) - numVersion(a); });
+  let corps = versions.map(function(v){
+    return (v === VERSION_PAGE ? '' : '<div style="font-family:var(--mono); font-size:11px; color:var(--muted); margin:9px 0 3px;">' + v + '</div>') +
+      '<ul style="margin:0; padding-left:17px;">' +
+      NOUVEAUTES[v].map(function(l){ return '<li style="margin:3px 0;">' + echapper(l) + '</li>'; }).join('') +
+      '</ul>';
+  }).join('');
+  if(!corps) corps = '<div style="margin-top:4px;">Corrections et réglages internes.</div>';
+  b.innerHTML =
+    '<div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px;">' +
+      '<b style="color:var(--amber);">Ce qui a changé</b>' +
+      '<span style="font-family:var(--mono); font-size:11px; color:var(--muted);">' + echapper(VERSION_PAGE) + '</span>' +
+    '</div>' + corps +
+    '<div style="margin-top:11px;"><button class="ghost" style="padding:6px 13px; font-size:12px;" ' +
+      'onclick="marquerVersionVue()">J\'ai vu</button></div>';
+  b.style.display = 'block';
 }
 
 function majBandeauContenu(){
@@ -5078,6 +5343,932 @@ function pvImprimer(){
       '<span>'+echapper(eq.nom)+' · intervention du '+pvDateFr(a.dateCr||a.date)+'</span></div>';
     g += pvPied() + '</section>';
   });
+
+  const z = document.getElementById('pvImpression');
+  z.innerHTML = g;
+  setTimeout(function(){ window.print(); }, 80);
+}
+
+// =====================================================================
+// ATTESTATION DE CONSIGNATION
+// Le document se remplit sur le téléphone, se signe au doigt, et sort
+// en PDF. L'en-tête et le pied reprennent « Mon en-tête » de l'onglet 19.
+// =====================================================================
+
+const AT_INTERV = [
+  {k:'num',    l:"N° d'attestation",         ty:'text'},
+  {k:'motif',  l:"Motif de l'intervention",  ty:'sel', o:['','Maintenance','Travaux','Dépannage']},
+  {k:'lieu',   l:"Lieu de l'intervention",   ty:'text', large:true},
+  {k:'date',   l:"Date de l'intervention",   ty:'date'},
+  {k:'heure',  l:"Heure",                    ty:'time'},
+  {k:'poste',  l:"Nom du poste",             ty:'text', large:true},
+  {k:'entUtil',l:"Entreprise utilisatrice",  ty:'text', large:true}
+];
+
+const AT_MANOEUVRE = [
+  {v:'nous', l:"Manœuvres de consignation réalisées par ma société, sous la responsabilité du représentant de l'entreprise utilisatrice, à défaut de chargé de consignation de celle-ci"},
+  {v:'eux',  l:"Manœuvres de consignation réalisées par un chargé de consignation de l'entreprise utilisatrice"}
+];
+
+const AT_OPS = [
+  {k:'sep',   l:'Séparation de réseau'},
+  {k:'amont', l:"MALT en amont de l'installation"},
+  {k:'aval',  l:"MALT en aval de l'installation"},
+  {k:'verif', l:"Vérification d'absence de tension"},
+  {k:'cad',   l:'Condamnation réalisée avec cadenas'}
+];
+
+const AT_ROLES = [
+  {k:'uti', l:"Représentant de l'entreprise utilisatrice", t:''},
+  {k:'cc',  l:'Chargé de consignation',
+   t:"Par l'apposition de sa signature, le chargé de consignation atteste de la réalisation des opérations définies ci-dessus et remet la présente attestation au responsable de travaux."},
+  {k:'rt',  l:'Responsable de travaux',
+   t:"Le responsable de travaux considère en exploitation toute installation autre que celle certifiée par la présente. Il s'engage à respecter et à faire respecter les prescriptions de sécurité correspondantes, du début des travaux jusqu'à leur achèvement."}
+];
+
+// ---------------------------------------------------------------------
+// Cellules du poste — on les empile de gauche à droite, le dessin
+// se redimensionne pour tenir dans la largeur disponible.
+// ---------------------------------------------------------------------
+const AT_CELLULES = [
+  {k:'ima',   l:'Cellule interrupteur — arrivée',     nom:'Arrivée Enedis'},
+  {k:'imd',   l:'Cellule interrupteur — départ',      nom:'Départ HTA'},
+  {k:'djd',   l:'Cellule disjoncteur — départ',       nom:'Départ protégé'},
+  {k:'cpt',   l:'Cellule comptage',                   nom:'Comptage HTA'},
+  {k:'d2s',   l:'Double sectionnement + disjoncteur', nom:'Double sectionnement', limite:true},
+  {k:'d1s',   l:'Simple sectionnement + disjoncteur', nom:'Simple sectionnement'},
+  {k:'qm',    l:'Protection transfo à fusibles',      nom:'Protection transformateur'},
+  {k:'tr',    l:'Transformateur HTA / BT',            nom:'Transformateur', sous:true},
+  {k:'djbtf', l:'Disjoncteur BT fixe',                nom:'Disjoncteur BT fixe', sous:true},
+  {k:'djbtd', l:'Disjoncteur BT débrochable',         nom:'Disjoncteur BT débrochable', sous:true}
+];
+function atDefCellule(k){
+  if(k === 'im')   k = 'imd';                     // anciens noms, pour les schémas déjà faits
+  if(k === 'djbt') k = 'djbtf';
+  return AT_CELLULES.filter(function(c){ return c.k === k; })[0];
+}
+function atEstDjBT(k){ return k === 'djbtf' || k === 'djbtd'; }
+
+// État électrique de chaque cellule au moment où l'attestation est remise.
+// Par défaut tout est sous tension : c'est la situation de départ, et c'est
+// ce qu'il faut rappeler à celui qui va travailler.
+const AT_ETATS = [
+  {k:'st', l:'Sous tension', court:'SOUS TENSION', c:'#c62828'},
+  {k:'ht', l:'Hors tension', court:'HORS TENSION', c:'#5a6b7a'},
+  {k:'cs', l:'Consignée',    court:'CONSIGNÉE',    c:'#2e7d32'}
+];
+function atDefEtat(k){
+  return AT_ETATS.filter(function(e){ return e.k === k; })[0] || AT_ETATS[0];
+}
+
+// Une cellule enregistrée est un objet {k, haut, bas, etat}. Les schémas
+// d'avant la v51 stockaient une simple chaîne : on les relit sans rien perdre.
+function atNormCell(c){
+  if(typeof c === 'string') c = {k:c};
+  const d = atDefCellule(c && c.k);
+  if(!d) return null;
+  return {k:d.k, haut:(c.haut || ''), bas:(c.bas || ''), etat:(c.etat || 'st')};
+}
+function atNomCell(c){
+  const d = atDefCellule(c.k);
+  return c.bas || (d ? d.nom : c.k);
+}
+
+// Les éléments marqués « sous » se placent sous la cellule précédente, dans
+// la même colonne : un transformateur pend de sa protection, un disjoncteur
+// BT pend du transformateur. L'un comme l'autre sont facultatifs.
+function atColonnes(cells){
+  const cols = [];
+  (cells || []).forEach(function(x){
+    const c = atNormCell(x); if(!c) return;
+    const d = atDefCellule(c.k);
+    if(d.sous && cols.length) cols[cols.length-1].sous.push(c);
+    else if(d.sous) cols.push({k:null, c:null, sous:[c]});
+    else cols.push({k:c.k, c:c, sous:[]});
+  });
+  return cols;
+}
+
+// Géométrie du dessin : partagée entre le tracé et la mesure de hauteur.
+function atGeo(W, cells){
+  const cols = atColonnes(cells);
+  const M = 34;
+  const colW = cols.length ? (W - 2*M) / cols.length : W;
+  const s = Math.max(0.5, Math.min(1, colW / 175));
+  return {cols:cols, M:M, colW:colW, s:s, bw:Math.min(colW*0.74, 150*s),
+          yNf:18, yRep:38, yEtat:52, hB:Math.max(13, 18*s),
+          yBus:104, yTop:134, yBot:134 + 196*s + 24};
+}
+// Jusqu'où descend le fond : sert à rogner le blanc inutile à l'impression.
+function atBasFond(W, cells){
+  const g = atGeo(W, cells);
+  if(!g.cols.length) return 0;
+  const s = g.s;
+  let bas = g.yBot + 66*s;
+  g.cols.forEach(function(c){
+    let y = g.yBot;
+    c.sous.forEach(function(e){
+      if(e.k === 'tr') y += 122*s; else y += (e.k === 'djbtd' ? 140 : 124)*s;
+      bas = Math.max(bas, y + 30*s);
+    });
+  });
+  return bas;
+}
+
+function atFond(ctx, W, H, schema){
+  const g = atGeo(W, schema && schema.cells);
+  const cols = g.cols;
+  if(!cols.length) return;
+
+  const L = '#8a8a8a', T = '#5a5a5a';
+  const M = g.M, colW = g.colW, s = g.s, bw = g.bw;
+  const yNf = g.yNf, yRep = g.yRep, yEtat = g.yEtat, hB = g.hB;
+  const yBus = g.yBus, yTop = g.yTop, yBot = g.yBot;
+  const h = yBot - yTop;
+  const dx = bw*0.24;                                 // écart des deux montants
+
+  ctx.save();
+  ctx.strokeStyle = L; ctx.fillStyle = T;
+  ctx.lineWidth = Math.max(1.2, 2*s); ctx.lineCap = 'round'; ctx.textBaseline = 'middle';
+
+  function trait(x1,y1,x2,y2){ ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); }
+  function blanc(x, y, w, hh){ ctx.fillStyle='#fff'; ctx.fillRect(x-w/2, y-hh/2, w, hh); ctx.fillStyle=T; }
+  function police(px, gras){
+    ctx.font = (gras ? '600 ' : '') + Math.max(8, px*s)+'px -apple-system, Helvetica, Arial, sans-serif';
+  }
+  function texte(x, y, t, px, align){
+    police(px); ctx.textAlign = align || 'center'; ctx.fillText(t, x, y);
+  }
+  // le conducteur passe derrière les libellés : on l'efface sous le texte
+  function masquer(xc, yy, lw){
+    const c = ctx.fillStyle;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(xc - lw/2 - 3, yy - Math.max(6, 8*s), lw + 6, Math.max(12, 16*s));
+    ctx.fillStyle = c;
+  }
+  function lignes(x, y, t, px, largeur, gras){      // libellé sur deux lignes au besoin
+    police(px, gras);
+    ctx.textAlign = 'center';
+    const mots = String(t).split(' '); let l = '', out = [];
+    mots.forEach(function(m){
+      const essai = l ? l+' '+m : m;
+      if(ctx.measureText(essai).width > largeur && l){ out.push(l); l = m; } else l = essai;
+    });
+    if(l) out.push(l);
+    out.slice(0,3).forEach(function(li, i){
+      const lw = ctx.measureText(li).width;
+      const xc = Math.max(lw/2 + 4, Math.min(W - lw/2 - 4, x));
+      const yy = y + i*Math.max(10, 13*s);
+      masquer(xc, yy, lw);
+      ctx.fillText(li, xc, yy);
+    });
+    return Math.min(out.length, 3);
+  }
+  function texteCote(cx, y, t, px, lg){
+    police(px);
+    const w = ctx.measureText(t).width;
+    const xd = cx + lg*0.5 + 8*s;
+    const aDroite = (xd + w < W - 6);
+    const xc = aDroite ? xd + w/2 : cx - lg*0.5 - 8*s - w/2;
+    masquer(xc, y, w);
+    ctx.textAlign = 'center'; ctx.fillText(t, xc, y);
+  }
+
+  // ---- marquage d'état : cadre coloré, hachures et cadenas sur le consigné ----
+  function cadre(x, y, w, hh, e){
+    const d = atDefEtat(e);
+    ctx.save();
+    ctx.strokeStyle = d.c;
+    if(e === 'cs'){
+      ctx.lineWidth = Math.max(2, 3*s);
+      ctx.strokeRect(x, y, w, hh);
+      ctx.save();
+      ctx.beginPath(); ctx.rect(x, y, w, hh); ctx.clip();
+      ctx.globalAlpha = 0.14; ctx.lineWidth = Math.max(1, 1.4*s);
+      const pas = Math.max(8, 12*s);
+      for(let u = -hh; u < w; u += pas){
+        ctx.beginPath(); ctx.moveTo(x+u, y+hh); ctx.lineTo(x+u+hh, y); ctx.stroke();
+      }
+      ctx.restore();
+    } else if(e === 'ht'){
+      ctx.lineWidth = Math.max(1, 1.6*s);
+      ctx.setLineDash([5*s, 4*s]); ctx.strokeRect(x, y, w, hh); ctx.setLineDash([]);
+    } else {
+      ctx.lineWidth = Math.max(1, 1.6*s);
+      ctx.strokeRect(x, y, w, hh);
+    }
+    ctx.restore();
+  }
+  function cadenas(x, y){
+    const w = Math.max(10, 13*s), hh = Math.max(8, 10*s);
+    const r = w*0.32, yb = y - hh*0.5;                 // haut du corps
+    ctx.save();
+    ctx.strokeStyle = '#2e7d32'; ctx.fillStyle = '#2e7d32';
+    ctx.lineWidth = Math.max(1.2, 1.8*s); ctx.lineCap = 'butt';
+    ctx.beginPath();
+    ctx.moveTo(x - r, yb);
+    ctx.lineTo(x - r, yb - hh*0.28);
+    ctx.arc(x, yb - hh*0.28, r, Math.PI, 0);
+    ctx.lineTo(x + r, yb);
+    ctx.stroke();
+    ctx.fillRect(x - w/2, yb, w, hh);
+    ctx.restore();
+  }
+  function bandeau(i, e){
+    const d = atDefEtat(e);
+    const bx = M + colW*i + 3, bw2 = colW - 6;
+    ctx.save();
+    ctx.globalAlpha = 0.13; ctx.fillStyle = d.c;
+    ctx.fillRect(bx, yEtat, bw2, hB);
+    ctx.globalAlpha = 1; ctx.fillStyle = d.c;
+    police(9.5, true); ctx.textAlign = 'center';
+    ctx.fillText(d.court, bx + bw2/2, yEtat + hB/2 + 0.5);
+    ctx.restore();
+  }
+  function tag(x, y, e, lg){
+    const d = atDefEtat(e);
+    ctx.save(); ctx.fillStyle = d.c;
+    texteCote(x, y, d.court, 9, lg);
+    ctx.restore();
+  }
+
+  const R = 4*s;
+  function inter(x, y){                               // interrupteur-sectionneur ouvert
+    const d = 16*s;
+    blanc(x, y, 7*s, d*2.2);
+    ctx.beginPath(); ctx.arc(x, y-d, R, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y+d, R, 0, 7); ctx.stroke();
+    trait(x, y+d, x+26*s, y-12*s);
+  }
+  function sectionneur(x, y){                         // même symbole, contacts marqués
+    inter(x, y);
+    const d = 16*s;
+    trait(x-7*s, y-d, x+7*s, y-d); trait(x-7*s, y+d, x+7*s, y+d);
+  }
+  function disjoncteur(x, y){
+    inter(x, y);
+    const d = 16*s;
+    trait(x-8*s, y-d-8*s, x+8*s, y-d+8*s); trait(x-8*s, y-d+8*s, x+8*s, y-d-8*s);
+  }
+  function brochage(x, y){                            // contacts de broche, appareil débrochable
+    const e = 4*s, w = 7*s, p = 8*s;
+    blanc(x, y, w*2.4, (e+p)*2.4);
+    ctx.beginPath(); ctx.moveTo(x-w, y-e-p); ctx.lineTo(x, y-e); ctx.lineTo(x+w, y-e-p); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x-w, y+e+p); ctx.lineTo(x, y+e); ctx.lineTo(x+w, y+e+p); ctx.stroke();
+  }
+  function fusible(x, y){
+    blanc(x, y, 24*s, 44*s);
+    ctx.strokeRect(x-10*s, y-20*s, 20*s, 40*s);
+  }
+  function transfo(x, y){
+    blanc(x, y, 7*s, 76*s);
+    ctx.beginPath(); ctx.arc(x, y-16*s, 20*s, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y+16*s, 20*s, 0, 7); ctx.stroke();
+  }
+  function terre(x, y, sens){                         // sectionneur de mise à la terre
+    const q = (sens === 'd') ? 1 : -1;
+    const bx = x + q*44*s;
+    ctx.beginPath(); ctx.arc(x, y, R, 0, 7); ctx.stroke();
+    trait(x, y, bx - q*18*s, y);
+    trait(bx - q*18*s, y, bx, y-10*s);
+    ctx.beginPath(); ctx.arc(bx, y, R, 0, 7); ctx.stroke();
+    trait(bx, y, bx, y+14*s);
+    [[14,14],[9,19],[4,24]].forEach(function(p){
+      trait(bx-p[0]*s, y+p[1]*s, bx+p[0]*s, y+p[1]*s); });
+  }
+  function terreBas(x, y){                            // mise à la terre descendante
+    ctx.beginPath(); ctx.arc(x, y, R, 0, 7); ctx.stroke();
+    trait(x, y+4*s, x+11*s, y+19*s);
+    ctx.beginPath(); ctx.arc(x, y+23*s, R, 0, 7); ctx.stroke();
+    trait(x, y+23*s, x, y+32*s);
+    [[14,32],[9,37],[4,42]].forEach(function(p){
+      trait(x-p[0]*s, y+p[1]*s, x+p[0]*s, y+p[1]*s); });
+  }
+  function tc(x, y){                                  // transformateur de courant
+    ctx.beginPath(); ctx.arc(x, y, 14*s, 0, 7); ctx.stroke();
+    texte(x + 22*s, y, 'TC', 10, 'left');
+  }
+  function tp(x, y){                                  // transformateur de tension vers la terre
+    texte(x + 46*s, y + 22*s, 'TP', 10, 'left');
+    trait(x, y, x+30*s, y);
+    ctx.beginPath(); ctx.arc(x+30*s, y+13*s, 11*s, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x+30*s, y+33*s, 11*s, 0, 7); ctx.stroke();
+    trait(x+30*s, y+44*s, x+30*s, y+54*s);
+    [[11,54],[7,58],[3,62]].forEach(function(p){
+      trait(x+30*s-p[0]*s, y+p[1]*s, x+30*s+p[0]*s, y+p[1]*s); });
+  }
+  function fleche(x, y, vers){                        // câble : départ (bas) ou arrivée (haut)
+    trait(x, y, x, y+20*s);
+    if(vers === 'haut'){
+      ctx.beginPath(); ctx.moveTo(x-6*s, y+9*s); ctx.lineTo(x, y); ctx.lineTo(x+6*s, y+9*s); ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.moveTo(x-6*s, y+11*s); ctx.lineTo(x, y+20*s); ctx.lineTo(x+6*s, y+11*s); ctx.stroke();
+    }
+  }
+
+  // ---- la double sectionnement coupe le jeu de barres en deux : NF C 13-100
+  //      côté distributeur, NF C 13-200 côté installation privée ----
+  let iLim = -1;
+  cols.forEach(function(c, i){
+    const d = c.k ? atDefCellule(c.k) : null;
+    if(iLim < 0 && d && d.limite) iLim = i;
+  });
+  const xLim = iLim >= 0 ? M + colW*(iLim+0.5) : 0;
+
+  const iPrem = cols.findIndex(function(c){ return c.k; });
+  let iDern = -1; cols.forEach(function(c, i){ if(c.k) iDern = i; });
+  const deuxBarres = (iLim >= 0 && iLim < iDern);
+  const yBus2 = deuxBarres ? yBus + 17 : yBus;        // la barre aval est décalée
+  function yBarre(i){ return (deuxBarres && i > iLim) ? yBus2 : yBus; }
+  if(iPrem >= 0){
+    const xA = M + colW*(iPrem+0.5) - colW*0.34;
+    const xZ = M + colW*(iDern+0.5) + colW*0.34;
+    ctx.lineWidth = Math.max(3, 6*s);
+    if(deuxBarres){
+      trait(xA, yBus, xLim - dx, yBus);               // barre NF C 13-100
+      trait(xLim + dx, yBus2, xZ, yBus2);             // barre NF C 13-200
+      ctx.lineWidth = Math.max(1.2, 2*s); ctx.fillStyle = T;
+      texte(xA, yBus - 15*s, 'Jeu de barres 13-100', 10, 'left');
+      texte(xZ, yBus2 - 15*s, 'Jeu de barres 13-200', 10, 'right');
+    } else {
+      trait(xA, yBus, xZ, yBus);
+      ctx.lineWidth = Math.max(1.2, 2*s); ctx.fillStyle = T;
+      texte(xZ, yBus - 15*s, 'Jeu de barres HTA', 11, 'right');
+    }
+    ctx.lineWidth = Math.max(1.2, 2*s);
+  }
+
+  if(deuxBarres){
+    ctx.save();
+    ctx.setLineDash([7*s, 5*s]); ctx.strokeStyle = '#b08968'; ctx.lineWidth = Math.max(1.2, 1.8*s);
+    trait(xLim, 26, xLim, yTop - 4);                  // la limite traverse la cellule
+    trait(xLim, yBot + 4, xLim, yBot + 54*s);
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#9c6f49';
+    police(10);
+    ctx.textAlign = 'right'; ctx.fillText('NF C 13-100', xLim - 7*s, yNf);
+    ctx.textAlign = 'left';  ctx.fillText('NF C 13-200', xLim + 7*s, yNf);
+    ctx.restore();
+    ctx.fillStyle = T;
+  }
+
+  // ---- une colonne par cellule ----
+  const nbDescentes = cols.filter(function(c){ return c.sous.length; }).length;
+  cols.forEach(function(c, i){
+    const cx = M + colW*(i+0.5);
+    let basCellule = yBus;
+
+    if(c.k){
+      ctx.strokeStyle = L; ctx.fillStyle = T;
+      ctx.strokeRect(cx - bw/2, yTop, bw, h);
+      const y1 = yTop + h*0.22, y2 = yTop + h*0.50, y3 = yTop + h*0.78;
+
+      if(c.k === 'd2s'){
+        // deux montants : arrivée du jeu de barres 13-100, départ vers le 13-200
+        const xg = cx - dx, xd = cx + dx, yL = yTop + h*0.74;
+        trait(xg, yBus, xg, yL); trait(xd, yBus2, xd, yL); trait(xg, yL, xd, yL);
+        sectionneur(xg, yTop + h*0.20);
+        disjoncteur(xg, yTop + h*0.50);
+        sectionneur(xd, yTop + h*0.20);
+        terreBas(cx, yL);
+      } else {
+        trait(cx, yBarre(i), cx, yBot);
+        if(c.k === 'ima' || c.k === 'imd'){
+          inter(cx, y1); terre(cx, y3);
+        } else if(c.k === 'djd'){
+          disjoncteur(cx, y1); terre(cx, y3);
+        } else if(c.k === 'cpt'){
+          tc(cx, y1); tp(cx, y2);
+        } else if(c.k === 'd1s'){
+          sectionneur(cx, y1); disjoncteur(cx, y2); terre(cx, y3);
+        } else if(c.k === 'qm'){
+          // la mise à la terre encadre les fusibles : au-dessus et en dessous
+          inter(cx, yTop + h*0.14);
+          terre(cx, yTop + h*0.38);
+          fusible(cx, yTop + h*0.62);
+          terre(cx, yTop + h*0.86);
+        }
+        // le comptage est en série sur le jeu de barres : ni arrivée ni départ
+        if(!c.sous.length && c.k !== 'cpt') fleche(cx, yBot, c.k === 'ima' ? 'haut' : 'bas');
+      }
+
+      // repère au-dessus ; le nom en dessous vient en dernier
+      ctx.fillStyle = T;
+      if(c.c.haut) lignes(cx, yRep, c.c.haut, 12, colW*0.94, true);
+
+      // état de la cellule
+      bandeau(i, c.c.etat);
+      cadre(cx - bw/2 - 5*s, yTop - 5*s, bw + 10*s, h + 10*s, c.c.etat);
+      if(c.c.etat === 'cs') cadenas(cx + bw/2 - 13*s, yTop + 13*s);
+      basCellule = yBot;
+    }
+
+    if(c.sous.length){
+      let y = basCellule;
+      c.sous.forEach(function(e){
+        ctx.strokeStyle = L; ctx.fillStyle = T;
+        const d = atDefCellule(e.k);
+        const diff = !c.c || c.c.etat !== e.etat;
+        if(e.k === 'tr'){
+          const yc = y + 86*s;
+          trait(cx, y, cx, yc - 36*s);
+          transfo(cx, yc);
+          if(e.bas || nbDescentes === 1) texteCote(cx, yc, e.bas || d.nom, 11, bw);
+          cadre(cx - 30*s, yc - 44*s, 60*s, 88*s, e.etat);
+          if(e.etat === 'cs') cadenas(cx + 21*s, yc - 31*s);
+          if(diff) tag(cx, yc + 52*s, e.etat, bw);
+          y = yc + 36*s;
+        } else if(atEstDjBT(e.k)){
+          const dbr = (e.k === 'djbtd');
+          const yc = y + (dbr ? 74 : 62)*s, yb = yc + (dbr ? 66 : 62)*s;
+          trait(cx, y, cx, yc - 20*s);
+          disjoncteur(cx, yc);
+          if(dbr){ brochage(cx, yc - 48*s); brochage(cx, yc + 36*s); }
+          if(e.bas || nbDescentes === 1) texteCote(cx, yc, e.bas || d.nom, 11, bw);
+          trait(cx, yc + 20*s, cx, yb);
+          ctx.lineWidth = Math.max(3, 6*s);
+          trait(cx - bw*0.45, yb, cx + bw*0.45, yb);
+          ctx.lineWidth = Math.max(1.2, 2*s);
+          texte(cx, yb + 18*s, 'TGBT', 11);
+          cadre(cx - 32*s, yc - (dbr ? 58 : 40)*s, 64*s, (dbr ? 106 : 76)*s, e.etat);
+          if(e.etat === 'cs') cadenas(cx + 25*s, yc - (dbr ? 49 : 31)*s);
+          if(diff) tag(cx, yb + 2*s, e.etat, bw);
+          y = yb;
+        }
+      });
+    }
+
+    // le nom de la cellule passe après la descente, qui le traverserait sinon
+    if(c.k){
+      ctx.strokeStyle = L; ctx.fillStyle = T;
+      lignes(cx, yBot + 40*s, atNomCell(c.c), 12, colW*0.92);
+    }
+  });
+  ctx.restore();
+}
+
+// Récapitulatif des états, pour le document imprimé.
+function atEtatsTries(schema){
+  const par = {st:[], ht:[], cs:[]};
+  ((schema && schema.cells) || []).forEach(function(x, i){
+    const c = atNormCell(x); if(!c) return;
+    par[c.etat] = par[c.etat] || [];
+    par[c.etat].push((i+1) + ' · ' + atNomCell(c) + (c.haut ? ' (' + c.haut + ')' : ''));
+  });
+  return par;
+}
+
+// ---------------------------------------------------------------------
+// Moteur de dessin : fond + traits, au doigt, à la souris ou au stylet
+// ---------------------------------------------------------------------
+const AT_OUTIL = {couleur:'#111111', largeur:3};
+
+function atRedessiner(cv, etat){
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  if(etat.cells && etat.cells.length) atFond(ctx, cv.width, cv.height, etat);
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  (etat.traits || []).forEach(function(t){
+    if(!t.p || t.p.length < 1) return;
+    ctx.strokeStyle = t.c; ctx.lineWidth = t.w;
+    ctx.beginPath();
+    if(t.p.length === 1){ ctx.arc(t.p[0][0], t.p[0][1], t.w/2, 0, 7); ctx.fillStyle = t.c; ctx.fill(); return; }
+    t.p.forEach(function(pt, i){ i ? ctx.lineTo(pt[0], pt[1]) : ctx.moveTo(pt[0], pt[1]); });
+    ctx.stroke();
+  });
+}
+
+function atBrancherDessin(cv, etat, apres){
+  if(cv.dataset.branche) return;
+  cv.dataset.branche = '1';
+  let trait = null;
+  function pos(e){
+    const r = cv.getBoundingClientRect();
+    return [ (e.clientX - r.left) * cv.width / r.width,
+             (e.clientY - r.top)  * cv.height / r.height ];
+  }
+  cv.addEventListener('pointerdown', function(e){
+    e.preventDefault();
+    // le trait se crée d'abord : une capture refusée ne doit pas faire
+    // perdre le geste
+    trait = {c:AT_OUTIL.couleur, w:AT_OUTIL.largeur, p:[pos(e)]};
+    etat.traits = etat.traits || [];
+    etat.traits.push(trait);
+    try{ cv.setPointerCapture(e.pointerId); }catch(err){}
+    atRedessiner(cv, etat);
+  });
+  cv.addEventListener('pointermove', function(e){
+    if(!trait) return;
+    e.preventDefault();
+    const p = pos(e), d = trait.p[trait.p.length-1];
+    if(Math.abs(p[0]-d[0]) + Math.abs(p[1]-d[1]) < 2) return;
+    trait.p.push([Math.round(p[0]), Math.round(p[1])]);
+    atRedessiner(cv, etat);
+  });
+  function fin(){
+    if(!trait) return;
+    trait = null;
+    if(apres) apres();
+  }
+  cv.addEventListener('pointerup', fin);
+  cv.addEventListener('pointercancel', fin);
+  cv.addEventListener('pointerleave', fin);
+}
+
+function atImageDe(etat, w, h, rogner){
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  atRedessiner(cv, etat);
+  if(!rogner) return cv.toDataURL('image/png');
+  // on coupe le blanc du bas : le schéma occupe alors toute la place
+  // que la feuille lui laisse, sans perdre une annotation.
+  let bas = atBasFond(w, etat.cells);
+  (etat.traits || []).forEach(function(t){
+    (t.p || []).forEach(function(p){ if(p[1] + t.w > bas) bas = p[1] + t.w; });
+  });
+  const hh = Math.min(h, Math.max(320, Math.ceil(bas + 24)));
+  if(hh >= h) return cv.toDataURL('image/png');
+  const cv2 = document.createElement('canvas');
+  cv2.width = w; cv2.height = hh;
+  const c2 = cv2.getContext('2d');
+  c2.fillStyle = '#fff'; c2.fillRect(0, 0, w, hh);
+  c2.drawImage(cv, 0, 0);
+  return cv2.toDataURL('image/png');
+}
+
+// ---------------------------------------------------------------------
+// État
+// ---------------------------------------------------------------------
+let AT_COURANTE = null;
+
+function atListeStockee(){ return LS.get('kitht-attest', []); }
+function atVide(){
+  const o = {id:'at-'+Date.now(), maj:new Date().toISOString(),
+             f:{}, ops:{}, man:'', schema:{cells:[], traits:[]}, val:{}, fin:{}};
+  AT_ROLES.forEach(function(r){
+    o.val[r.k] = {nom:'', obs:'', date:'', heure:'', sig:{traits:[]}};
+    o.fin[r.k] = {nom:'', date:'', heure:'', sig:{traits:[]}};
+  });
+  return o;
+}
+function atMessage(t, c){
+  const m = document.getElementById('atMsg');
+  if(!m) return;
+  m.innerHTML = t ? '<span style="color:'+(c||'var(--green)')+';">'+t+'</span>' : '';
+  if(t) setTimeout(function(){ const e=document.getElementById('atMsg'); if(e) e.innerHTML=''; }, 4000);
+}
+function atSauver(){
+  if(!AT_COURANTE) return false;
+  AT_COURANTE.maj = new Date().toISOString();
+  const l = atListeStockee();
+  const i = l.findIndex(function(x){ return x.id === AT_COURANTE.id; });
+  if(i >= 0) l[i] = AT_COURANTE; else l.unshift(AT_COURANTE);
+  try{ LS.set('kitht-attest', l); return true; }
+  catch(e){ atMessage("Mémoire pleine — supprime d'anciennes attestations.", 'var(--red)'); return false; }
+}
+
+function atMajF(k, v){ if(AT_COURANTE){ AT_COURANTE.f[k] = v; atSauver(); atAfficherListe(); } }
+function atMajOp(k, v){ if(AT_COURANTE){ AT_COURANTE.ops[k] = v; atSauver(); } }
+function atMajMan(v){ if(AT_COURANTE){ AT_COURANTE.man = v; atSauver(); atRendreManoeuvre(); } }
+function atMajRole(bloc, r, k, v){
+  if(!AT_COURANTE) return;
+  AT_COURANTE[bloc][r][k] = v; atSauver();
+}
+
+// ---------------------------------------------------------------------
+// Rendu
+// ---------------------------------------------------------------------
+function atRendreIntervention(){
+  const z = document.getElementById('atIntervention'); if(!z || !AT_COURANTE) return;
+  z.innerHTML = '<div class="pvgrid">' + AT_INTERV.map(function(c){
+    return pvChamp(c, AT_COURANTE.f[c.k], "atMajF('"+c.k+"',this.value)");
+  }).join('') + '</div>';
+}
+
+function atRendreManoeuvre(){
+  const z = document.getElementById('atManoeuvre'); if(!z || !AT_COURANTE) return;
+  const soc = pvSoc().nom || 'ma société';
+  z.innerHTML = AT_MANOEUVRE.map(function(m){
+    const on = AT_COURANTE.man === m.v;
+    return '<button class="atchoix'+(on?' on':'')+'" onclick="atMajMan(\''+m.v+'\')">' +
+      '<span class="atcase">'+(on?'✕':'')+'</span><span>' +
+      echapper(m.l).replace('ma société', '<b>'+echapper(soc)+'</b>') + '</span></button>';
+  }).join('');
+}
+
+function atRendreOps(){
+  const z = document.getElementById('atOps'); if(!z || !AT_COURANTE) return;
+  z.innerHTML = AT_OPS.map(function(o){
+    const on = !!AT_COURANTE.ops[o.k];
+    return '<button class="atchoix'+(on?' on':'')+'" onclick="atMajOp(\''+o.k+'\','+(on?'false':'true')+'); atRendreOps();">' +
+      '<span class="atcase">'+(on?'✕':'')+'</span><span>'+echapper(o.l)+'</span></button>';
+  }).join('');
+}
+
+function atAjouterCellule(k){
+  if(!AT_COURANTE) return;
+  const c = atNormCell(k); if(!c) return;
+  AT_COURANTE.schema.cells = AT_COURANTE.schema.cells || [];
+  AT_COURANTE.schema.cells.push(c);
+  atSauver(); atRendreSchema();
+}
+function atRetirerCellule(){
+  if(!AT_COURANTE || !(AT_COURANTE.schema.cells||[]).length) return;
+  AT_COURANTE.schema.cells.pop();
+  atSauver(); atRendreSchema();
+}
+function atRedessinerFond(){
+  const cv = document.getElementById('atCanvas');
+  if(cv && AT_COURANTE) atRedessiner(cv, AT_COURANTE.schema);
+}
+// Les champs de texte ne redessinent que le schéma : re-fabriquer la liste
+// à chaque frappe ferait perdre le curseur.
+function atMajCell(i, champ, v){
+  const l = AT_COURANTE && AT_COURANTE.schema.cells;
+  if(!l || !l[i]) return;
+  l[i] = atNormCell(l[i]); if(!l[i]) return;
+  l[i][champ] = v;
+  atSauver(); atRedessinerFond();
+}
+function atMajCellEtat(i, e){ atMajCell(i, 'etat', e); atRendreSchema(); }
+function atDeplacerCell(i, d){
+  const l = AT_COURANTE && AT_COURANTE.schema.cells; if(!l) return;
+  const j = i + d; if(j < 0 || j >= l.length) return;
+  const t = l[i]; l[i] = l[j]; l[j] = t;
+  atSauver(); atRendreSchema();
+}
+function atSupprimerCell(i){
+  const l = AT_COURANTE && AT_COURANTE.schema.cells; if(!l || !l[i]) return;
+  l.splice(i, 1); atSauver(); atRendreSchema();
+}
+function atViderCellules(){
+  if(!AT_COURANTE) return;
+  AT_COURANTE.schema.cells = [];
+  atSauver(); atRendreSchema();
+}
+function atAnnulerTrait(){
+  if(!AT_COURANTE || !AT_COURANTE.schema.traits.length) return;
+  AT_COURANTE.schema.traits.pop(); atSauver();
+  const cv = document.getElementById('atCanvas'); if(cv) atRedessiner(cv, AT_COURANTE.schema);
+}
+function atEffacerTraits(){
+  if(!AT_COURANTE) return;
+  AT_COURANTE.schema.traits = []; atSauver();
+  const cv = document.getElementById('atCanvas'); if(cv) atRedessiner(cv, AT_COURANTE.schema);
+}
+function atOutil(c, w){
+  AT_OUTIL.couleur = c; AT_OUTIL.largeur = w;
+  document.querySelectorAll('.atoutil').forEach(function(b){
+    b.classList.toggle('on', b.dataset.c === c && b.dataset.w === String(w));
+  });
+}
+
+function atRendreSchema(){
+  const z = document.getElementById('atSchema'); if(!z || !AT_COURANTE) return;
+  z.innerHTML =
+    '<div class="atmodeles">' + AT_CELLULES.map(function(m){
+      return '<button class="atmod" onclick="atAjouterCellule(\''+m.k+'\')">' +
+        '<span>+</span>'+echapper(m.l)+'</button>'; }).join('') + '</div>' +
+    '<div class="atcells">' + ((AT_COURANTE.schema.cells||[]).length
+      ? (AT_COURANTE.schema.cells||[]).map(function(x, i){
+          const c = atNormCell(x); if(!c) return '';
+          const d = atDefCellule(c.k);
+          return '<div class="atcell" data-etat="'+c.etat+'">' +
+            '<div class="atcellh">' +
+              '<span class="atcelln">'+(i+1)+'</span>' +
+              '<span class="atcellt">'+echapper(d.l)+'</span>' +
+              '<button onclick="atDeplacerCell('+i+',-1)" title="Vers la gauche">&#8592;</button>' +
+              '<button onclick="atDeplacerCell('+i+',1)" title="Vers la droite">&#8594;</button>' +
+              '<button class="x" onclick="atSupprimerCell('+i+')" title="Retirer">&#10005;</button>' +
+            '</div>' +
+            '<div class="atcellg'+(d.sous ? ' seul' : '')+'">' +
+              (d.sous ? '' :
+                '<input type="text" value="'+echapper(c.haut)+'" placeholder="Repère au-dessus — EDF 1" ' +
+                  'oninput="atMajCell('+i+',\'haut\',this.value)">') +
+              '<input type="text" value="'+echapper(c.bas)+'" placeholder="Nom '+(d.sous ? 'à côté' : 'en dessous')+' — '+echapper(d.nom)+'" ' +
+                'oninput="atMajCell('+i+',\'bas\',this.value)">' +
+            '</div>' +
+            '<div class="atetats">' + AT_ETATS.map(function(e){
+                return '<button class="atet'+(c.etat === e.k ? ' on' : '')+'" data-e="'+e.k+'" ' +
+                  'onclick="atMajCellEtat('+i+',\''+e.k+'\')">'+echapper(e.l)+'</button>'; }).join('') +
+            '</div></div>'; }).join('')
+      : '<span class="atvide">Aucune cellule — clique sur les boutons ci-dessus pour composer le poste, de la gauche vers la droite.</span>') +
+    '</div>' +
+    '<div class="atoutils">' +
+      '<button class="ghost" style="padding:7px 12px; font-size:12px;" onclick="atRetirerCellule()">Retirer la dernière</button>' +
+      '<button class="ghost danger" style="padding:7px 12px; font-size:12px;" onclick="atViderCellules()">Vider le poste</button>' +
+    '</div>' +
+    '<div class="atoutils">' +
+      '<button class="atoutil on" data-c="#111111" data-w="3" onclick="atOutil(\'#111111\',3)">Stylo</button>' +
+      '<button class="atoutil" data-c="#c62828" data-w="4" onclick="atOutil(\'#c62828\',4)">Rouge — zones et MALT</button>' +
+      '<button class="atoutil" data-c="#ffffff" data-w="22" onclick="atOutil(\'#ffffff\',22)">Gomme</button>' +
+      '<button class="ghost" style="padding:7px 12px; font-size:12px;" onclick="atAnnulerTrait()">Annuler</button>' +
+      '<button class="ghost danger" style="padding:7px 12px; font-size:12px;" onclick="atEffacerTraits()">Tout effacer</button>' +
+    '</div>' +
+    '<canvas id="atCanvas" class="atcanvas" width="1100" height="640"></canvas>' +
+    '<p class="desc" style="margin-top:8px;">Compose le poste de la gauche vers la droite, nomme chaque cellule et donne-lui son état. Ce qui est consigné sort encadré en vert avec un cadenas, le reste porte la mention sous tension. Tu peux encore annoter par-dessus au doigt.</p>';
+  const cv = document.getElementById('atCanvas');
+  atRedessiner(cv, AT_COURANTE.schema);
+  atBrancherDessin(cv, AT_COURANTE.schema, atSauver);
+}
+
+function atRendreSignatures(bloc){
+  const z = document.getElementById(bloc === 'val' ? 'atValidation' : 'atFinTravaux');
+  if(!z || !AT_COURANTE) return;
+  z.innerHTML = AT_ROLES.map(function(r){
+    const d = AT_COURANTE[bloc][r.k] || {};
+    const cid = 'atSig-'+bloc+'-'+r.k;
+    return '<div class="atrole">' +
+      '<div class="atrolet">'+echapper(r.l)+'</div>' +
+      (bloc === 'val' && r.t ? '<p class="atengage">'+echapper(r.t)+'</p>' : '') +
+      '<div class="pvgrid">' +
+        '<div class="pvlarge"><label>Nom</label><input type="text" value="'+echapper(d.nom||'')+'" ' +
+          'oninput="atMajRole(\''+bloc+'\',\''+r.k+'\',\'nom\',this.value)"></div>' +
+        (bloc === 'val' ? '<div class="pvlarge"><label>Observation</label><textarea ' +
+          'oninput="atMajRole(\''+bloc+'\',\''+r.k+'\',\'obs\',this.value)">'+echapper(d.obs||'')+'</textarea></div>' : '') +
+        '<div><label>Date</label><input type="date" value="'+echapper(d.date||'')+'" ' +
+          'onchange="atMajRole(\''+bloc+'\',\''+r.k+'\',\'date\',this.value)"></div>' +
+        '<div><label>Heure</label><input type="time" value="'+echapper(d.heure||'')+'" ' +
+          'onchange="atMajRole(\''+bloc+'\',\''+r.k+'\',\'heure\',this.value)"></div>' +
+      '</div>' +
+      '<label style="display:block; font-size:11px; color:var(--muted); margin:10px 0 4px; ' +
+        'text-transform:uppercase; letter-spacing:.04em;">Signature</label>' +
+      '<canvas id="'+cid+'" class="atsig" width="520" height="170"></canvas>' +
+      '<div class="toolbar" style="margin:6px 0 0;">' +
+        '<button class="ghost" style="padding:6px 11px; font-size:12px;" ' +
+          'onclick="atEffacerSig(\''+bloc+'\',\''+r.k+'\')">Effacer la signature</button></div>' +
+      '</div>';
+  }).join('');
+  AT_ROLES.forEach(function(r){
+    const cid = 'atSig-'+bloc+'-'+r.k;
+    const cv = document.getElementById(cid); if(!cv) return;
+    const etat = AT_COURANTE[bloc][r.k].sig;
+    atRedessiner(cv, etat);
+    // la signature se trace toujours au stylo fin, quel que soit l'outil choisi
+    cv.addEventListener('pointerdown', function(){ AT_OUTIL.couleur = '#111111'; AT_OUTIL.largeur = 3; }, true);
+    atBrancherDessin(cv, etat, atSauver);
+  });
+}
+function atEffacerSig(bloc, r){
+  if(!AT_COURANTE) return;
+  AT_COURANTE[bloc][r].sig.traits = []; atSauver();
+  const cv = document.getElementById('atSig-'+bloc+'-'+r);
+  if(cv) atRedessiner(cv, AT_COURANTE[bloc][r].sig);
+}
+
+// ---------------------------------------------------------------------
+// Gestion
+// ---------------------------------------------------------------------
+function atNouvelle(){
+  AT_COURANTE = atVide();
+  const auj = new Date();
+  AT_COURANTE.f.date = auj.toISOString().slice(0,10);
+  AT_COURANTE.f.heure = String(auj.getHours()).padStart(2,'0')+':'+String(auj.getMinutes()).padStart(2,'0');
+  if(session && session.profil && session.profil.nom)
+    AT_COURANTE.val.cc.nom = session.profil.nom;
+  atSauver(); atToutRendre();
+  atMessage("Nouvelle attestation. Remplis l'intervention, puis le schéma.", 'var(--muted)');
+  window.scrollTo(0,0);
+}
+function atOuvrir(id){
+  const p = atListeStockee().filter(function(x){ return x.id===id; })[0];
+  if(!p) return;
+  AT_COURANTE = JSON.parse(JSON.stringify(p));
+  if(!AT_COURANTE.schema) AT_COURANTE.schema = {cells:[], traits:[]};
+  if(!AT_COURANTE.schema.cells) AT_COURANTE.schema.cells = [];
+  if(!AT_COURANTE.schema.traits) AT_COURANTE.schema.traits = [];
+  AT_ROLES.forEach(function(r){
+    ['val','fin'].forEach(function(b){
+      if(!AT_COURANTE[b]) AT_COURANTE[b] = {};
+      if(!AT_COURANTE[b][r.k]) AT_COURANTE[b][r.k] = {nom:'', obs:'', date:'', heure:'', sig:{traits:[]}};
+      if(!AT_COURANTE[b][r.k].sig) AT_COURANTE[b][r.k].sig = {traits:[]};
+    });
+  });
+  atToutRendre(); window.scrollTo(0,0);
+  atMessage('Attestation ouverte.', 'var(--muted)');
+}
+function atSupprimer(id){
+  LS.set('kitht-attest', atListeStockee().filter(function(x){ return x.id !== id; }));
+  if(AT_COURANTE && AT_COURANTE.id === id) AT_COURANTE = null;
+  atToutRendre();
+  atMessage('Attestation supprimée.', 'var(--amber)');
+}
+function atAfficherListe(){
+  const z = document.getElementById('atListe'); if(!z) return;
+  const l = atListeStockee();
+  if(!l.length){
+    z.innerHTML = '<div class="note" style="border-left-color:var(--muted);">Aucune attestation enregistrée.</div>';
+    return;
+  }
+  z.innerHTML = l.map(function(p){
+    const f = p.f || {};
+    const en = AT_COURANTE && AT_COURANTE.id === p.id;
+    const sigs = AT_ROLES.filter(function(r){
+      return p.val && p.val[r.k] && p.val[r.k].sig && (p.val[r.k].sig.traits||[]).length; }).length;
+    return '<div class="pvfiche"'+(en?' style="border-left-color:var(--amber);"':'')+'>' +
+      '<span class="pvinfo"><span class="pvn">'+echapper(f.poste || f.lieu || 'Sans nom') +
+        (en?' <span style="color:var(--amber); font-size:11px;">· ouverte</span>':'')+'</span>' +
+      '<span class="pvd">'+echapper([f.num, f.motif].filter(Boolean).join(' · ')||'—') +
+        ' · '+(f.date?pvDateFr(f.date):'sans date') +
+        ' · '+sigs+'/3 signature'+(sigs>1?'s':'')+'</span></span>' +
+      '<span style="display:flex; gap:6px; flex-shrink:0;">' +
+      '<button class="ghost" style="padding:7px 11px; font-size:12px;" onclick="atOuvrir(\''+p.id+'\')">Ouvrir</button>' +
+      '<button class="ghost danger" style="padding:7px 10px; font-size:12px;" onclick="atSupprimer(\''+p.id+'\')">×</button>' +
+      '</span></div>';
+  }).join('');
+}
+function atToutRendre(){
+  const b = document.getElementById('atBloc');
+  if(b) b.style.display = AT_COURANTE ? 'block' : 'none';
+  if(AT_COURANTE){
+    atRendreIntervention(); atRendreManoeuvre(); atRendreOps(); atRendreSchema();
+    atRendreSignatures('val'); atRendreSignatures('fin');
+  }
+  atAfficherListe();
+}
+function atInit(){
+  if(!AT_COURANTE){
+    const l = atListeStockee();
+    if(l.length) return atOuvrir(l[0].id);
+  }
+  atToutRendre();
+}
+
+// ---------------------------------------------------------------------
+// Impression
+// ---------------------------------------------------------------------
+function atCase(on){ return '<span class="acase">'+(on?'✕':'')+'</span>'; }
+
+function atImprimer(){
+  if(!AT_COURANTE){ atMessage('Aucune attestation ouverte.', 'var(--amber)'); return; }
+  const f = AT_COURANTE.f || {}, soc = pvSoc();
+  let g = '<section class="apage">';
+
+  g += pvEnteteDoc('<div class="dtitre">Attestation de consignation électrique</div>' +
+      (f.num ? '<div class="dnum">N° '+echapper(f.num)+'</div>' : ''));
+
+  g += '<table class="ainfo">' +
+    '<tr><th>Lieu de l\'intervention</th><td colspan="3">'+echapper(f.lieu||'')+'</td></tr>' +
+    '<tr><th>Date et heure</th><td>'+pvDateFr(f.date)+(f.heure?' à '+echapper(f.heure):'')+'</td>' +
+    '<th>Motif</th><td>'+echapper(f.motif||'')+'</td></tr>' +
+    '<tr><th>Entreprise utilisatrice</th><td colspan="3">'+echapper(f.entUtil||'')+'</td></tr>' +
+    '</table>';
+
+  g += '<div class="aman">' + AT_MANOEUVRE.map(function(m){
+      return '<div>' + atCase(AT_COURANTE.man === m.v) + ' ' +
+        echapper(m.l).replace('ma société', '<b>'+echapper(soc.nom||'')+'</b>') + '</div>';
+    }).join('') + '</div>';
+
+  g += '<div class="abandeau">Schéma de l\'installation — état de chaque cellule et mises à la terre</div>' +
+    '<div class="aschema"><div class="aposte">Nom du poste : <b>'+echapper(f.poste||'')+'</b></div>' +
+    '<img src="'+atImageDe(AT_COURANTE.schema, 1100, 640, true)+'" alt=""></div>';
+
+  const par = atEtatsTries(AT_COURANTE.schema);
+  if(par.cs.length || par.ht.length || par.st.length){
+    g += '<table class="aetats">';
+    if(par.cs.length) g += '<tr class="cs"><th>Consigné</th><td>'+echapper(par.cs.join(' ; '))+'</td></tr>';
+    if(par.ht.length) g += '<tr class="ht"><th>Hors tension, non consigné</th><td>'+echapper(par.ht.join(' ; '))+'</td></tr>';
+    if(par.st.length) g += '<tr class="st"><th>Reste sous tension</th><td>'+echapper(par.st.join(' ; '))+'</td></tr>';
+    g += '</table>';
+    if(par.st.length) g += '<p class="aavert">Les cellules désignées ci-dessus comme sous tension le restent pendant toute la durée des travaux. Seule la zone consignée est accessible.</p>';
+  }
+
+  g += '<div class="aops">' + AT_OPS.map(function(o){
+      return '<span>'+atCase(!!AT_COURANTE.ops[o.k])+' '+echapper(o.l)+'</span>'; }).join('') + '</div>';
+
+  function colonnes(bloc, titre){
+    let h = '<div class="abandeau">'+titre+'</div><table class="asign"><tr>';
+    AT_ROLES.forEach(function(r){
+      const d = (AT_COURANTE[bloc] || {})[r.k] || {};
+      const sig = (d.sig && (d.sig.traits||[]).length) ? atImageDe(d.sig, 520, 170) : null;
+      h += '<td><div class="arole">'+echapper(r.l)+'</div>' +
+        '<div class="achamp"><span>Nom</span>'+echapper(d.nom||'')+'</div>' +
+        (bloc === 'val' ? '<div class="achamp"><span>Observation</span>'+
+            echapper(d.obs||'').replace(/\n/g,'<br>')+'</div>' : '') +
+        '<div class="achamp"><span>Date et heure</span>'+
+          (d.date?pvDateFr(d.date):'')+(d.heure?' à '+echapper(d.heure):'')+'</div>' +
+        '<div class="achamp asig"><span>Signature</span>' +
+          (sig ? '<img src="'+sig+'" alt="">' : '') + '</div></td>';
+    });
+    return h + '</tr></table>';
+  }
+
+  g += '<div class="asuite">';
+  g += colonnes('val', 'Validation');
+  g += '<p class="anote">' + AT_ROLES.filter(function(r){ return r.t; })
+        .map(function(r){ return '<b>'+echapper(r.l)+'.</b> '+echapper(r.t); }).join(' ') + '</p>';
+
+  g += '<div class="abandeau">Fin de travaux</div><table class="afin">' +
+    '<tr><th>Rôle</th><th>Nom</th><th>Date et heure</th><th>Signature</th></tr>' +
+    AT_ROLES.map(function(r){
+      const d = (AT_COURANTE.fin || {})[r.k] || {};
+      const sig = (d.sig && (d.sig.traits||[]).length) ? atImageDe(d.sig, 520, 170) : null;
+      return '<tr><td>'+echapper(r.l)+'</td><td>'+echapper(d.nom||'')+'</td>' +
+        '<td>'+(d.date?pvDateFr(d.date):'')+(d.heure?' à '+echapper(d.heure):'')+'</td>' +
+        '<td class="afsig">'+(sig?'<img src="'+sig+'" alt="">':'')+'</td></tr>';
+    }).join('') + '</table></div>';
+  g += pvPied() + '</section>';
 
   const z = document.getElementById('pvImpression');
   z.innerHTML = g;
