@@ -671,6 +671,20 @@ canvas.fige{pointer-events:none;}
   border:1px solid var(--line); color:var(--muted); flex-shrink:0;}
 .atbadge.c{border-color:#4caf50; color:#4caf50;}
 .atbadge.l{border-color:var(--blue); color:var(--blue);}
+.atactions{display:grid; gap:8px; margin-bottom:10px;}
+.atgros{display:flex; align-items:center; gap:13px; text-align:left; width:100%;
+  background:var(--panel-2); border:1px solid var(--line); border-radius:9px;
+  padding:14px 15px; cursor:pointer; font-family:var(--body); color:var(--text);}
+.atgros:hover{border-color:var(--amber);}
+.atgros.primaire{background:rgba(255,138,30,.09); border-color:var(--amber-dim);}
+.atgros.ouvert{border-color:var(--amber);}
+.atgros .ati{font-family:var(--mono); font-size:21px; line-height:1; color:var(--amber);
+  width:26px; text-align:center; flex-shrink:0;}
+.atgros .att{min-width:0;}
+.atgros .atl{display:block; font-size:14px; font-weight:600;}
+.atgros .atd{display:block; font-size:11.5px; color:var(--muted); margin-top:2px;}
+.atgros.vide .ati{color:var(--muted);}
+@media(min-width:620px){ .atactions{grid-template-columns:repeat(3,1fr); align-items:stretch;} }
 
 </style>
 </head>
@@ -1881,9 +1895,22 @@ canvas.fige{pointer-events:none;}
         <div class="card">
       <h2><span class="idx">18</span> Attestation de consignation</h2>
       <p class="desc">Le document se remplit ici, se signe au doigt et sort en PDF. L'en-tête et le pied de page reprennent <b>Mon en-tête</b>, réglé dans l'onglet 19. Le mémo de la procédure est en bas de l'onglet.</p>
-      <div class="toolbar">
-        <button class="action" onclick="atNouvelle()">Nouvelle attestation</button>
-        <button class="ghost" onclick="atImprimer()">Aperçu · PDF</button>
+      <div class="atactions">
+        <button class="atgros primaire" onclick="atNouvelle()">
+          <span class="ati">+</span><span class="att">
+            <span class="atl">Nouvelle attestation</span>
+            <span class="atd">Consigner, faire signer, sortir le PDF</span></span>
+        </button>
+        <button class="atgros" id="atBtnDecons" onclick="atVoirDecons()">
+          <span class="ati">&#8634;</span><span class="att">
+            <span class="atl">Déconsignation</span>
+            <span class="atd" id="atNbDecons">—</span></span>
+        </button>
+        <button class="atgros" id="atBtnListe" onclick="atVoirListe()">
+          <span class="ati">&#8801;</span><span class="att">
+            <span class="atl">Mes attestations</span>
+            <span class="atd" id="atNbTotal">—</span></span>
+        </button>
       </div>
       <div id="atMsg" style="font-size:12px; min-height:16px;"></div>
     </div>
@@ -1925,8 +1952,8 @@ canvas.fige{pointer-events:none;}
       </div>
     </div>
 
-    <div class="card">
-      <h2 style="font-size:14px;">Attestations enregistrées</h2>
+    <div class="card" id="atCarteListe" style="display:none;">
+      <h2 style="font-size:14px;" id="atTitreListe">Mes attestations</h2>
       <div id="atListe"></div>
     </div>
 
@@ -3803,7 +3830,7 @@ loadBdd();
 // =====================================================================
 // RECHERCHE GLOBALE · RACCOURCIS · GARDE-FOU DE VERSION
 // =====================================================================
-const VERSION_PAGE = 'v56';
+const VERSION_PAGE = 'v57';
 function numVersion(v){ const n = parseInt(String(v).replace(/[^0-9]/g, ''), 10); return isNaN(n) ? 0 : n; }
 
 // D'où vient cette installation. Relevé tout de suite, avant que
@@ -4164,6 +4191,9 @@ function majVersions(){
 // Une entrée par version livrée, de la plus récente à la plus ancienne.
 // Trois ou quatre lignes suffisent : c'est un rappel, pas une notice.
 const NOUVEAUTES = {
+  v57: ["L'onglet 18 s'ouvre sur trois entrées : nouvelle attestation, déconsignation, mes attestations.",
+        "Plus rien ne se déplie tant que tu n'as pas choisi, et le mémo de la procédure est juste en dessous.",
+        "L'entrée Déconsignation compte celles qui attendent leur fin de travaux et les ouvre directement."],
   v55: ["L'attestation se valide en deux temps : consignation, puis fin de travaux.",
         "Une fois la consignation validée, cette partie est verrouillée — tu sors le PDF et tu en remets un exemplaire à chacun.",
         "Tu rouvres la même attestation au retour pour la fin de travaux, et tu ressors le PDF définitif."],
@@ -6108,23 +6138,24 @@ function atRendreStatut(){
   if(!z || !AT_COURANTE) return;
   const s = atStatut();
   const pdf = '<button class="ghost" onclick="atImprimer()">Aperçu · PDF</button>';
+  const fermer = '<button class="ghost" onclick="atFermer()">Fermer</button>';
   if(s === 'brouillon'){
     z.innerHTML = '<div class="atetat b">Brouillon. Remplis l\'intervention, compose le schéma, ' +
       'coche les opérations, puis fais signer les trois rôles et valide — la partie consignation ' +
       'sera alors figée.</div><div class="toolbar">' +
-      '<button class="action" onclick="atValiderConsignation()">Valider la consignation</button>' + pdf + '</div>';
+      '<button class="action" onclick="atValiderConsignation()">Valider la consignation</button>' + pdf + fermer + '</div>';
   } else if(s === 'consignee'){
     z.innerHTML = '<div class="atetat c"><b>Consignée</b> le ' + echapper(atDateHeure(AT_COURANTE.consigneeLe)) +
       '. La partie consignation est verrouillée. Sors le PDF, remets un exemplaire à chacun, ' +
       'et reprends cette attestation au retour pour la fin de travaux.</div><div class="toolbar">' +
       '<button class="action" onclick="atImprimer()">Aperçu · PDF — exemplaires à remettre</button>' +
-      '<button class="ghost" onclick="atDeverrouiller()">Déverrouiller pour corriger</button></div>';
+      '<button class="ghost" onclick="atDeverrouiller()">Déverrouiller pour corriger</button>' + fermer + '</div>';
   } else {
     z.innerHTML = '<div class="atetat l"><b>Travaux terminés.</b> Fin de travaux validée le ' +
       echapper(atDateHeure(AT_COURANTE.leveeLe)) + '. Le document est complet et entièrement verrouillé.' +
       '</div><div class="toolbar">' +
       '<button class="action" onclick="atImprimer()">Aperçu · PDF définitif</button>' +
-      '<button class="ghost" onclick="atDeverrouiller()">Déverrouiller pour corriger</button></div>';
+      '<button class="ghost" onclick="atDeverrouiller()">Déverrouiller pour corriger</button>' + fermer + '</div>';
   }
   if(a){
     a.innerHTML = (s === 'brouillon')
@@ -6370,9 +6401,10 @@ function atNouvelle(){
   AT_COURANTE.f.heure = String(auj.getHours()).padStart(2,'0')+':'+String(auj.getMinutes()).padStart(2,'0');
   if(session && session.profil && session.profil.nom)
     AT_COURANTE.val.cc.nom = session.profil.nom;
-  atSauver(); atToutRendre();
+  atSauver(); atMontrerListe(false); atToutRendre();
   atMessage("Nouvelle attestation. Remplis l'intervention, puis le schéma.", 'var(--muted)');
-  window.scrollTo(0,0);
+  const b = document.getElementById('atBloc');
+  if(b) setTimeout(function(){ b.scrollIntoView({behavior:'smooth', block:'start'}); }, 60);
 }
 function atOuvrir(id){
   const p = atListeStockee().filter(function(x){ return x.id===id; })[0];
@@ -6382,6 +6414,7 @@ function atOuvrir(id){
   if(!AT_COURANTE.schema.cells) AT_COURANTE.schema.cells = [];
   if(!AT_COURANTE.schema.traits) AT_COURANTE.schema.traits = [];
   AT_COURANTE.statut = atStatut(AT_COURANTE);
+  atMontrerListe(false);
   AT_ROLES.forEach(function(r){
     ['val','fin'].forEach(function(b){
       if(!AT_COURANTE[b]) AT_COURANTE[b] = {};
@@ -6396,13 +6429,80 @@ function atSupprimer(id){
   LS.set('kitht-attest', atListeStockee().filter(function(x){ return x.id !== id; }));
   if(AT_COURANTE && AT_COURANTE.id === id) AT_COURANTE = null;
   atToutRendre();
+  if(atListeVisible()) atAfficherListe();
   atMessage('Attestation supprimée.', 'var(--amber)');
 }
-function atAfficherListe(){
-  const z = document.getElementById('atListe'); if(!z) return;
-  const l = atListeStockee();
+// La liste ne s'affiche que si on la demande : l'onglet s'ouvre sur les
+// trois entrées, pas sur un formulaire de deux écrans de haut.
+let AT_FILTRE = null;
+
+function atMontrerListe(oui, titre){
+  const c = document.getElementById('atCarteListe');
+  const t = document.getElementById('atTitreListe');
+  if(!c) return;
+  c.style.display = oui ? 'block' : 'none';
+  if(oui && t && titre) t.textContent = titre;
+  if(oui) setTimeout(function(){ c.scrollIntoView({behavior:'smooth', block:'start'}); }, 40);
+}
+function atListeVisible(){
+  const c = document.getElementById('atCarteListe');
+  return !!c && c.style.display === 'block';
+}
+function atVoirListe(){
+  if(atListeVisible() && AT_FILTRE === null){ atMontrerListe(false); return; }
+  AT_FILTRE = null; atAfficherListe();
+  atMontrerListe(true, 'Mes attestations');
+}
+function atVoirDecons(){
+  const l = atListeStockee().filter(function(x){ return atStatut(x) === 'consignee'; });
   if(!l.length){
-    z.innerHTML = '<div class="note" style="border-left-color:var(--muted);">Aucune attestation enregistrée.</div>';
+    atMontrerListe(false);
+    atMessage('Aucune attestation en attente de fin de travaux.', 'var(--muted)');
+    return;
+  }
+  if(l.length === 1){
+    atOuvrir(l[0].id);
+    atMessage('Attestation reprise — remplis la fin de travaux et valide.', 'var(--muted)');
+    setTimeout(function(){
+      const f = document.getElementById('atFinTravaux');
+      if(f) f.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 120);
+    return;
+  }
+  if(atListeVisible() && AT_FILTRE === 'consignee'){ atMontrerListe(false); return; }
+  AT_FILTRE = 'consignee'; atAfficherListe();
+  atMontrerListe(true, 'À déconsigner');
+}
+function atFermer(){
+  AT_COURANTE = null;
+  atToutRendre();
+  atMessage('', '');
+  window.scrollTo(0, 0);
+}
+function atMajCompteurs(){
+  const l = atListeStockee();
+  const d = l.filter(function(x){ return atStatut(x) === 'consignee'; }).length;
+  const nd = document.getElementById('atNbDecons');
+  const nt = document.getElementById('atNbTotal');
+  const bd = document.getElementById('atBtnDecons');
+  const bl = document.getElementById('atBtnListe');
+  if(nd) nd.textContent = d ? (d + ' à reprendre pour la fin de travaux')
+                            : 'Rien en attente';
+  if(nt) nt.textContent = l.length ? (l.length + ' enregistrée' + (l.length > 1 ? 's' : ''))
+                                   : 'Aucune pour le moment';
+  if(bd) bd.classList.toggle('vide', !d);
+  if(bl) bl.classList.toggle('vide', !l.length);
+}
+
+function atAfficherListe(){
+  atMajCompteurs();
+  const z = document.getElementById('atListe'); if(!z) return;
+  let l = atListeStockee();
+  if(AT_FILTRE) l = l.filter(function(x){ return atStatut(x) === AT_FILTRE; });
+  if(!l.length){
+    z.innerHTML = '<div class="note" style="border-left-color:var(--muted);">' +
+      (AT_FILTRE ? 'Aucune attestation en attente de fin de travaux.'
+                 : 'Aucune attestation enregistrée.') + '</div>';
     return;
   }
   z.innerHTML = l.map(function(p){
@@ -6436,10 +6536,6 @@ function atToutRendre(){
   atAfficherListe();
 }
 function atInit(){
-  if(!AT_COURANTE){
-    const l = atListeStockee();
-    if(l.length) return atOuvrir(l[0].id);
-  }
   atToutRendre();
 }
 
