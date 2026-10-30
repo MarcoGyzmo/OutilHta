@@ -543,6 +543,8 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   /* le schéma garde ses proportions mais ne mange pas la page */
   #pvImpression .aschema img{width:100%; height:auto; max-height:96mm;
     object-fit:contain; object-position:center; display:block; margin:0 auto;}
+  #pvImpression .aetape{font-size:8pt; font-weight:700; margin:2.5mm 0 0;
+    padding:1.2mm 0 0; border-top:.4pt solid #ddd;}
   #pvImpression .aetats{margin-top:2mm; table-layout:fixed;}
   #pvImpression .aetats th{width:38mm; text-align:left; font-size:6.8pt; font-weight:700;
     letter-spacing:.1em; text-transform:uppercase; vertical-align:top;
@@ -653,6 +655,22 @@ tr:hover td{background:rgba(255,138,30,0.03);}
   margin-bottom:8px;}
 .atengage{font-size:11.5px; color:var(--muted); line-height:1.55; margin:0 0 12px;
   border-left:2px solid var(--line); padding-left:10px;}
+/* Une partie validée reste lisible : sur iOS un champ désactivé pâlit
+   jusqu'à devenir illisible, d'où le -webkit-text-fill-color. */
+.zonefigee input:disabled, .zonefigee select:disabled, .zonefigee textarea:disabled{
+  color:var(--text) !important; -webkit-text-fill-color:var(--text); opacity:1;
+  background:var(--panel-2); border-style:dashed;}
+.zonefigee .atchoix:disabled, .zonefigee button:disabled{opacity:1; cursor:default;}
+canvas.fige{pointer-events:none;}
+.atetat{border-radius:7px; padding:12px 14px; font-size:12.5px; line-height:1.55;
+  margin-bottom:10px; border:1px solid var(--line); background:var(--panel-2);}
+.atetat.b{border-left:3px solid var(--muted);}
+.atetat.c{border-left:3px solid #4caf50; background:rgba(76,175,80,.07);}
+.atetat.l{border-left:3px solid var(--blue); background:rgba(62,166,255,.06);}
+.atbadge{font-family:var(--mono); font-size:10.5px; border-radius:4px; padding:2px 7px;
+  border:1px solid var(--line); color:var(--muted); flex-shrink:0;}
+.atbadge.c{border-color:#4caf50; color:#4caf50;}
+.atbadge.l{border-color:var(--blue); color:var(--blue);}
 
 </style>
 </head>
@@ -1910,6 +1928,7 @@ tr:hover td{background:rgba(255,138,30,0.03);}
     </div>
 
     <div id="atBloc" style="display:none;">
+      <div id="atStatut"></div>
       <div class="card">
         <h2 style="font-size:14px;">Intervention</h2>
         <div id="atIntervention"></div>
@@ -1936,13 +1955,11 @@ tr:hover td{background:rgba(255,138,30,0.03);}
 
       <div class="card">
         <h2 style="font-size:14px;">Fin de travaux</h2>
-        <p class="desc">À remplir au moment de la restitution, avant déconsignation.</p>
+        <p class="desc">À remplir au retour sur site, au moment de la restitution — c'est ce qui permet la déconsignation.</p>
         <div id="atFinTravaux"></div>
-        <div class="toolbar" style="margin-top:16px;">
-          <button class="action" onclick="atImprimer()">Aperçu · PDF</button>
-        </div>
+        <div id="atFinActions" class="toolbar" style="margin-top:16px;"></div>
         <div class="note" style="border-left-color:var(--muted); font-size:12px;">
-          <b>Enregistrement automatique.</b> Tout est conservé sur cet appareil au fil de la saisie. Le PDF reste la seule sauvegarde durable : sors-le une fois le document signé.
+          <b>Enregistrement automatique.</b> Tout est conservé sur cet appareil au fil de la saisie. Le PDF reste la seule sauvegarde durable : sors-le à la consignation pour en remettre un exemplaire à chacun, et une deuxième fois en fin de travaux.
         </div>
       </div>
     </div>
@@ -3786,7 +3803,7 @@ loadBdd();
 // =====================================================================
 // RECHERCHE GLOBALE · RACCOURCIS · GARDE-FOU DE VERSION
 // =====================================================================
-const VERSION_PAGE = 'v53';
+const VERSION_PAGE = 'v55';
 function numVersion(v){ const n = parseInt(String(v).replace(/[^0-9]/g, ''), 10); return isNaN(n) ? 0 : n; }
 
 // D'où vient cette installation. Relevé tout de suite, avant que
@@ -4147,6 +4164,11 @@ function majVersions(){
 // Une entrée par version livrée, de la plus récente à la plus ancienne.
 // Trois ou quatre lignes suffisent : c'est un rappel, pas une notice.
 const NOUVEAUTES = {
+  v55: ["L'attestation se valide en deux temps : consignation, puis fin de travaux.",
+        "Une fois la consignation validée, cette partie est verrouillée — tu sors le PDF et tu en remets un exemplaire à chacun.",
+        "Tu rouvres la même attestation au retour pour la fin de travaux, et tu ressors le PDF définitif."],
+  v54: ["Sur iPhone, l'aperçu PDF s'ouvre dans un onglet Safari : l'application installée sur l'écran d'accueil ne sait pas imprimer.",
+        "Vaut pour le PV d'intervention comme pour l'attestation de consignation."],
   v53: ["Après chaque mise à jour, l'outil signale ici ce qui a changé — une seule fois.",
         "Les versions sautées sont rattrapées : tu vois tout ce que tu n'as pas encore lu."],
   v52: ["La double sectionnement coupe le jeu de barres en deux : NF C 13-100 d'un côté, NF C 13-200 de l'autre.",
@@ -4563,6 +4585,97 @@ function pvDateFr(iso){
   if(isNaN(d)) return String(iso);
   return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
 }
+// =====================================================================
+// IMPRESSION
+// =====================================================================
+// iOS n'imprime pas depuis une application posée sur l'écran d'accueil :
+// en mode « standalone », window.print() ne fait rien, pas de dialogue, pas
+// d'erreur. On passe alors par un onglet séparé — le téléphone le confie à
+// Safari, où l'impression et l'enregistrement en PDF fonctionnent.
+function surIOS(){
+  try{
+    const ua = navigator.userAgent || '';
+    return /iPad|iPhone|iPod/.test(ua) ||
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }catch(e){ return false; }
+}
+function enAppliInstallee(){
+  try{
+    if(navigator.standalone === true) return true;
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.matchMedia('(display-mode: fullscreen)').matches;
+  }catch(e){ return false; }
+}
+
+// Le document est recopié entier dans le nouvel onglet : feuille de style et
+// images comprises, puisque tout est déjà en data:. Rien à recharger, donc
+// ça marche aussi sans réseau.
+function documentAutonome(corps, titre){
+  let css = '';
+  document.querySelectorAll('style').forEach(function(s){ css += s.textContent + '\n'; });
+  return '<!doctype html><html lang="fr"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<title>' + echapper(titre) + '</title>' +
+    '<style>' + css + '</style>' +
+    // Ces règles ne servent qu'à l'aperçu à l'écran : à l'impression, c'est
+    // la feuille @media print de l'outil qui reprend la main, à l'identique.
+    '<style>html,body{margin:0; padding:0; background:#fff;}' +
+    '@media screen{' +
+      '.wrap{max-width:none; margin:0; padding:0;}' +
+      '#pvImpression{display:block !important; color:#111; background:#fff; padding:14px 16px;' +
+      ' font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; font-size:13px; line-height:1.45;}' +
+      '#pvImpression *{box-sizing:border-box;}' +
+      '#pvImpression table{width:100%; border-collapse:collapse;' +
+      ' display:table !important; table-layout:fixed; white-space:normal !important;}' +
+      '#pvImpression th,#pvImpression td{font-family:inherit; text-align:left; vertical-align:top;' +
+      ' white-space:normal !important; padding:4px 10px 4px 0; border-bottom:1px solid #e6e6e6;}' +
+      '#pvImpression img{max-width:100%; height:auto;}' +
+      '#pvImpression .achamp.asig img{max-height:42px; width:auto;}' +
+      '#pvImpression .afsig img{max-height:34px; width:auto;}' +
+      '#pvImpression .aops span, #pvImpression .aman > div{display:block; padding:3px 0;}' +
+      '#pvImpression .abandeau{font-weight:700; margin:17px 0 6px; padding-bottom:4px;' +
+      ' border-bottom:1px solid #bbb;}' +
+      '#pvImpression .dtitre{font-size:17px; font-weight:700;}' +
+      '#pvImpression .apage, #pvImpression .dpage, #pvImpression .asuite{' +
+      ' border-top:1px dashed #bbb; margin-top:20px; padding-top:20px;}' +
+      '#pvImpression > .apage:first-child, #pvImpression > .dpage:first-child{' +
+      ' border-top:0; margin-top:0; padding-top:0;}' +
+      '.barreImp{position:sticky; top:0; z-index:9; background:#fff; border-bottom:1px solid #ccc;' +
+      ' padding:11px 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;}' +
+      '.barreImp button{font-family:inherit; font-size:15px; padding:10px 18px; border:0;' +
+      ' background:#111; color:#fff; border-radius:7px;}' +
+      '.barreImp span{font-size:12px; color:#666;}' +
+    '}' +
+    '@media print{.barreImp{display:none !important;}}</style></head><body>' +
+    '<div class="barreImp"><button onclick="window.print()">Imprimer / Enregistrer en PDF</button>' +
+    '<span>Partager puis Imprimer, et pince pour obtenir le PDF.</span></div>' +
+    '<div class="wrap"><div id="pvImpression">' + corps + '</div></div></body></html>';
+}
+
+function lancerImpression(corps, titre, message){
+  const z = document.getElementById('pvImpression');
+  if(surIOS() && enAppliInstallee()){
+    let w = null;
+    try{ w = window.open('', '_blank'); }catch(e){}
+    if(w && w.document){
+      try{
+        w.document.open();
+        w.document.write(documentAutonome(corps, titre));
+        w.document.close();
+        if(message) message('Document ouvert dans un onglet — appuie sur Imprimer là-bas.', 'var(--green)');
+        return;
+      }catch(e){}
+    }
+    z.innerHTML = corps;
+    try{ window.print(); }catch(e){}
+    if(message) message("Si rien ne s'ouvre : l'iPhone n'imprime pas depuis l'icône de " +
+      "l'écran d'accueil. Ouvre le même lien dans Safari, le bouton y fonctionne.", 'var(--amber)');
+    return;
+  }
+  z.innerHTML = corps;
+  setTimeout(function(){ window.print(); }, 80);
+}
+
 function pvMessage(txt, coul){
   const m = document.getElementById('pvMsg');
   if(!m) return;
@@ -5344,9 +5457,7 @@ function pvImprimer(){
     g += pvPied() + '</section>';
   });
 
-  const z = document.getElementById('pvImpression');
-  z.innerHTML = g;
-  setTimeout(function(){ window.print(); }, 80);
+  lancerImpression(g, (a.typeRap || "Rapport d'intervention") + (a.num ? ' ' + a.num : ''), pvMessage);
 }
 
 // =====================================================================
@@ -5903,8 +6014,125 @@ function atImageDe(etat, w, h, rogner){
 let AT_COURANTE = null;
 
 function atListeStockee(){ return LS.get('kitht-attest', []); }
+// Une attestation passe par trois états. Tant qu'elle est en brouillon tout
+// se modifie ; une fois la consignation validée, cette partie est figée et
+// seule la fin de travaux reste ouverte ; une fois la fin de travaux validée,
+// le document est complet.
+const AT_STATUTS = {
+  brouillon: {l:'Brouillon',          c:'b'},
+  consignee: {l:'Consignée',          c:'c'},
+  levee:     {l:'Travaux terminés',   c:'l'}
+};
+function atStatut(a){
+  const s = (a || AT_COURANTE || {}).statut;
+  return AT_STATUTS[s] ? s : 'brouillon';
+}
+// 'cons' : tout ce qui touche à la consignation. 'fin' : la restitution.
+function atVerrouille(bloc){
+  const s = atStatut();
+  return bloc === 'fin' ? (s === 'levee') : (s === 'consignee' || s === 'levee');
+}
+function atFiger(id){
+  const z = document.getElementById(id); if(!z) return;
+  z.querySelectorAll('input, select, textarea, button').forEach(function(e){ e.disabled = true; });
+  z.querySelectorAll('canvas').forEach(function(c){ c.classList.add('fige'); });
+  z.classList.add('zonefigee');
+}
+function atDateHeure(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d)) return '';
+  return d.toLocaleDateString('fr-FR') + ' à ' +
+    String(d.getHours()).padStart(2,'0') + 'h' + String(d.getMinutes()).padStart(2,'0');
+}
+function atSansSignature(bloc){
+  return AT_ROLES.filter(function(r){
+    const v = (AT_COURANTE[bloc] || {})[r.k] || {};
+    return !String(v.nom || '').trim() || !((v.sig && v.sig.traits) || []).length;
+  });
+}
+
+function atValiderConsignation(){
+  if(!AT_COURANTE) return;
+  if(atStatut() !== 'brouillon') return;
+  const m = atSansSignature('val');
+  if(m.length === AT_ROLES.length){
+    atMessage("Personne n'a signé : la consignation ne peut pas être validée.", 'var(--red)');
+    return;
+  }
+  if(m.length && !confirm('Pas de nom ou pas de signature pour :\n\n· ' +
+      m.map(function(r){ return r.l; }).join('\n· ') +
+      '\n\nValider quand même la consignation ?')) return;
+  AT_COURANTE.statut = 'consignee';
+  AT_COURANTE.consigneeLe = new Date().toISOString();
+  atSauver(); atToutRendre(); window.scrollTo(0, 0);
+  atMessage('Consignation validée et verrouillée. Sors le PDF et remets un exemplaire à chacun.', 'var(--green)');
+}
+function atValiderFin(){
+  if(!AT_COURANTE) return;
+  if(atStatut() === 'brouillon'){
+    atMessage("Valide d'abord la consignation.", 'var(--amber)'); return;
+  }
+  if(atStatut() === 'levee') return;
+  const m = atSansSignature('fin');
+  if(m.length === AT_ROLES.length){
+    atMessage("Personne n'a signé la fin de travaux.", 'var(--red)'); return;
+  }
+  if(m.length && !confirm('Pas de nom ou pas de signature pour :\n\n· ' +
+      m.map(function(r){ return r.l; }).join('\n· ') +
+      '\n\nValider quand même la fin de travaux ?')) return;
+  AT_COURANTE.statut = 'levee';
+  AT_COURANTE.leveeLe = new Date().toISOString();
+  atSauver(); atToutRendre(); window.scrollTo(0, 0);
+  atMessage('Fin de travaux validée. Le document est complet — sors le PDF définitif.', 'var(--green)');
+}
+function atDeverrouiller(){
+  if(!AT_COURANTE) return;
+  const s = atStatut();
+  if(s === 'brouillon') return;
+  if(!confirm('Cette attestation est signée.\n\nLa rouvrir permet de modifier un document ' +
+    'déjà remis. À ne faire que pour corriger une erreur, et à refaire signer.\n\nContinuer ?')) return;
+  if(s === 'levee'){ AT_COURANTE.statut = 'consignee'; AT_COURANTE.leveeLe = ''; }
+  else { AT_COURANTE.statut = 'brouillon'; AT_COURANTE.consigneeLe = ''; }
+  atSauver(); atToutRendre();
+  atMessage('Attestation rouverte — pense à refaire signer ce que tu modifies.', 'var(--amber)');
+}
+
+function atRendreStatut(){
+  const z = document.getElementById('atStatut');
+  const a = document.getElementById('atFinActions');
+  if(!z || !AT_COURANTE) return;
+  const s = atStatut();
+  const pdf = '<button class="ghost" onclick="atImprimer()">Aperçu · PDF</button>';
+  if(s === 'brouillon'){
+    z.innerHTML = '<div class="atetat b">Brouillon. Remplis l\'intervention, compose le schéma, ' +
+      'coche les opérations, puis fais signer les trois rôles et valide — la partie consignation ' +
+      'sera alors figée.</div><div class="toolbar">' +
+      '<button class="action" onclick="atValiderConsignation()">Valider la consignation</button>' + pdf + '</div>';
+  } else if(s === 'consignee'){
+    z.innerHTML = '<div class="atetat c"><b>Consignée</b> le ' + echapper(atDateHeure(AT_COURANTE.consigneeLe)) +
+      '. La partie consignation est verrouillée. Sors le PDF, remets un exemplaire à chacun, ' +
+      'et reprends cette attestation au retour pour la fin de travaux.</div><div class="toolbar">' +
+      '<button class="action" onclick="atImprimer()">Aperçu · PDF — exemplaires à remettre</button>' +
+      '<button class="ghost" onclick="atDeverrouiller()">Déverrouiller pour corriger</button></div>';
+  } else {
+    z.innerHTML = '<div class="atetat l"><b>Travaux terminés.</b> Fin de travaux validée le ' +
+      echapper(atDateHeure(AT_COURANTE.leveeLe)) + '. Le document est complet et entièrement verrouillé.' +
+      '</div><div class="toolbar">' +
+      '<button class="action" onclick="atImprimer()">Aperçu · PDF définitif</button>' +
+      '<button class="ghost" onclick="atDeverrouiller()">Déverrouiller pour corriger</button></div>';
+  }
+  if(a){
+    a.innerHTML = (s === 'brouillon')
+      ? '<span class="atvide">La fin de travaux se valide une fois la consignation validée.</span>' + pdf
+      : (s === 'levee' ? pdf
+         : '<button class="action" onclick="atValiderFin()">Valider la fin de travaux</button>' + pdf);
+  }
+}
+
 function atVide(){
-  const o = {id:'at-'+Date.now(), maj:new Date().toISOString(),
+  const o = {id:'at-'+Date.now(), maj:new Date().toISOString(), statut:'brouillon',
+             consigneeLe:'', leveeLe:'',
              f:{}, ops:{}, man:'', schema:{cells:[], traits:[]}, val:{}, fin:{}};
   AT_ROLES.forEach(function(r){
     o.val[r.k] = {nom:'', obs:'', date:'', heure:'', sig:{traits:[]}};
@@ -5944,6 +6172,7 @@ function atRendreIntervention(){
   z.innerHTML = '<div class="pvgrid">' + AT_INTERV.map(function(c){
     return pvChamp(c, AT_COURANTE.f[c.k], "atMajF('"+c.k+"',this.value)");
   }).join('') + '</div>';
+  if(atVerrouille('cons')) atFiger('atIntervention');
 }
 
 function atRendreManoeuvre(){
@@ -5955,6 +6184,7 @@ function atRendreManoeuvre(){
       '<span class="atcase">'+(on?'✕':'')+'</span><span>' +
       echapper(m.l).replace('ma société', '<b>'+echapper(soc)+'</b>') + '</span></button>';
   }).join('');
+  if(atVerrouille('cons')) atFiger('atManoeuvre');
 }
 
 function atRendreOps(){
@@ -5964,6 +6194,7 @@ function atRendreOps(){
     return '<button class="atchoix'+(on?' on':'')+'" onclick="atMajOp(\''+o.k+'\','+(on?'false':'true')+'); atRendreOps();">' +
       '<span class="atcase">'+(on?'✕':'')+'</span><span>'+echapper(o.l)+'</span></button>';
   }).join('');
+  if(atVerrouille('cons')) atFiger('atOps');
 }
 
 function atAjouterCellule(k){
@@ -6026,6 +6257,12 @@ function atOutil(c, w){
 
 function atRendreSchema(){
   const z = document.getElementById('atSchema'); if(!z || !AT_COURANTE) return;
+  if(atVerrouille('cons')){
+    z.innerHTML = '<canvas id="atCanvas" class="atcanvas fige" width="1100" height="640"></canvas>' +
+      '<p class="desc" style="margin-top:8px;">Schéma figé depuis la validation de la consignation.</p>';
+    atRedessiner(document.getElementById('atCanvas'), AT_COURANTE.schema);
+    return;
+  }
   z.innerHTML =
     '<div class="atmodeles">' + AT_CELLULES.map(function(m){
       return '<button class="atmod" onclick="atAjouterCellule(\''+m.k+'\')">' +
@@ -6100,6 +6337,8 @@ function atRendreSignatures(bloc){
           'onclick="atEffacerSig(\''+bloc+'\',\''+r.k+'\')">Effacer la signature</button></div>' +
       '</div>';
   }).join('');
+  if(atVerrouille(bloc === 'val' ? 'cons' : 'fin'))
+    atFiger(bloc === 'val' ? 'atValidation' : 'atFinTravaux');
   AT_ROLES.forEach(function(r){
     const cid = 'atSig-'+bloc+'-'+r.k;
     const cv = document.getElementById(cid); if(!cv) return;
@@ -6138,6 +6377,7 @@ function atOuvrir(id){
   if(!AT_COURANTE.schema) AT_COURANTE.schema = {cells:[], traits:[]};
   if(!AT_COURANTE.schema.cells) AT_COURANTE.schema.cells = [];
   if(!AT_COURANTE.schema.traits) AT_COURANTE.schema.traits = [];
+  AT_COURANTE.statut = atStatut(AT_COURANTE);
   AT_ROLES.forEach(function(r){
     ['val','fin'].forEach(function(b){
       if(!AT_COURANTE[b]) AT_COURANTE[b] = {};
@@ -6166,13 +6406,16 @@ function atAfficherListe(){
     const en = AT_COURANTE && AT_COURANTE.id === p.id;
     const sigs = AT_ROLES.filter(function(r){
       return p.val && p.val[r.k] && p.val[r.k].sig && (p.val[r.k].sig.traits||[]).length; }).length;
+    const st = atStatut(p), sd = AT_STATUTS[st];
     return '<div class="pvfiche"'+(en?' style="border-left-color:var(--amber);"':'')+'>' +
       '<span class="pvinfo"><span class="pvn">'+echapper(f.poste || f.lieu || 'Sans nom') +
         (en?' <span style="color:var(--amber); font-size:11px;">· ouverte</span>':'')+'</span>' +
       '<span class="pvd">'+echapper([f.num, f.motif].filter(Boolean).join(' · ')||'—') +
         ' · '+(f.date?pvDateFr(f.date):'sans date') +
-        ' · '+sigs+'/3 signature'+(sigs>1?'s':'')+'</span></span>' +
-      '<span style="display:flex; gap:6px; flex-shrink:0;">' +
+        ' · '+sigs+'/3 signature'+(sigs>1?'s':'') +
+        (st === 'consignee' ? ' · fin de travaux à faire' : '')+'</span></span>' +
+      '<span style="display:flex; gap:6px; flex-shrink:0; align-items:center;">' +
+      '<span class="atbadge '+sd.c+'">'+echapper(sd.l)+'</span>' +
       '<button class="ghost" style="padding:7px 11px; font-size:12px;" onclick="atOuvrir(\''+p.id+'\')">Ouvrir</button>' +
       '<button class="ghost danger" style="padding:7px 10px; font-size:12px;" onclick="atSupprimer(\''+p.id+'\')">×</button>' +
       '</span></div>';
@@ -6182,6 +6425,7 @@ function atToutRendre(){
   const b = document.getElementById('atBloc');
   if(b) b.style.display = AT_COURANTE ? 'block' : 'none';
   if(AT_COURANTE){
+    atRendreStatut();
     atRendreIntervention(); atRendreManoeuvre(); atRendreOps(); atRendreSchema();
     atRendreSignatures('val'); atRendreSignatures('fin');
   }
@@ -6214,6 +6458,15 @@ function atImprimer(){
     '<th>Motif</th><td>'+echapper(f.motif||'')+'</td></tr>' +
     '<tr><th>Entreprise utilisatrice</th><td colspan="3">'+echapper(f.entUtil||'')+'</td></tr>' +
     '</table>';
+
+  const st = atStatut();
+  if(st === 'consignee'){
+    g += '<p class="aetape">Document remis à la consignation — la fin de travaux reste à compléter.</p>';
+  } else if(st === 'levee'){
+    g += '<p class="aetape">Document complet — consignation du ' +
+      echapper(atDateHeure(AT_COURANTE.consigneeLe) || '—') + ', fin de travaux validée le ' +
+      echapper(atDateHeure(AT_COURANTE.leveeLe) || '—') + '.</p>';
+  }
 
   g += '<div class="aman">' + AT_MANOEUVRE.map(function(m){
       return '<div>' + atCase(AT_COURANTE.man === m.v) + ' ' +
@@ -6270,9 +6523,7 @@ function atImprimer(){
     }).join('') + '</table></div>';
   g += pvPied() + '</section>';
 
-  const z = document.getElementById('pvImpression');
-  z.innerHTML = g;
-  setTimeout(function(){ window.print(); }, 80);
+  lancerImpression(g, 'Attestation de consignation' + (f.num ? ' ' + f.num : ''), atMessage);
 }
 
 // =====================================================================
